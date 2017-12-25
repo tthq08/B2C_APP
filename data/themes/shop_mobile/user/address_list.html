@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>我的收货地址</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('User/manager')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">我的收货地址</h5>
+			</div>
+			<div class="header-right">
+				<div class="filter-top">
+				<a href="{:U('User/add_address')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/map_add.png" width="24" alt="">
+				</a>
+				</div>
+			</div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30" id="address_list">
+	{volist name="lists" id="vo"}
+		<div class="address-item">
+			<div class="msg">
+				<div class="top clearfix">
+					<span class="n">{$vo.consignee}</span>
+					<span class="phone fr">{$vo.mobile|hidetel|default=''}</span>
+				</div>
+				<div class="txt"> {$vo.address}</div>
+			</div>
+			<div class="ctr clearfix">
+				<div class="fl default">
+					<span class="login-check">
+						<input {eq name="vo.is_default" value='1'}checked{/eq} type="checkbox" id="address{$i}" onclick="set_default('{$vo.id}');">
+						<label for="address{$i}" >设为默认地址</label>
+					</span>
+				</div>
+				<div class="fr">
+					<a href="{:U('user/edit_address',['id'=>$vo['id']])}" class="btn"><img src="{:tb_config('resource_path',1)}mshop/images/editor.png" alt="" />编辑</a>
+					<a href="javascript:;" onclick="del_addr('{$vo.id}');" class="btn"><img src="{:tb_config('resource_path',1)}mshop/images/ld.png" alt="" />删除</a>
+				</div>
+			</div>
+		</div>
+	{/volist}
+	</main>
+
+</body>
+	<script type="text/javascript">
+		function set_default(id) {
+			$.ajax({
+				url:"{:U('User/set_default')}",	
+				data:{id:id},	
+				success: function(data){									
+					layer.msg(data.msg,{time:1000},function () {
+						if (data.code==1) {
+							location.reload();
+						}
+					})
+				}
+			});	
+		}
+
+		function del_addr(id) {
+			layer.confirm('是否删除当前地址？', {
+		      btn: ['Yes','No'] //按钮
+		    }, function(){
+		    	$.ajax({
+		          url:"{:U('User/del_address')}",
+		          data:{
+		          	id:id
+		          },      
+		          success: function(data){                  
+		            layer.msg(data.msg,{time:1000},function () {
+		              if (data.code==1) {
+		                location.reload();
+		              }
+		            })
+		          }
+		        }); 
+		    })
+		}
+	</script>
+</html>

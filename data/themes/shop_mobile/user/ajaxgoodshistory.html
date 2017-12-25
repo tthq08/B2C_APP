@@ -1,0 +1,15 @@
+{volist name="goods_list" id="vo"}
+	<div class="ulog-item">
+		<div class="pic"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['id']])}"><img src="{$vo.id|goods_thum_images=200,200}" alt="" /></a></div>
+		<div class="info">
+			<div class="name"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['id']])}">{$vo.title}</a></div>
+			<div class="log-price">
+				<span class="price">{:getTableValue('shop_goods','id='.$vo['id'],'shop_price')}<small>元</small></span>
+			</div>
+			<div class="ctr">
+				<a href="{:U('shop/goods/goodsInfo',['id'=>$vo['id']])}" class="btn color--f76d6d mr10">查看商品</a>
+				<a href="javascript:;" onclick="delHistory('{$vo.id}');" class="btn">删除</a>
+			</div>
+		</div>
+	</div>
+{/volist}

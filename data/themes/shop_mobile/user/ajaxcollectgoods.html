@@ -1,0 +1,21 @@
+{volist name="goods_list" id="vo"}
+<div class="uflw-item">
+	<div class="pic"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['goods_id']])}"><img src="{$vo.goods_id|goods_thum_images=200,200}" alt=""></a></div>
+	<div class="info">
+		<div class="flw-name"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['goods_id']])}">{:getTableValue('shop_goods','id='.$vo['goods_id'],'title')}</a></div>
+		<div class="flw-price">
+			<span class="price">{:getTableValue('shop_goods','id='.$vo['goods_id'],'shop_price')}<small>元</small></span>
+		</div>
+		<div class="useful">
+		{notempty name="list.spec_key"}
+			<span>【规格：{:getTableValue('shop_spec_price',['goods_id'=>$vo['goods_id'],'key_sign'=>$vo['spec_key']],'key_name')}】</span>
+		{/notempty}
+			<!-- <span>满2000.00减100，满5000.00减300</span> -->
+		</div>
+		<div class="ctr">
+			<a href="javascript:;" onclick="addCart('{$vo.goods_id}','1','{$vo.spec_key}');" class="btn cbtn mr10">加入购物车</a>
+			<a href="javascript:;" onclick="delCollect('{$vo.id}');" class="btn fbtn">取消关注</a>
+		</div>
+	</div>
+</div>
+{/volist}

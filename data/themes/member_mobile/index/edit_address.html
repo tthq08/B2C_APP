@@ -1,0 +1,35 @@
+<input type="hidden" id="addressId">
+<form>
+    <div class="add-row">
+        <label class="consignee-add-label" for="consignee_add_realname">
+            <b>*</b>收货人姓名
+        </label>
+        <input name="consignee_add_realname" type="text" class="consignee-add-text" placeholder="收货人姓名">
+    </div>
+    <div class="add-row m-t-10">
+        <label class="consignee-add-label" for="consignee_add_province"><b>*</b>地址</label>
+        <select class="consignee-add-select" id="consignee_add_province" name="consignee_add_province"><option value="0" selected="">请选择</option></select>
+        <select class="consignee-add-select" id="consignee_add_city" name="consignee_add_city"><option value="0" selected="">请选择</option></select>
+        <select class="consignee-add-select" id="consignee_add_county" name="consignee_add_county"><option value="0" selected="">请选择</option></select>
+        <select class="consignee-add-select" id="consignee_add_street" name="consignee_add_street" style="display: none"><option value="0" selected="">请选择</option></select>
+        <textarea class="consignee-add-address" id="consignee_add_address" name="consignee_add_address" placeholder="路名或街道地址，门牌号"></textarea>
+    </div>
+    <div class="add-row m-t-10">
+        <label class="consignee-add-label" for="consignee_add_postcode">邮政编码</label>
+        <input name="consignee_add_postcode" type="text" class="consignee-add-text" placeholder="6位邮政编码" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" maxlength="6">
+    </div>
+    <div class="add-row m-t-10">
+        <label class="consignee-add-label" for="consignee_add_mobile">
+            <b>*</b>手机号码
+        </label>
+        <input name="consignee_add_mobile" type="text" class="consignee-add-text" maxlength="11" placeholder="11位手机号">
+        <input name="hide_consignee_add_mobile" type="hidden" value="">
+    </div>
+    <input type="hidden" name="consignee_add_addr_id" value="">
+    <div class="add-row m-t-10">
+        <p class="m-t-20">
+            <a href="javascript:void(0);" id="consigneeAddBtn" class="mod-btn-green" addressid="138636522">保存</a>
+            <a href="javascript:void(0);" id="consigneeCancelBtn" class="mod-btn-gray">取消</a>
+        </p>
+    </div>
+</form>

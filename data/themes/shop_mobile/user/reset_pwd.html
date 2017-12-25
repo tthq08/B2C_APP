@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>重置登录密码</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('User/manager')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">重置登录密码</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+	<form id="passForm" method="post" action="{:U('member/login/reset_pwd')}">
+		<div class="user-form">
+			<div class="signup-wrap" style="background: #fff;">
+				<div class="signup-f-block clearfix">
+					<div class="sf-left">邮箱地址</div>
+					<div class="sf-right"><input placeholder="请输入登录的邮箱" name="email" type="text" class="input--100"></div>
+				</div>
+				<div class="signup-f-block clearfix">
+					<div class="sf-left">图形验证码</div>
+					<div class="sf-right">
+						<input placeholder="图形验证码" name="verify_code" type="text" class="input--60">
+					</div>
+				</div>
+				<div class="signup-f-block clearfix">
+					<div class="sf-left"></div>
+					<div class="sf-right">
+						<img onclick="javascript:this.src='{:captcha_src()}?time='+Math.random();" src="{:captcha_src()}" class="sf-right">
+					</div>
+				</div>
+				<div class="signup-f-block clearfix">
+					<div class="sf-left">邮件验证码</div>
+					<div class="sf-right"><input placeholder="邮件验证码" name="code" type="text" class="input--60"></div>
+					<a href="javascript:;" id="send_btn" onclick="send_sms();" class="code-btn">发送验证码</a>
+				</div>
+				<div class="signup-f-block clearfix">
+					<div class="sf-left">新密码</div>
+					<div class="sf-right"><input placeholder="请输入密码" name="pass" type="password" class="input--100"></div>
+				</div>
+				<div class="signup-f-block clearfix">
+					<div class="sf-left">确认密码</div>
+					<div class="sf-right"><input placeholder="请再次输入密码" name="re_pass" type="password" class="input--100"></div>
+				</div>
+			</div>
+		</div>
+		<div class="btn-box mt40 plr3">
+			<button type="button" id="submit_btn" onclick="saveForm();" class="block-btn w100">确定修改</button>
+		</div>
+	</form>
+	</main>
+
+</body>
+
+	<script type="text/javascript">
+		function saveForm() {
+			var old_pass = $('input[name="old_pass"]').val();
+		 	var new_pass = $('input[name="pass"]').val();
+		 	var re_pass = $('input[name="re_pass"]').val();
+		 	var code = $('input[name="code"]').val();
+	        if (old_pass=='') {
+	        	layer.msg('请输入原密码');
+	        	return false;
+	        }
+	        if (new_pass=='') {
+	        	layer.msg('请输入新密码');
+	        	return false;
+	        }
+	        if (new_pass!=re_pass) {
+	        	layer.msg('两次输入的密码不一致，请确认。');
+	        	return false;
+	        }
+	        if (code=='') {
+	        	layer.msg('请输入邮件动态码');
+	        	return false;
+	        }
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+			$('#submit_btn').attr('disabled',true);
+			$.ajax({
+			    type : "POST",
+			    url:$('#passForm').attr('action'),
+			    data : $('#passForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function () {
+						$('#submit_btn').attr('disabled',false);
+						if (data.code==1) {
+							location.href = '{:U("user/login")}';
+						}else{
+							location.reload();							
+						}
+					})
+			    },
+			    error: function (XMLHttpRequest, textStatus, errorThrown) {
+			    	layer.msg('网络失败，请刷新页面后重试');
+			    	$('#submit_btn').attr('disabled',false);
+			    	layer.close(lay_index);
+			    }
+			});
+		}
+
+		function send_sms(){
+		 	// layer.msg('尚未配置短信发送参数，随意填写验证码即可');
+		 	// return false;
+		 	var email = $('input[name="email"]').val();
+		 	if (email=='') {
+		 		layer.msg('邮箱地址不能为空，请填写');
+		 		return false;
+		 	}
+	        var verify_code = $('input[name="verify_code"]').val();
+	        if (verify_code=='') {
+	        	layer.msg('图形验证码不能为空，请输入');
+	        	return false;
+	        }
+	        $.ajax({
+	            type : "POST",
+	            url:"{:U('member/login/send_email_code')}",
+	            data : {
+	            	email:email,
+	            	code:verify_code
+	            },
+	            dataType : 'json',
+	            success: function(data){
+	        		layer.msg(data.msg,{time:1000},function () {
+	        			if (data.code==1) {
+	        				$('#send_btn').addClass('no');
+	        				$('#send_btn').attr("disabled",true);
+	        				intAs = 180; // 手机短信超时时间
+	                		jsInnerTimeout('send_btn',intAs);	
+	        			}
+	        		});
+	            }
+	        });
+	    }
+
+	    //倒计时函数
+	    function jsInnerTimeout(id,intAs)
+	    {
+	        var codeObj=$("#"+id);
+	        intAs--;
+	        if(intAs<=-1)
+	        {
+	            codeObj.removeAttr("disabled");
+	            codeObj.removeClass("no");
+	            codeObj.text("发送验证码");
+	            return true;
+	        }
+
+	        codeObj.text(intAs+'秒');
+	        setTimeout("jsInnerTimeout('"+id+"',"+intAs+")",1000);
+	    };
+
+	</script>
+</html>

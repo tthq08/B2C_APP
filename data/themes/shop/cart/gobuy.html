@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>直接下单-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+
+	<style type="text/css">
+	.label-intr {
+		display: inline-block;
+		width: 120px;
+		text-align: right;
+		vertical-align: middle;
+	}
+	.cart-shop-table .other-shop-intr td {
+		text-align: left;
+	}
+	.cart-shop-table .other-shop-intr input {
+		vertical-align: middle;
+	}
+	.cart-shop-table .other-shop-intr .btn {
+		vertical-align: middle;
+	}
+	.settl-address {
+	    height: 220px;
+	}
+	.settl-address .s-address {
+	    width: 300px;
+	    height: 200px;
+	}
+	</style>
+</head>
+<body style="background: #fff;">
+
+	{include file="public/topbar" /}
+	<!-- 导航 -->
+	<header class="header bus_header">
+		<div class="container w1200 clearfix">
+			<a href="{:U('/')}" class="logo fl"><img src="{:tb_config('web_site_logo',1)}" alt="" /></a>
+			<div class="header-intr fl">
+				<h1 class="color--d81c1d" style="font-size: 24px;">直接下单</h1>
+				<a href="{:U('/')}" class="topback">
+					<img src="{:tb_config('resource_path',1)}shop/picture/back.png" alt="" />
+					<span>返回首页</span>
+				</a>
+			</div>
+			<div class="header-right fr">
+				<div class="user-step w600 mt10">
+					<div class="step-item on w33">
+						<span class="num">1</span>
+						<p class="msg">1.填写核对订单信息</p>
+					</div>
+					<div class="step-item w33">
+						<span class="num">2</span>
+						<p class="msg">2.成功提交订单</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+
+	<main class="main cart-main">
+		<!-- 当前位置 -->
+		<div class="c-location-section background-location">
+			<div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="{:U('/')}">首页</a></li>
+					<li class="location-item has"><span>商品</span></li>
+					<li class="location-item"><span>直接下单</span></li>
+				</ul>
+			</div>
+		</div>
+		<form name="cart2_form" id="cart2_form" method="post">
+		<div class="container w1100 clearfix mt30 pb50">
+			<div class="settlement-wrap">
+				<div class="settlement-box">
+					<div class="settl-item"  id="ajax_address_uid">
+						<div class="set-top"><strong>填写收货地址</strong></div>
+						<div class="settl-address" id="ajax_address">
+							<div class="s-address" onclick="add_edit_address(0);">
+								<h3 style="vertical-align: top;margin-top: 70px;text-align: center;">点击设置收货信息</h3>
+						    </div>  
+						</div>
+						<div class="settl-bottom mt10"></div>
+					</div>
+						<!-- 发票抬头 -->
+					<!-- <div class="settl-item">
+						<div class="set-top"><strong>发票</strong></div>
+						<div class="o-invoice">
+							<div class="invo-msg mt10">
+								<span>发票抬头：</span>
+								<input type="text" class="input-400" name="invoice_title" placeholder="如需开具发票请填写发票抬头，无需开具可留空" />
+							</div>
+						</div>
+					</div> -->
+
+					<!-- 确认订单信息 -->
+					<div class="settl-item settl-shop-intr" id="order_list" style="border-bottom: 0px;">
+						<!-- ajax 异步获取数据 -->
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	</main>
+
+	{include file="common/footer" /}
+
+
+	<script type="text/javascript">
+		$(function () {
+			ajaxLoadGobuy();
+			{notempty name='user_id'}
+			ajax_address(); // 获取用户收货地址列表
+			{/notempty}
+		});
+
+		// 数量操作
+		function nums_reduce(obj) {
+			var id = $(obj).attr('data-id');
+			var input = $(obj).siblings('.in').find('input');
+			var num = Number(input.val());
+			if(num == 1) {
+				layer.msg('不能小于1');
+				return ;
+			} else {
+				input.val(--num);
+				gobuynums(id,num);
+			}
+		}
+
+		function nums_add(obj) {
+			var id = $(obj).attr('data-id');
+			var input = $(obj).siblings('.in').find('input');
+			var num = Number(input.val());
+			var max = Number($(obj).attr('data-max'));
+			if(num == max) {
+				layer.msg('不能大于' + max);
+				return ;
+			} else {
+				input.val(++num);
+				gobuynums(id,num);
+			}
+		}
+
+		// Ajax加载订单列表
+		function ajaxLoadGobuy() {
+			$.ajax({
+				url:"{:U('cart/ajaxGobuyList')}",
+				success: function(data){
+					$('#order_list').html(data);
+				}
+			});	
+		}
+
+		/*
+		* ajax 获取当前用户的收货地址列表
+		*/
+		function ajax_address(){
+			$.ajax({
+				url:"{:U('shop/Cart/ajaxAddress')}",//+tab,
+				success: function(data){
+					$("#ajax_address_uid").html('');
+					$("#ajax_address_uid").append(data);
+					// 有收货地址列表 再计算价钱
+					if(data != '') {
+						// 计算订单价钱
+						ajax_order_price();
+					}
+				}
+			});
+		}
+
+		// 切换收货地址
+		function swidth_address(obj)
+		{
+			var me = $(obj);
+			var addr_id = me.attr('data-id');
+			$.ajax({
+				url:"{:U('Cart/getAddrInfo')}",
+				data:{id:addr_id},	
+				success: function(data){									
+					if (data.code==1) {
+						var info = data.data;
+						$('#consignee').val(info.consignee);
+						$('#consignee_en').val(info.consignee_en);
+						$('#mobile').val(info.mobile);
+						$('#emali').val(info.emali);
+						$('#zip').val(info.zip);
+						$('#address').val(info.address);
+						$('#en_address').val(info.en_address);
+						
+						me.addClass('on').siblings('.s-address').removeClass('on');
+						me.find('input').prop('checked',true);
+						me.siblings('.s-address').find('input').prop('checked',false);
+						$(".order-address-list").removeClass('address_current');
+						$(obj).parent().parent().parent().parent().parent().addClass('address_current');
+					} else {
+						layer.msg(data.msg);
+					}
+				}
+			});	
+		}
+
+		function gobuynums(id,nums) {
+			$.ajax({
+				url:"{:U('Cart/gobuynums')}",
+				data:{
+					id:id,
+					nums:nums
+				},		
+				success: function(data){									
+					// layer.msg(data.msg,{time:1000},function () {
+					if (data.code==1) {
+						ajaxLoadGobuy();
+					}else{
+						layer.msg(data.msg);
+					}
+					// })
+				}
+			});	
+		}
+
+		// 添加修改收货地址回调函数 
+		function call_back_fun(v){	 
+			layer.closeAll(); // 关闭窗口
+			ajax_address(); // 刷新收货地址
+		}
+
+
+		/**
+		* 新增修改收货地址
+		* id 为零 则为新增, 否则是修改
+		*  使用 公共的 layer 弹窗插件  参考官方手册 http://layer.layui.com/
+		*/
+		function add_edit_address(id)
+		{
+			var url = "{:U('shop/cart/set_address')}";	// 新增地址
+			layer.open({
+				type: 2,
+				title: '设置收货地址',
+				shadeClose: true,
+				shade: 0.8,
+				area: ['620px', '540px'],
+				content: url,
+			}); 	
+		}
+
+		function address_callback(data) {
+			$("#ajax_address").html('');
+			$("#ajax_address").append(data);
+			layer.closeAll();
+		}
+
+		function delBuy(id) {
+			$.ajax({
+				url:"{:U('cart/delbuy')}",
+				data:{id:id},
+				success: function(data){
+					if (data.code==1) {
+						ajaxLoadGobuy();
+					}else{
+						layer.msg(data.msg);
+					}
+				}
+			});	
+		}
+		 
+		// 更多优惠方式
+		function selectCoupon(obj) {
+			var me = $(obj);
+			me.toggleClass('on');
+			me.siblings('.o-more-discount').slideToggle(300);
+		}
+
+		function checkedCoupon(obj) {
+			var me = $(obj);
+			var val_name = me.attr('data-dis');
+			var val = me.attr('data-value');
+			me.parent().slideUp();
+			me.parent().siblings('.a').removeClass('on');
+			me.parent().siblings('input').val(val);
+			me.parent().siblings('.m').text(val_name);
+		}
+
+
+		// 提交订单
+		ajax_return_status = 1; // 标识ajax 请求是否已经回来 可以进行下一次请求
+		function submit_order()
+		{
+			// if(ajax_return_status == 0)
+			//     return false;
+
+			ajax_return_status = 0;
+			
+			$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/gobuy2')}",//+tab,
+				data : $('#cart2_form').serialize()+"&act=submit_order",// 你的formid
+		        dataType: "json",
+				success: function(data){
+												
+					if(data.code != '1')
+					{
+						// alert(data.msg); //执行有误
+						layer.alert(data.msg, {icon: 2});				
+						
+						// 登录超时
+						if(data.status == -100) 
+							location.href ="{:U('Home/User/login')}";
+						
+						ajax_return_status = 1; // 上一次ajax 已经返回, 可以进行下一次 ajax请求		
+						
+						return false;
+					}
+		            // console.log(data);
+		//			$("#postFee").text(data.msg.postFee); // 物流费
+					//layer.alert('订单提交成功，跳转支付页面!', {icon: 1}); //alert('订单提交成功，跳转支付页面!');
+
+					layer.msg('订单提交成功，跳转支付页面!', {
+					  icon: 1,   // 成功图标
+					  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+					}, function(){ // 关闭后执行的函数
+							location.href = "{:U('shop/Cart/cart4')}?serial_id="+data.msg.order_id; // 跳转到结算页
+					});
+				}
+			});	
+		}
+
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,104 @@
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+    <?php if(!empty($value)){
+        $imgs = explode(',',$value);
+      }else{
+        $imgs = [];
+      }
+    ?>
+    <div>
+       <style type="text/css">
+         #photo-container li { 
+          display: inline-block;
+          width: 80px;
+          height: 70px;
+          margin-right: 6px;
+          margin-bottom: 10px;
+          cursor: pointer;
+          position: relative;
+         }
+          #photo-container li img {
+            width: 100%;
+            height: 100%;
+          }
+
+          .file_del {
+              background: url("{:tb_config('sys_plugin_src',1,$lang_id)}uploadsFile/control/images/delete_white.png") no-repeat scroll 0 0 transparent;
+              width: 18px;
+              height: 18px;
+              display: inline;
+              -moz-user-select: none;
+              position: absolute;
+              right: 3px;
+              margin-top: 4px;
+          }
+       </style>
+      <ul id="photo-container">
+        {volist name="imgs" id="vo" key="K"}
+        <li>
+          <img src={$vo} style="">
+          <input type="hidden" name="{$name}['ol_{$K}']" value="{$vo}">
+          <div class="file_bar "><div style="padding:5px;"><p class="file_name">是否删除？</p><span class="file_del" data-index="0" title="删除"></span>   </div>  </div>
+        </li>
+        {/volist}
+      </ul>
+      <script>
+          $('#photo-container').on('mouseover','li',function(){
+            $(this).find('.file_bar').addClass('file_hover');
+          })
+
+          $('#photo-container ').on('mouseout','li',function(){
+            $(this).find('.file_bar').removeClass('file_hover');
+          })
+
+           $('#photo-container ').on('click','.file_bar',function(){
+            $(this).parents('li').remove();
+          })
+
+      </script>
+    </div>
+    <button type="button" class="layui-btn zy-upload" data-toggle="class:show inline" data-target="#spin" data-loading-text="请选择...">
+      <i class="fa fa-cloud-upload text"></i> 上传图集
+    </button><i>{$tips}</i>
+	</div>
+</div>
+<!-- 上传处理 -->
+<div id="{$name}" class="demo"><a href="javascript:;" class="zy-close"><i class="fa fa-close"></i></a></div>
+<!-- 多图上传 Html 结束 -->
+{eq name="times.images" value="1"}
+<link rel="stylesheet" href="{:tb_config('sys_plugin_src',1,$lang_id)}uploadsFile/control/css/uploadsFile.css" type="text/css">
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}uploadsFile/core/uploadsFile.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}uploadsFile/control/js/uploadsFile.js"></script>
+{/eq}
+<script type="text/javascript">
+//上传处理
+$(function(){
+  //显示组件
+  $('.zy-upload').click(function (){$('#{$name}').fadeIn(200);});
+  //关闭上传组件
+  $('.zy-close').click(function (){
+    $('#{$name}').fadeOut(100);
+    // setTimeout("$('#demo').fadeOut(100);", 300);
+  });
+  
+  // 初始化插件
+  $("#{$name}").uploadsFile({
+    width            :   "650px", // 宽度
+    height           :   "400px", // 宽度
+    pic_obj          :   "{$name}",  // 上传成功后图片存放的input的name
+    itemWidth        :   "",  // 文件项的宽度
+    itemHeight       :   "",  // 文件项的高度
+    url              :   "{:url('Sys/Upload/upload')}",  // 上传文件的路径
+    multiple         :   true,  // 是否可以多个文件上传
+    dragDrop         :   true,  // 是否可以拖动上传文件
+    del              :   true,  // 是否可以删除文件
+    finishDel        :   false,  // 是否在上传文件完成后删除预览
+    onSuccess: function(file){  // 文件上传成功的回调方法
+      console.info("此文件上传成功：");
+      console.info(file);
+    },
+  });
+});
+<!-- 多图上传 Script 结束 -->
+</script>

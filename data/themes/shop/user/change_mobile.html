@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{include file="common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+	<main class="main bus-main" style="margin-top: 0px;margin-bottom: 0px;">
+		<div class="container clearfix">
+			<div class="bus-right" style="float:left;">
+				<div class="j-user-section user-section user-safety-section mt10 plr20-section pb50">
+					<div class="user-title-2">
+						<span>{$eBiz.lang.Phone_page_change}</span>
+					</div>
+					<form id="theForm" action="" method="post">
+					<div class="user-safely-form">
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Phone_old_phone}：</div>
+							<div class="m-msg">
+								<input type="text" name="old_phone" placeholder="{$eBiz.lang.Phone_old_phone_place}" class="input-200">
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Phone_vali_code}：</div>
+							<div class="m-msg">
+								<input type="text" name="verify_code" placeholder="{$eBiz.lang.Phone_vali_code_place}" class="input-200">
+								<img onclick="javascript:this.src='{:captcha_src()}?time='+Math.random();" src="{:captcha_src()}" id="reflsh_code2" style="width:150px;height: 30px;" >
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Phone_new_phone}：</div>
+							<div class="m-msg">
+								<input type="text" name="mobile" placeholder="{$eBiz.lang.Phone_user_phone_place}" class="input-200">
+								<button id="sendSms" type="button" onclick="sendSmsCode();" class="cmall-btn-f">{$eBiz.lang.Phone_code_send}</button>
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Phone_code}：</div>
+							<div class="m-msg"><input type="text" name="code" placeholder="{$eBiz.lang.Email_code_place}" class="input-300"></div>
+						</div>
+						
+						<div class="btn-box tcenter mt40">
+							<button type="button" id="submit_btn" onclick="saveForm()" class="cmall-btn-h">{$eBiz.lang.Email_submit_btn}</button>
+						</div>
+					</div>
+					</form>
+				</div>
+				<!-- 提示 -->
+				<div class="user-block-2 mt20">
+					<h5 class="mb10">{$eBiz.lang.Safe_safety_warn}</h5>
+					<p>{$eBiz.lang.Safe_safety_warn_a}</p>
+					<p>{$eBiz.lang.Safe_safety_warn_b}</p>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="text/javascript">
+
+		function saveForm() {
+			var old_pass = $('input[name="old_pass"]').val();
+			var new_pass = $('input[name="new_pass"]').val();
+			var re_pass = $('input[name="re_pass"]').val();
+
+			if (old_pass=='' || new_pass=='' || re_pass=='') {
+				layer.msg('{$eBiz.lang.Pwd_info_not_full}');
+				return false;
+			}
+
+			if (new_pass != re_pass) {
+				layer.msg('{$eBiz.lang.Pwd_pwd_not_match}');
+				return false;
+			}
+			var lay_index = layer.load(0, {shade: false});
+			$('#submit_btn').attr('disabled',true);
+			$.ajax({
+			    type : "POST",
+			    url:$('#theForm').attr('action'),
+			    data : $('#theForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function() {
+						if (data.code==1) {
+							parent.location.reload();
+						}else{
+							layer.close(lay_index);
+							$('#submit_btn').attr('disabled',false);
+						}
+					});
+			    }
+			});
+		}
+
+		function sendSmsCode(){
+		 	// layer.msg('尚未配置短信发送参数，随意填写验证码即可');
+		 	// return false;
+	        var mobile = $('input[name="mobile"]').val();
+	        // if(!checkMobile(mobile)){
+	        //     layer.alert('请输入正确的手机号码', {icon: 2});//alert('请输入正确的手机号码');
+	        //     return;
+	        // }
+	        var code = $('input[name="verify_code"]').val();
+	        if (code == '') {
+	        	layer.msg('{$eBiz.lang.Phone_piccode_empty}');
+	        	$('input[name="verify_code"]').focus();
+	        	return false;
+	        }
+	        if (mobile=='') {
+	        	layer.msg("{$eBiz.lang.Phone_phone_empty}");
+	        	$('input[name="mobile"]').focus();
+	        	return false;
+	        }
+	        $.ajax({
+	            type : "POST",
+	            url:"{:U('member/login/send_sms_reg_code')}",
+	            data : {
+	            	mobile:mobile,
+	            	code:code
+	            },
+	            dataType : 'json',
+	            success: function(data){
+	        		layer.msg(data.msg,{time:1000},function () {
+	        			if (data.code==1) {
+	        				$('#sendSms').attr("disabled",true);
+	        				intAs = 180; // 手机短信超时时间
+	                		jsInnerTimeout('sendSms',intAs);	
+	        			}
+	        		});
+	            }
+	        });
+	    }
+	 	// $('#sendSms').removeAttr("disabled");
+	    //倒计时函数
+	    function jsInnerTimeout(id,intAs)
+	    {
+	        var codeObj=$("#"+id);
+	        //var intAs = parseInt(codeObj.attr("IntervalTime"));
+
+	        intAs--;
+	        if(intAs<=-1)
+	        {
+	            codeObj.removeAttr("disabled");
+	            codeObj.text("{$eBiz.lang.Reg_form_getmcode}");
+	            return true;
+	        }
+
+	        codeObj.text(intAs+'秒');
+//	        codeObj.attr("IntervalTime",intAs);
+
+	        setTimeout("jsInnerTimeout('"+id+"',"+intAs+")",1000);
+	    };
+		
+	</script>
+</body>
+</html>

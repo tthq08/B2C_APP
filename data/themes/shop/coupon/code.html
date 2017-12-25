@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="email=no,telephone=no,address=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <title>优惠券</title>
+    {include file="common/static" /}
+</head>
+
+<body class="has-right">
+    <!-- top -->
+    {include file="common/top_header"}
+
+    <!-- header -->
+    {include file="common/header"}
+
+    <!-- nav -->
+    {include file="common/nav"}
+
+    <!-- 右侧功能栏 -->
+    {include file="common/right_column"}
+<main class="main pb50">
+    <!-- 当前位置、已筛选 -->
+    <div class="c-location-section background-location">
+        <div class="container w1200">
+            <ul class="">
+                <li class="location-item has"><a href="/">首页</a></li>
+                <li class="location-item"><a href="javascript:;">优惠券</a></li>
+                <li style="float: right"><a href="{:U('shop/Coupon/code')}">优惠码兑换</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="cmall-conpon-wrap mt30">
+
+
+
+        <div class="container w1200">
+            <!-- 筛选 -->
+            <div class="m">
+                <div class="conpon-code-box">
+                    <div class="code-box clearfix">
+                        <!-- <div class="label">优惠码领取</div> -->
+                        <div class="txt"><input id="code" placeholder="请输入优惠码领取" type="text"></div>
+                        <div class="btn"><a href="javascript:;" onclick="getCoupon();">提取</a></div>
+                    </div>
+
+                </div>
+
+            </div>
+            <!-- 列表 -->
+            <div class="m mt30">
+                <div class="mc">
+                    <div class="quan-list" id="coupons-list">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</main>
+{include file='common/footer'/}
+<script type="text/javascript">
+    // 提示层
+    $(".just-tipLeft").mouseover(function(event) {
+        $.justToolsTip({
+            events: event,
+            animation: "moveInLeft",
+            //width:"300px",
+            contents: $(this).attr('data-tip'),
+            gravity: 'left'
+        });
+    })
+    function getCoupon()
+    {
+        // 获取码
+        var code = $('#code').val();
+        if( code == '' || code == null || code == undefined ){
+            alert('请输入优惠码进行提取!');
+            return ;
+        }
+        $.ajax({
+            type:'post',
+            url:'{:U("shop/Coupon/ajaxcoupon")}',
+            data:{code:code},
+            success:function(data){
+                if( data.code == 0 ){
+                    alert(data.msg);
+                }else{
+                    $('.quan-list').html(data);
+                }
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

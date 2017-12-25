@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>团购</title>
+
+	{include file="public/static" /}
+</head>
+<body>
+
+	<header class="header header-fixed">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="">
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">团购</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body" style="margin-top: 50px;">
+		<div class="seckill-section">
+			<div class="seckpdt-itembox">
+			<?php 
+				$nowTime =date('Y-m-d H:i:s');
+				$groups = db('shop_promotion_group','',false) ->where('start_time','<= time',$nowTime) ->where('end_time','> time',$nowTime) ->where('is_end',0)->limit(4)->select();
+			?>
+			{volist name="groups" id="vo"}
+			{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+				<div class="seckpdt-item">
+					<div class="pic"><img src="{$vo.goods|goods_thum_images=100,100}" alt="" /></div>
+					<div class="info">
+						<div class="sk-name">{$vo.title}</div>
+						<div class="sk-desc">
+							<div class="descl">
+								<p class="price">{$vo.price}元</p>
+								<del>{$goods.shop_price}元</del>
+							</div>
+							<div class="descr">
+								<div class="seckill-time countdown">
+									<span class="im hours" style="width: 3.6rem;">{$vo.end_time|mb_substr=5,11}</span>
+								</div>
+								<div class="btnbox">
+									<a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}" class="gobtn start">我要参团</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{/volist}
+			</div>
+		</div>
+		<!-- 未开始 -->
+		<div class="seckill-section">
+			<div class="plr3">
+				<div class="shop-title">
+					<span class="txt">更多惊喜</span>
+				</div>
+			</div>
+			<div class="seckpdt-itembox">
+			<?php 
+				$nowTime =date('Y-m-d H:i:s');
+				$groups = db('shop_promotion_group','',false) ->where('start_time','> time',$nowTime) ->where('is_end',0)->limit(4)->select();
+			?>
+			{volist name="groups" id="vo"}
+			{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+				<div class="seckpdt-item">
+					<div class="pic"><img src="{$vo.goods|goods_thum_images=100,100}" alt="" /></div>
+					<div class="info">
+						<div class="sk-name">{$vo.title}</div>
+						<div class="sk-desc">
+							<div class="descl">
+								<p class="price">{$vo.price}元</p>
+								<del>{$goods.shop_price}元</del>
+							</div>
+							<div class="descr">
+								<div class="seckill-time countdown">
+								<span class="im hours" style="width: 3.6rem;">{$vo.start_time|mb_substr=5,11}</span>
+								</div>
+								<div class="btnbox">
+									<a href="javascript:;" class="gobtn no">暂未开始</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			{/volist}
+			</div>
+		</div>
+	</main>
+	<!-- footer -->
+	<footer class="footer footer-fixed">
+		<nav class="seckill-nav clearfix">
+			<a href="{:U('flash_buy')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_13.png" alt="" />
+				<span>TBmall秒杀</span>
+			</a>
+			<a href="javascript:;" class="nav-item on">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_161.png" alt="" />
+				<span>TBmall团购</span>
+			</a>
+			<a href="{:U('new_goods')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_19.png" alt="" />
+				<span>TBmall新品</span>
+			</a>
+		</nav>
+	</footer>
+
+
+</body>
+</html>

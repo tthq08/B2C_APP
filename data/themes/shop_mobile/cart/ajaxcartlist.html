@@ -1,0 +1,109 @@
+
+<div class="cart-block">
+	<div class="content">
+	{volist name="$cartList" id="vo"}
+		<div class="cart-item clearfix">
+			<div class="item-check">
+				<div class="reset-check">
+					<input type="checkbox" class="product-check" id="cart{$vo.id}" name="cart_select[{$vo.id}]" value="{$vo.id}" {eq name="$vo.selected" value="1"}checked{/eq} />
+					<label for="cart{$vo.id}"></label>
+				</div>
+			</div>
+			<div class="infos">
+			{assign name="goods_key" value="$vo['goods'].'--'.$vo['spec_key']"}
+				<div class="pic"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}"><img src="{$vo.goods|goods_thum_images=200,200}" alt="" /></a></div>
+				<div class="info">
+
+					<div class="c-name"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}">{$vo.goods_name}</a></div>
+					<div class="c-spe">{$vo.spec_text}</div>
+					<div class="c-price clearfix">
+
+					{assign name="truePrice" value=":compute()->promGoodsPrice($vo.goods,$vo.spec_key)" /}
+						<span class="price">{$truePrice}<small>元</small></span>
+						<div class="fr c-num">
+							<!-- <span class="txt">x1</span> -->
+							<span class="goods-quantity">
+								<i class="q reduce" onclick="switch_num(-1,{$vo.id},200);">-</i>
+								<input type="text" name="goods_num[{$vo.id}]" id="goods_num[{$vo.id}]" value="{$vo.goods_num}" />
+								<i class="q add" onclick="switch_num(1,{$vo.id},200);">+</i>
+							</span>
+						</div>
+					</div>
+					<div class="c-ctr">
+						<div class="hide-ctr">
+						<a href="javascript:;" is-editor="0" class="c-editor">编辑</a>
+						</div>
+						<a href="javascript:;" onclick="del_cart({$vo.id});">{$eBiz.lang.Cart_goods_del}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/volist}
+	</div>
+</div>
+<script type="text/javascript">
+	$(function() {
+		$('#cart_total').html('{$total_price|default="111"}');
+	})
+
+	// checkbox选择
+		$('.cart-block').on('change','.cart-item .product-check',function() {
+			var me = $(this);
+			var box = me.parent().parent().parent().parent().parent();
+			var sibitem = box.find('.product-check');
+			var sibitemed = box.find('.product-check:checked');
+			var pShop = box.find('.shop-check');
+			if(sibitemed.length == sibitem.length) {
+				box.find('.shop-check').prop('checked',true);
+			} else {
+				box.find('.shop-check').prop('checked',false);
+			}
+			isAllCheck();
+		})
+		// checkbox商铺checkbox
+		$('.cart-block').on('change','.shop-check',function() {
+			console.log('fasdfas')
+			var me = $(this);
+			if(me.prop('checked')) {
+				me.parent().parent().parent().find('.product-check').prop('checked',true);
+			} else {
+				me.parent().parent().parent().find('.product-check').prop('checked',false);
+			}
+			isAllCheck()
+		})
+		// 全选按钮
+		$('#cart-allcheck').on('change',function() {
+			console.log('fdsafasd')
+			if($(this).prop('checked')) {
+				$('.cart-block .shop-check').prop('checked',true);
+				$('.cart-block .product-check').prop('checked',true);
+			} else {
+				$('.cart-block .shop-check').prop('checked',false);
+				$('.cart-block .product-check').prop('checked',false);
+			}
+			ajax_cart_list();
+		})
+		function isAllCheck() {
+			var shop = $('.cart-block .shop-check');
+			var shoped = $('.cart-block .shop-check:checked');
+			if(shoped.length == shop.length) {
+				$('#cart-allcheck').prop('checked',true);
+			} else {
+				$('#cart-allcheck').prop('checked',false);
+			}
+			ajax_cart_list();
+		}
+
+		// 操作
+		$('.cart-block').on('click','.cart-item .c-editor',function() {
+			var me = $(this);
+			var is = me.attr('is-editor');
+			if(is == '0') {
+				me.siblings('.hide-ctr').css('display','inline-block');
+				me.attr('is-editor','1');
+			} else if(is == '1') {
+				me.siblings('.hide-ctr').css('display','none');
+				me.attr('is-editor','0');
+			}
+		})
+</script>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>新品</title>
+
+	{include file="public/static" /}
+</head>
+<body>
+
+	<header class="header header-fixed">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="">
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">新品</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body" style="margin-top: 50px;">
+		<div class="seckill-section">
+			<div class="seckpdt-itembox" id="all_goods_list">
+			
+			</div>
+			<div class="mall-block mt30" style="text-align: center;">
+				<button type="button" id="more_goods_btn" onclick="loadMoreGoods();" class="product-btn">{$eBiz.lang.Index_Text_show_more}<img src="{:tb_config('resource_path',1)}shop/images/down-red.png" width="10" alt=""></button>
+			</div>
+		</div>
+	</main>
+	<!-- footer -->
+	<footer class="footer footer-fixed">
+		<nav class="seckill-nav clearfix">
+			<a href="{:U('flash_buy')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_13.png" alt="" />
+				<span>TBmall秒杀</span>
+			</a>
+			<a href="{:U('group_buy')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_16.png" alt="" />
+				<span>TBmall团购</span>
+			</a>
+			<a href="javascript:;" class="nav-item on">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_191.png" alt="" />
+				<span>TBmall新品</span>
+			</a>
+		</nav>
+	</footer>
+	<script type="text/javascript">
+		var goods_page = 0;
+		$(function () {
+			loadMoreGoods();
+		});
+		// 加载更多商品
+		function loadMoreGoods() {
+			$('#more_goods_btn').attr('disable',true);
+			if (goods_page>0) {
+				var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2				
+			}
+			$.ajax({
+				url:"{:U('Index/ajaxGoods')}",
+				data:{
+					page:goods_page,
+					nums:4,
+					is_new:1
+				},
+				success: function(data){									
+					$('#all_goods_list').append(data);
+					layer.close(index);
+					$('#more_goods_btn').attr('disable',false);
+					if (data!='') {
+						goods_page ++;						
+					}
+				}
+			});	
+		}
+	</script>
+
+</body>
+</html>

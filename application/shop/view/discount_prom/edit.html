@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        {notempty name="web_title"}
+        <header class="larry-personal-tit">
+            <span>{$web_title}</span>
+        </header>
+        {/notempty}
+        <div class="larry-personal-body clearfix">
+            {notempty name="form_tpis"}
+            <blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+            {/notempty}
+            {notempty name="nav_list"}
+            <ul class="layui-tab-title" style="bottom:10px;">
+                {volist name="nav_list" id="nav"}
+                <li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+                {/volist}
+            </ul>
+            {/notempty}
+            <form class="layui-form col-lg-12" action="{:url('DiscountProm/save')}" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('prom_type_title')}</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" style="width: 600px;" placeholder="{:lang('prom_type_title')}" autocomplete="off" class="layui-input" value="{$discountData.title}">
+                        <input type="hidden" name="discount_id" value="{$discountData.discount_id}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('add_goods')}</label>
+                    <div class="layui-input-block">
+                        <input type="button" id="selectgoods" style="width: 400px;" onclick="selectGoods();" placeholder="{:lang('add_goods')}" autocomplete="off" class="layui-btn layui-btn-primary" value="{:lang('add_goods')}">
+                        <div>
+                            <table class="layui-table">
+                                <thead>
+                                <tr>
+                                    <th style="font-size: 12px;width: 400px;">{:lang('goods_name')}</th>
+                                    <th style="font-size: 12px;">{:lang('goods_price')}</th>
+                                    <th style="font-size: 12px;">{:lang('goods_stock')}</th>
+                                    <th width="200">{:lang('operation')}</th>
+                                </tr>
+                                </thead>
+                                <tbody id="goodspec">
+                                {volist name="goods" id="vo"}
+                                <tr id="goods{$vo.id}">
+                                    <td style="font-size: 12px;" title="{$vo.title}">{:mb_substr($vo.title,0,20)}..</td>
+                                    <td style="font-size: 12px;">{:priceFormat($vo.shop_price,1)}</td>
+                                    <td style="font-size: 12px;">{$vo.stock}</td>
+                                    <td><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal" onclick="selectGoodsSpec({$vo.id});">{:lang('prom_table_goods_spec')}</botton><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger" onclick="delGoods({$vo.id});">{:lang('delete')}</botton></td>
+                                    <input type="hidden" name="goods[{$vo.id}]" id="goods" value="{$vo.id}">
+                                    <input type="hidden" class="goodsspec" name="goodsspec[{$vo.id}]" value='{$vo.goods_spec}'>
+                                </tr>
+                                {/volist}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('discount_type')}</label>
+                    <div class="layui-input-block" style="width: 200px;">
+                        <select name="discount_type" lay-filter="expression" lay-verify="required">
+                            <option value="">{:lang('discount_select')}</option>
+                            {volist name="discount_type" id="vo"}
+                            <option value="{$vo.id}" {if condition="$discountData.discount_type eq $vo.id"} selected{/if}>{$vo.name}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{$eBiz.lang.discount_amount_to_be_satisfied}</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="money" style="width: 80px;" placeholder="{:priceFormat(0.00)}" autocomplete="off" class="layui-input" value="{$discountData.money}">
+                    </div>
+                </div>
+                <div class="layui-form-item" id="expression">
+                    {$discount_form}
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('whether_to_use_coupons')}</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="use_coupon" value="1" title="{:lang('yes')}" {eq name="discountData.use_coupon" value="1" } checked{/eq}>
+                        <input type="radio" name="use_coupon" value="0" title="{:lang('no')}" {eq name="discountData.use_coupon" value="0" } checked{/eq}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('whether_to_use_integral')}</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="use_integral" value="1" title="{:lang('yes')}" {eq name="discountData.use_integral" value="1" } checked{/eq}>
+                        <input type="radio" name="use_integral" value="0" title="{:lang('no')}" {eq name="discountData.use_integral" value="0" } checked{/eq}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('whether_to_allow_the_use_of_coupons')}</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="use_shopping_coupon" value="1" title="{:lang('yes')}" {eq name="discountData.use_shopping_coupon" value="1" } checked{/eq}>
+                        <input type="radio" name="use_shopping_coupon" value="0" title="{:lang('no')}" {eq name="discountData.use_shopping_coupon" value="0" } checked{/eq}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('whether_to_join_the_shopping_cart')}</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="add_shopping_car" value="1" title="{:lang('yes')}" {eq name="discountData.add_shopping_car" value="1" } checked{/eq}>
+                        <input type="radio" name="add_shopping_car" value="0" title="{:lang('no')}" {eq name="discountData.add_shopping_car" value="0" } checked{/eq}>
+                    </div>
+                </div>
+                {//检测是否开启积分系统}
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('add_user_points')}</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="add_user_integral" value="1" title="{:lang('yes')}" {eq name="discountData.add_user_integral" value="1" } checked{/eq}>
+                        <input type="radio" name="add_user_integral" value="0" title="{:lang('no')}" {eq name="discountData.add_user_integral" value="0" } checked{/eq}>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('membership_group')}</label>
+                    <div class="layui-input-block">
+                        {volist name="user_level" id="level"}
+                        <input type="checkbox" name="user_group" value="{$level.id}" title="{$level.level_name}" {php}if ( in_array($level['id'],$discountData['user_group_arr']) ){ echo 'checked'; }{/php}>
+                        {/volist}
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('activit_time')}</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" name="start_time" placeholder="{:lang('start_time')}" value="{$discountData.start_time}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" name="end_time" placeholder="{:lang('end_time')}" value="{$discountData.end_time}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">{:lang('prom_panic_description')}</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="" name="description" value="" class="layui-textarea">{$discountData.description}</textarea>
+                    </div>
+                </div>
+                {:token()}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" lay-submit="" lay-filter="*">{$eBiz.lang.comm_form_btn_submit}</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">{$eBiz.lang.comm_form_btn_reset}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+
+        var form = layui.form();
+
+        form.on('select(expression)',function (data) {
+            var loading = layer.load(0, {shade: false});
+            $.post("{:url('promotion/getDiscountForm')}",{
+                id:data.value,
+            },function (data,success) {
+                layer.close(loading);
+                if( data.code == 0 ){
+                    layer.msg(data.msg);
+                }else{
+                    $('#expression').html(data.msg);
+                    form.render('select');
+                }
+            });
+        })
+
+        form.on('submit(*)', function(data){
+            var url = $(data.form).attr('action');
+            //验证传输的值是否为空
+            if( $('input[name="start_time"]').val() == '' ) {
+                layer.msg('{:lang('prom_panic_table_start_time_null')}');
+                return false;
+            }
+            if( $('input[name="end_time"]').val() == '' ) {
+                layer.msg('{:lang('prom_panic_table_end_time_null')}');
+                return false;
+            }
+            var user_group = '';
+            $('input[name="user_group"]:checked').each(function(){
+                user_group += $(this).val()+',';
+            });
+            if( user_group.length > 0 ){
+                var user_groupLen = user_group.length;
+                user_group = user_group.slice(0,user_groupLen-1);
+            }
+            data.field.user_group = user_group;
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            var Home_tip = parent.$('#subwinaaa').text();
+                            var target = '{$target|default=''}';
+                            if(Home_tip=='home' && target!='parent'){
+                                location.reload();
+                            }else{
+                                parent.callback();
+                            }
+                        };
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    //获取商品详情
+    function fillGoods(goods_id,title,price,stock) {
+        var id = '#goods'+goods_id;
+        if($(id).length>0){
+            return ;
+        }else{
+            var goodspechtml = '<tr id="goods'+goods_id+'"><td style="font-size: 12px;" title="'+title+'">'+title.slice(0,20)+'..</td><td style="font-size: 12px;">'+price+'</td><td style="font-size: 12px;">'+stock+'</td><td><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal" onclick="selectGoodsSpec('+goods_id+');">选择抢购规格</botton><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger" onclick="delGoods('+goods_id+');">删除</botton></td><input type="hidden" name="goods['+goods_id+']" class="goods" value="'+goods_id+'"><input type="hidden" class="goodsspec" name="goodsspec['+goods_id+']" value=""></tr>';
+            $('#goodspec').append(goodspechtml);
+        }
+    }
+
+    function selectGoods()
+    {
+        //获取当前选中的所有商品
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/select_goods',['type'=>'checkbox'])}',
+    });
+    }
+    //进入选择商品规格页面
+    function selectGoodsSpec(goods_id)
+    {
+        var goods_spec_id = '#goods'+goods_id+' .goodsspec';
+        var spec_json = $(goods_spec_id).val();
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: true, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/getGoodsSpec')}?goods_id='+goods_id+'&spec_json='+encodeURIComponent(spec_json)+'&type=checkbox',
+    });
+    }
+    /**
+     * 删除商品
+     * @param id
+     */
+    function delGoods(id){
+        var g_id = '#goods'+id;
+        $(g_id).remove();
+    }
+</script>
+</body>
+</html>

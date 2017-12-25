@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+
+<style>
+    .tbtitle{
+        background-color: #eeeeee;
+    }
+    .yby{
+        margin-left: 10px;
+    }
+    .edit{
+        display: none;
+    }
+    p{
+        display: inline-block;
+    }
+    .layui-input{
+        height: 25px;
+    }
+</style>
+
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <form class="layui-form" id="update" action="{:url('coupon/update')}">
+            <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+
+                <div style="float: right; margin-bottom: 10px;">
+                    {if condition="$coupon['send_num'] > 0"}
+                    <button type="button" class="layui-btn layui-btn-small layui-btn-disabled">
+                        已有领取拥有该优惠券的用户,不予修改
+                    </button>
+                    {else/}
+                    <button type="button" onclick="editInfo()" class="layui-btn layui-btn-small layui-btn-danger show_coupon">
+                        修改优惠券信息
+                    </button>
+                    <button type="button" onclick="cancelEdit()" class="layui-btn layui-btn-small layui-btn-danger edit">
+                        取消修改
+                    </button>
+                    <button type="button" onclick="subUpdate();" class="layui-btn layui-btn-small layui-btn-warm edit">
+                            保存优惠券信息
+                    </button>
+
+                    <script>
+                        function editInfo(){
+                            $('.show_coupon').hide();
+                            $('.edit').show();
+                        }
+                        function cancelEdit() {
+                            $('.show_coupon').show();
+                            $('.edit').hide();
+
+                        }
+                    </script>
+                    {/if}
+                    <button type="button" class="layui-btn layui-btn-small" onclick="location.href='{:U('Coupon/send_coupon',['id'=>$coupon['id']])}'">发放优惠券</button>
+                    <!--<button class="layui-btn layui-btn-small layui-btn-warm">查看优惠券内容</button>-->
+                </div>
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td width="150" class="tbtitle">ID</td>
+                        <td width="200">
+                            {$coupon.id}
+                            <input type="hidden" name="id" value="{$coupon.id}">
+                        </td>
+                        <td width="150" class="tbtitle">等级</td>
+                        <td>{$levelInfo.name}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td class="tbtitle">发放类型</td>
+                        <td>{$send_type_name}</td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle" width="150">名称</td>
+                        <td>
+                            <p class="show_coupon">{$coupon.name}</p>
+                            <p class="edit">
+                                <input name="name" class="layui-input" style="width: 200px;" type="text" value="{$coupon.name}">
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle">标题</td>
+                        <td>
+                            <p class="show_coupon">{$coupon.title}</p>
+                            <p class="edit"><input name="title" class="layui-input" type="text" value="{$coupon.title}"></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle">简述</td>
+                        <td>
+                            <p class="show_coupon">{$coupon.sketch}</p>
+                            <p class="edit">
+                                <textarea name="sketch" id="" cols="60" rows="3">{$coupon.sketch}</textarea>
+                            </p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td class="tbtitle" width="150">优惠类型</td>
+                        <td width="200">{$discount_type_name}</td>
+                        <td class="tbtitle" width="150">单次使用次数</td>
+                        <td>
+                            <p class="show_coupon">{$coupon.one_use_num}</p>
+                            <p class="edit">
+                                <input name="one_use_num" class="layui-input" style="width: 70px;" type="number" value="{$coupon.one_use_num}">
+                            </p>
+                            <span class="yby">次</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle" width="150">满足多少金额使用</td>
+                        <td width="200"><small>{:web_currency()}</small>
+                            <p class="yby">
+                                <p class="show_coupon">{$coupon.money}</p>
+                                <p class="edit">
+                                    <input name="money" class="layui-input" style="width: 130px;" type="number" value="{$coupon.money}">
+                                </p>
+                            </p>
+                        </td>
+                        <td class="tbtitle" width="150">额度</td>
+                        <td>
+                            {if condition="$coupon.discount_type == 2"}<small>{:web_currency()}</small>{/if}
+                            <p class="yby">
+                                <p class="show_coupon">{$coupon.quota}</p>
+                                <p class="edit">
+                                    <input name="quota" class="layui-input" style="width: 130px;" type="number" value="{$coupon.quota}">
+                                </p>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle" width="150">总发放数量</td>
+                        <td width="200">
+                            <p class="show_coupon">{$coupon.num}</p>
+                            <p class="edit">
+                                <input name="num" class="layui-input" style="width: 92px;" type="number" value="{$coupon.num}">
+                            </p>
+                            <span class="yby">张</span></td>
+                        <td class="tbtitle" width="150">当前发放数量</td>
+                        <td>{$coupon.send_num}<span class="yby">张</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td class="tbtitle" width="150">绑定使用方式</td>
+                        <td>{$coupon.bind_type}</td>
+                    </tr>
+                    {if condition="count($coupon.bind_data) > 0"}
+                        <tr>
+                            <td rowspan="{:count($coupon['bind_data'])+1}">选择的{$coupon.bind_type}</td>
+                        </tr>
+                        {volist name="coupon.bind_data" id="vo"}
+                        <tr>
+                            <td>{$vo}</td>
+                        </tr>
+                        {/volist}
+                    {/if}
+                    </tbody>
+                </table>
+
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td class="tbtitle" width="150">允许使用的会员等级</td>
+                        <td colspan="3">
+                            {if condition="empty($coupon['user_level'][0])"}
+                                <span>所有会员</span>
+                            {/if}
+                            {volist name="$coupon.user_level" id="vo"}
+                            &nbsp;&nbsp;&nbsp;<span style="background-color: #eeeeee">{:api('member','User','getLevelName',[$vo])}</span>
+                            {/volist}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle">开始发放时间</td>
+                        <td>
+                            <p class="show_coupon">{:date('Y-m-d H:i:s',$coupon['send_start_time'])}</p>
+                            <p class="edit">
+                                <input class="layui-input" name="send_start_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{:date('Y-m-d H:i:s',$coupon['send_end_time'])}">
+                            </p>
+
+                        </td>
+                        <td class="tbtitle" width="150">结束发放时间</td>
+                        <td>
+                            <p class="show_coupon">{:date('Y-m-d H:i:s',$coupon['send_end_time'])}</p>
+                            <p class="edit">
+                                <input class="layui-input" name="send_end_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{:date('Y-m-d H:i:s',$coupon['send_end_time'])}">
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tbtitle" width="150">开始使用时间</td>
+                        <td width="200">
+                            <p class="show_coupon">{:date('Y-m-d H:i:s',$coupon['use_start_time'])}</p>
+                            <p class="edit">
+                                <input class="layui-input" name="use_start_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{:date('Y-m-d H:i:s',$coupon['use_start_time'])}">
+                            </p>
+                        </td>
+                        <td class="tbtitle" width="150">结束使用时间</td>
+                        <td>
+                            <p class="show_coupon">{:date('Y-m-d H:i:s',$coupon['use_end_time'])}</p>
+                            <p class="edit">
+                                <input class="layui-input" name="use_end_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{:date('Y-m-d H:i:s',$coupon['use_end_time'])}">
+                            </p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table class="layui-table">
+                    <tbody>
+                    <tr>
+                        <td class="tbtitle" width="150">有效期</td>
+                        <td width="200">
+                            <p class="show_coupon">{$coupon.use_days}</p>
+                            <p class="edit">
+                                <input name="use_days" class="layui-input" style="width: 92px;" type="number" value="{$coupon.use_days}">
+                            </p>
+                            <span class="yby">天</span>
+                        </td>
+                        <td class="tbtitle" width="150">是否开启</td>
+                        <td width="200">
+                            <input type="checkbox" name="status" lay-filter="status" value="1" lay-skin="switch" {if condition="$coupon.status == 1"}checked{/if}>
+                        </td>
+                        <td class="tbtitle" width="150">是否首页显示</td>
+                        <td>
+                            <input type="checkbox" name="index_show" lay-filter="index_show" value="1" lay-skin="switch" {if condition="$coupon.index_show == 1"}checked{/if}>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+<script type="text/javascript">
+    var form;
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+
+        form = layui.form();
+
+        form.on('switch(status)', function(data){
+            $.ajax({
+                type:'post',
+                url:'{:url("Coupon/update_status")}',
+                data:{id:{$coupon['id']},status:data.value},
+                success:function (data) {
+                    layer.msg(data.msg);
+                }
+            })
+        });
+
+        form.on('switch(index_show)', function(data){
+            $.ajax({
+                type:'post',
+                url:'{:url("Coupon/update_index_show")}',
+                data:{id:{$coupon['id']},index_show:data.value},
+                success:function (data) {
+                    layer.msg(data.msg);
+                }
+            })
+        });
+
+        form.on('submit(*)', function(data){
+            //验证传输的值是否为空
+            $.ajax({
+                type : "POST",
+                url: '{:url("Coupon/update")}',
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        /**
+         * 图标上传
+         */
+        layui.upload({
+            url: "{:url('Sys/Upload/upload')}",
+            type: 'image',
+            ext: 'jpg|png|gif|bmp',
+            before: function () {
+                lay_index = layer.load(3, {
+                    shade: [0.1, '#fff'], //0.1透明度的白色背景
+                });
+            },
+            success: function (data, input) {
+                // console.log(data);
+                var img_input = $(input).attr('data-val');
+                var img_src = $(input).attr('data-val') + '_src';
+                // console.log();
+                if (data.error === 0) {
+                    $('#' + img_input).val(data.url);
+                    $('#' + img_src).attr('src', data.url);
+                    layer.msg('上传完成', {time: 1000});
+                    layer.close(lay_index);
+                } else {
+                    layer.msg(data.message);
+                    layer.close(lay_index);
+                }
+            }
+        });
+    });
+    function subUpdate() {
+        $.ajax({
+            type : "POST",
+            url: '{:url("Coupon/update")}',
+            data : $('#update').serialize(),
+            dataType : 'json',
+            success: function(data){
+                layer.msg(data.msg,{time:1000},function(){
+                    if (data.code==1) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+            <div style="float: right; padding-bottom: 10px;">
+                <button class="layui-btn" data-href="{:url('shop/Order/update_order',['id'=>$order.id])}"
+                        onclick="showFrame(this);">修改订单
+                </button>
+                <button class="layui-btn">拆分订单</button>
+                <button class="layui-btn layui-btn-warm">打印订单</button>
+            </div>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="8" style="text-align:center;">{$eBiz.lang.order_show_basic_table_title}</th>
+                </tr>
+                <tr>
+                    <th>ID</th>
+                    <th>{$eBiz.lang.order_show_basic_table_order}</th>
+                    <th>{$eBiz.lang.order_show_basic_table_user}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_need}</th>
+                    <th>{$eBiz.lang.order_show_basic_table_status}</th>
+                    <th>{$eBiz.lang.order_show_basic_table_time}</th>
+                    <th>{$eBiz.lang.order_show_basic_table_pay_time}</th>
+                    <th>{$eBiz.lang.order_show_basic_table_pay_style}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{$order.id}</td>
+                    <td>{$order.order_sn}</td>
+                    <td><a href="javascript:;" data-href="{:url('member/Index/edit',['id'=>$order['user_id']])}"
+                           onclick="showFrame(this);">{$order.user}</a></td>
+                    <td>{$order.payable_price}</td>
+                    <td>{$order.status_str}</td>
+                    <td>{$order.add_time}</td>
+                    <td>{$order.pay_time}</td>
+                    <td>{$order.pay_code}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="4" style="text-align:center;">{$eBiz.lang.order_show_cnee_table_title}</th>
+                </tr>
+                <tr>
+                    <th>{$eBiz.lang.order_show_cnee_table_consignee}</th>
+                    <th>{$eBiz.lang.order_show_cnee_table_phone}</th>
+                    <th>{$eBiz.lang.order_show_cnee_table_address}</th>
+                    <th>{$eBiz.lang.order_show_cnee_table_code}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{$order.consignee}</td>
+                    <td>{$order.phone}</td>
+                    <td>{$order.address}</td>
+                    <td>{$order.zipcode}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="6" style="text-align:center;">{$eBiz.lang.order_show_goods_table_title}</th>
+                </tr>
+                <tr>
+                    <th>{$eBiz.lang.order_show_goods_table_goods}</th>
+                    <th>{$eBiz.lang.order_show_goods_table_spec}</th>
+                    <th>{$eBiz.lang.order_show_goods_table_nums}</th>
+                    <th>{$eBiz.lang.order_show_goods_table_price}</th>
+                    <th>{$eBiz.lang.order_show_goods_table_pay}</th>
+                    <th>{$eBiz.lang.order_show_goods_table_total}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="order_goods" id="vo"}
+                <tr>
+                    <td>{$vo.goods_name}</td>
+                    <td>{$vo.spec_title}</td>
+                    <td>{$vo.goods_num}</td>
+                    <td>{$vo.shop_price}</td>
+                    <td>{$vo.pay_price}</td>
+                    <td>{$vo.payable_price}</td>
+                </tr>
+                {/volist}
+                <tr>
+                    <td colspan="4"></td>
+                    <td>{$eBiz.lang.order_show_goods_table_total}</td>
+                    <td>{$order.payable_price}</td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="7" style="text-align:center;">{$eBiz.lang.order_show_fee_table_title}
+                        <button type="button" class="layui-btn layui-btn-small"
+                                data-href="{:url('shop/order/update_order_price',['id'=>$order.id])}"
+                                onclick="showFrame(this);"><i class="fa fa-pencil"></i></button>
+                    </th>
+                </tr>
+                <tr>
+                    <th>{$eBiz.lang.order_show_fee_table_need}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_shipping}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_points}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_account}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_paper}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_change}</th>
+                    <th>{$eBiz.lang.order_show_fee_table_pay}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{$order.payable_price}</td>
+                    <td>{$order.postage}</td>
+                    <td>{$order.points}</td>
+                    <td>{$order.balance_price}</td>
+                    <td>{$order.coupon_price}</td>
+                    <td>{$order.change_mny}</td>
+                    <td>{$order.payable_price+$order.postage-$order.change_mny}</td>
+                </tr>
+                </tbody>
+            </table>
+
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="7" style="text-align:center;">使用的优惠券
+                    </th>
+                </tr>
+                <tr>
+                    <th>优惠券ID</th>
+                    <th>优惠券名称</th>
+                    <th>优惠券等级</th>
+                    <th>优惠券的类型</th>
+                    <th>额度</th>
+                    <th>最大减免</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="usedCoupon" id="vo"}
+                <tr>
+                    <td>{$vo.id}</td>
+                    <td><a href="javascript:;" data-href="{:url('shop/Coupon/detail',['id'=>$vo.id])}" onclick="showFrame(this);">{$vo.name}</a></td>
+                    <td>{$vo.coupon_level}</td>
+                    <td>{$vo.discount_type}</td>
+                    <td>{$vo.quota}</td>
+                    <td>{if condition="empty($vo.quota)"}无最大减免{else/}{:tb_config('web_currency',1)}{$vo.max_quota}{/if}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="6" style="text-align:center;">{$eBiz.lang.order_show_action_table_title}</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{$eBiz.lang.order_show_action_table_remarks}</td>
+                    <td>
+                        <textarea id="act_remarks" name="act_remarks" class="layui-textarea"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{$eBiz.lang.order_show_action_table_btns}</td>
+                    <td>
+                        {eq name="order.status" value="1"}  <!--//待支付-->
+                        <a class="layui-btn" onclick="updateStatus({$order.id},2)">{$eBiz.lang.order_show_action_table_btn_pay}</a>
+                        {/eq}
+                        {eq name="order.status" value="2"}  <!--//已支付，待确认-->
+                        <a class="layui-btn" onclick="updateStatus({$order.id},1)">{$eBiz.lang.order_show_action_table_btn_unpay}</a>
+                        <a class="layui-btn" onclick="updateStatus({$order.id},3)">{$eBiz.lang.order_show_action_table_btn_confirm}</a>
+                        {/eq}
+                        {eq name="order.status" value="3"}    <!--//已确认，待发货-->
+                        <a class="layui-btn" onclick="updateStatus({$order.id},2)">{$eBiz.lang.order_show_action_table_btn_unconfir}</a>
+                        <a data-href="{:url('shop/Order/delivery',['id'=>$order.id])}" class="layui-btn"
+                           onclick="showFrame(this);">{$eBiz.lang.order_show_action_table_btn_sent}</a><!--去发货-->
+                        {/eq}
+                        {eq name="order.status" value="4"}    <!--//已发货，待收货-->
+                        <a class="layui-btn" onclick="updateStatus({$order.id},-3)">{$eBiz.lang.order_show_action_table_btn_del}</a>
+                        {/eq}
+                        {neq name="order.status" value="-2"}
+                        <a class="layui-btn" onclick="updateStatus({$order.id},-2)">{$eBiz.lang.order_show_action_table_btn_cancel}</a>
+                        {/neq}
+
+                        {if condition="$order['status'] == -1 || $order['status'] == -2 || $order['status'] == -3"}
+                        <br/>
+                        <style>
+                            .upstatusSpan {
+                                margin-right: 10px;
+                            }
+                            .upstatusSpan span{
+                                margin-left: 5px;
+                            }
+                        </style>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="0">
+                            <span>设为取消订单</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="1">
+                            <span>设为未支付订单</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="2">
+                            <span>设为未确认订单(已支付)</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="3">
+                            <span>设为未发货订单(已确认)</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="4">
+                            <span>设为未收货订单(已发货)</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="5">
+                            <span>设为未评论订单(已收货)</span>
+                        </span>
+                        <span class="upstatusSpan">
+                            <input type="radio" name="upStatus" value="6">
+                            <span>设为已完成订单(已评论)</span>
+                        </span>
+
+                        <div style="float: right; margin-right: 40px;">
+                            <button class="layui-btn layui-btn-small layui-btn-warm" type="button" onclick="statusUp();">修改状态</button>
+                        </div>
+
+                        <script>
+                            function statusUp()
+                            {
+                                var id = {$order.id};
+                                var status = $('input[name="upStatus"]:checked').val();
+                                if( status == '' || status == undefined ){
+                                    layer.msg('请选择修改状态!');
+                                    return false;
+                                }
+                                var remark = $('#act_remarks').val();
+                                if(remark == '' ){
+                                    layer.msg('请输入操作备注!');
+                                    return false;
+                                }
+                                $.post("{:url('shop/order/update_status')}", {
+                                    'id': id,
+                                    'status': status,
+                                    'remark': remark,
+                                }, function (data) {
+                                    if (data.code == 1) {
+                                        layer.msg(data.msg);
+                                        location.reload();
+                                    } else {
+                                        layer.msg(data.msg);
+                                    }
+                                });
+                            }
+                        </script>
+                        {/if}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                <thead>
+                <tr>
+                    <th colspan="7" style="text-align:center;">{$eBiz.lang.order_show_handle_table_title}</th>
+                </tr>
+                <tr>
+                    <th>{$eBiz.lang.order_show_handle_table_user}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_time}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_status}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_pay}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_shipping}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_desc}</th>
+                    <th>{$eBiz.lang.order_show_handle_table_note}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="order_action" id="vo"}
+                <tr>
+                    <td>{$vo.action_user}</td>
+                    <td>{$vo.log_time}</td>
+                    <td>{$status[$vo['order_status']]}</td>
+                    <td>{$pay_status[$vo['pay_status']]}</td>
+                    <td>{$shipping_status[$vo['shipping_status']]}</td>
+                    <td>{$vo.status_desc}</td>
+                    <td>{$vo.action_note}</td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+<script type="text/javascript">
+    layui.use(['layer', 'element', 'laypage'], function () {
+    });
+    function showFrame(obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade: [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+    function updateStatus($order_id, $status) {
+        var $remark = $('#act_remarks').val();
+        $.post("{:url('shop/order/update_status')}", {
+            'id': $order_id,
+            'status': $status,
+            'remark': $remark,
+        }, function (data) {
+            if (data.code == 1) {
+                layer.msg(data.msg);
+                location.reload();
+            } else {
+                layer.msg(data.msg);
+            }
+        });
+    }
+</script>
+</html>

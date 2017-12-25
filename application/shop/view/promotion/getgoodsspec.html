@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div>
+        <table class="layui-table">
+            <colgroup>
+                <col width="80">
+                <col>
+                <col>
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th layui-form><input type="checkbox" name="cboxAll" id="cboxAll">全选</th>
+                <th>{$eBiz.lang.goods_name}</th>
+                <th>{$eBiz.lang.goods_price}</th>
+                {if condition="$inputtype == 'radio'"}<th>抢购价格</th>{/if}
+                <th>{$eBiz.lang.goods_stock}</th>
+                <th>{$eBiz.lang.cate_list_title_7}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {volist name="spec_list" id="vo"}
+            <tr id="goodsSpec{$vo.id}">
+                <td>
+                    <input type="checkbox" name="goodsspec" value="{$vo.key_sign}" {in name="$vo.key_sign" value="$specstr"} checked{/in}>
+                </td>
+                <td id="key_name{$vo.key_sign}">{$vo.key_name}</td>
+                <td>{:priceFormat($vo.price,1)}</td>
+                {if condition="$inputtype == 'radio'"}<td>{:tb_config('web_currency',1,getLang())}<input type="text" id="price{$vo.key_sign}" value="{in name="$vo.key_sign" value="$specstr"}{:trim($checked_spec[$vo.key_sign])}{else/}{:trim($vo.price)}{/in}"></td>{/if}
+                <td id="store_count{$vo.key_sign}">{$vo.store_count}</td>
+                <td><botton onclick="delGoodsSpec({$vo.id});" class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger">{$eBiz.lang.comm_btn_del}</botton></td>
+            </tr>
+            {/volist}
+            </tbody>
+        </table>
+        <div class="layui-form-item" style="float: right">
+            <div class="layui-input-block">
+                <button class="layui-btn" onclick="closeIndex();" id="selected" lay-filter="formDemo">{$eBiz.lang.comm_btn_confirm}</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    $(function () {
+        $('#cboxAll').click(function () {
+            if($('input[name="cboxAll"]').is(':checked')){
+                $('input[name="goodsspec"]').each(function() {
+                    $(this).prop("checked", true);
+                });
+            }else{
+                $('input[name="goodsspec"]').each(function() {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+    })
+    function specArr(id,price){
+        this.id = id;
+        this.price = price;
+    }
+    function closeIndex() {
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        var gspec = '{';
+        $('input[name="goodsspec"]:checked').each(function(){
+            var spec_id = $(this).val();
+            var price_id = '#price'+spec_id;
+            var price = $(price_id).val();
+            gspec += '"'+spec_id+'":"'+price+'",';
+        });
+        if( gspec.length > 0 ){
+            var sLen = gspec.length;
+            var spec = gspec.slice(0,sLen-1);
+        }
+        spec += '}';
+        var g_id = '#goods{$Request.param.goods_id} .goodsspec';
+        //alert(g_id);
+        parent.$(g_id).val(spec);
+        //将
+        parent.layer.close(index);
+    }
+
+    function delGoodsSpec(id){
+        $('#goodsSpec'+id).remove();
+    }
+</script>
+</body>
+</html>

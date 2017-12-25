@@ -1,0 +1,137 @@
+<?php
+	if(strstr($value,',')!=false){
+		$sign = ',';
+	}else{
+		$sign = '_';
+	}
+	$selectd = explode($sign, $value);
+
+	if($selectd[0]!=0){
+		array_unshift($selectd,'0');
+	}
+	$item = ['select_'.$name.'_f','select_'.$name.'_s','select_'.$name];
+?>
+<?php 
+if(!isset($line)){
+?>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-inline">
+		<select name="{$name}[0]" id="select_{$name}_f" lay-filter="{$name}_f">
+			<option value=""></option>
+		</select>		
+	</div>
+	<div class="layui-input-inline">
+		<select name="{$name}[1]" id="select_{$name}_s" lay-filter="{$name}_s">
+			<option value=""></option>
+		</select>		
+	</div>
+	<div class="layui-input-inline">
+		<select name="{$name}[2]" id="select_{$name}" lay-filter="{$name}">
+			<option value=""></option>
+		</select>
+		<i>{$tips}</i>
+	</div>
+</div>
+<?php
+}else{
+?>
+	<div class="layui-input-inline">
+		<select name="{$name}[0]" id="select_{$name}_f" lay-filter="{$name}_f">
+			<option value=""></option>
+		</select>		
+	</div>
+	<div class="layui-input-inline">
+		<select name="{$name}[1]" id="select_{$name}_s" lay-filter="{$name}_s">
+			<option value=""></option>
+		</select>		
+	</div>
+	<div class="layui-input-inline">
+		<select name="{$name}[2]" id="select_{$name}" lay-filter="{$name}">
+			<option value=""></option>
+		</select>
+		<i>{$tips}</i>
+	</div>
+<?php
+}
+?>
+<script type="text/javascript">
+	layui.use(['jquery','form','layer','element','laypage'],function(){
+   		var form = layui.form();
+   		<?php
+   			foreach ($selectd as $key => $vals) {
+   				$id = $vals;
+   				$select_now = '';
+   				if (isset($selectd[$key+1])) {
+   					$select_now = $selectd[$key+1];
+   				};
+   				if ($key>2) {
+   					break;
+   				}
+   		?>
+		$.ajax({
+			url:"{:url($option)}",
+			data:{
+				val : "{$id}"
+			},
+			success: function(data){									
+				if (data.code==1) {
+					var options = data.data;
+					var Html = '<option value="0">{if condition="empty($title)"}{$eBiz.lang.comm_form_select_default}{else/}{$title}{/if}</option>';
+					for(var i in options) {
+						var val = "{$select_now}";
+						var select = val==i?'selected="selected"':'';
+						Html += '<option value="'+i+'" '+select+'>'+options[i]+'</option>';
+					}
+					$('#{$item[$key]}').html(Html);
+					form.render('select');
+				};
+			}
+		});
+		<?php
+			}
+		?>
+		form.on('select({$name}_f)', function(data){
+		  $.ajax({
+			url:"{:url($option)}",
+			data:{
+				val : data.value
+			},
+			success: function(data){
+				$('#select_{$name}_s').html('');
+				// if (data.code==1) {
+					var options = data.data;
+					var Html = '<option value="0">{if condition="empty($title)"}{$eBiz.lang.comm_form_select_default}{else/}{$title}{/if}</option>';
+					for(var i in options) {
+						Html += '<option value="'+i+'">'+options[i]+'</option>';
+					}
+					$('#select_{$name}_s').html(Html);
+					$('#select_{$name}').html('');
+
+				// };
+					form.render('select');
+			}
+		});
+		});
+		form.on('select({$name}_s)', function(data){
+		  $.ajax({
+			url:"{:url($option)}",
+			data:{
+				val : data.value
+			},
+			success: function(data){
+				$('#select_{$name}').html('');
+				// if (data.code==1) {
+					var options = data.data;
+					var Html = '<option value="0">{:lang("comm_form_select_default")}</option>';
+					for(var i in options) {
+						Html += '<option value="'+i+'">'+options[i]+'</option>';
+					}
+					$('#select_{$name}').html(Html);
+				// };
+					form.render('select');
+			}
+		});
+		});
+	})
+</script>

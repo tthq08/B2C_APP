@@ -1,0 +1,20 @@
+{volist name="list" id="vo"}
+<div class="seckpdt-item">
+	<div class="pic"><img src="{:common_thumb_img($vo['goods']['thumb'],230,230)}" alt="" /></div>
+	<div class="info">
+		<div class="sk-name">{$vo.goods.title}</div>
+		<div class="sk-desc">
+			<div class="descl">
+				<p class="price">{$vo.goods.price}元</p>
+				<del>{$vo.goods.shop_price}元</del>
+			</div>
+			<div class="descr">
+				<div class="sell"><span class="sed">&nbsp;<!-- 07售</span><span>/10件 --></span></div>
+				<div class="btnbox">
+					<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}" class="gobtn start">去秒杀</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/volist}

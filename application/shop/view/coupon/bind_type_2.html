@@ -1,0 +1,89 @@
+<div class="layui-form-item goods_category_select">
+    <label class="layui-form-label">锁定商品分类</label>
+
+    <div class="layui-input-inline" id="select_next" style="width: 100px;">
+        <button type="button" class="layui-btn layui-btn-normal" onclick="selectCategory();">获取下级</button>
+    </div>
+
+    <div class="layui-input-inline">
+        <button type="button" class="layui-btn layui-btn-danger" onclick="clearCategory();">重新选择</button>
+    </div>
+
+    <div class="layui-input-inline">
+        <button type="button" class="layui-btn" onclick="addCategoryList();">加入选择</button>
+    </div>
+</div>
+
+<div class="layui-form-item" style="display: none;" id="category_list">
+    <label class="layui-form-label">选择的商品分类列表</label>
+    <div id="category_list_2">
+
+    </div>
+
+</div>
+
+<script>
+    /**
+     * 选择商品分类
+     */
+    function selectCategory(){
+        var pid = $('.category_select .layui-form-select .layui-anim-upbit:last .layui-this').attr('lay-value');
+        if( $('.category_select').length > 0 ){
+            if( pid == '' || pid == undefined || pid == 0 ){
+                alert('请选择规格!');
+                return ;
+            }
+        }
+        $.ajax({
+            type:"POST",
+            url:'{:U("shop/Coupon/goodsCategory")}',
+            data:{pid:pid},
+            success:function (data) {
+                if( data.code == 1 ){
+                    var htm = '<div class="layui-input-inline category_select">'+
+                            '<select>';
+                    htm += data.msg;
+                    htm += '</select>'+
+                            '</div>';
+                    $('#select_next').before(htm);
+                    form.render();
+                }else{
+                    layer.msg(data.msg);
+                }
+            }
+        })
+    }
+
+    /**
+     * 清空商品选择
+     */
+    function clearCategory() {
+        $('.category_select').remove();
+        selectCategory();
+    }
+
+    function addCategoryList() {
+        // 获取选择的值
+        var category_id_val = $('.category_select .layui-form-select .layui-anim-upbit:last .layui-this').attr('lay-value');
+        // 获取店铺名称
+        var category_name = $('.category_select .layui-form-select .layui-anim-upbit:last .layui-this').html();
+
+        var shop_list_id = '#categpry_id_'+category_id_val;
+        if( $(shop_list_id).length == 0 ){
+            var ahtml = '<div class="layui-input-block category_list" style="margin-top: 5px;" id="categpry_id_'+category_id_val+'">\
+            <div style="display: none;"><input type="hidden" name="goods_category['+category_id_val+']" value="'+category_id_val+'"></div>\
+        <button type="button" class="layui-btn layui-btn-warm" style="min-width: 130px;">'+category_name+'</button>\
+                <button type="button" class="layui-btn layui-btn-small layui-btn-danger" onclick="delCategoryList('+category_id_val+');" style="margin-top:5px;">\
+                <i class="layui-icon" >&#x1007;</i>\
+        </button>\
+        </div>';
+            $('#category_list').css('display','block');
+            $('#category_list_2').append(ahtml);
+        }
+    }
+    function delCategoryList(id) {
+        // 去掉选择的
+        var shop_list_id = '#categpry_id_'+id;
+        $(shop_list_id).remove();
+    }
+</script>

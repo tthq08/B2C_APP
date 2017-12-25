@@ -1,0 +1,39 @@
+<div class="user-tab-top">
+	<ul class="user-tab-box clearfix">
+		<li class="top-item {eq name='status' value='all'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxWidthdrawLog')}');">{$eBiz.lang.Recharge_all_records}</a></li>
+		<li class="top-item {eq name='status' value='0'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxWidthdrawLog',['status'=>'0'])}');">{$eBiz.lang.Withdrawals_checking}</a></li>
+		<li class="top-item {eq name='status' value='1'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxWidthdrawLog',['status'=>'1'])}');">{$eBiz.lang.Withdrawals_checked_succ}</a></li>
+		<li class="top-item {eq name='status' value='2'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxWidthdrawLog',['status'=>'2'])}');">{$eBiz.lang.Withdrawals_checked_fail}</a></li>
+	</ul>
+</div>
+<div class="user-content pb30 mt20">
+	<div class="user-re-tb">
+		<table>
+			<tr>
+				<th width="15%">{$eBiz.lang.Recharge_ctime}</th>
+				<th width="10%">{$eBiz.lang.Withdrawals_need_money}({:web_currency()})</th>
+				<th width="15%">{$eBiz.lang.Withdrawals_bank_name}</th>
+				<th width="25%">{$eBiz.lang.Withdrawals_account_bank}</th>
+				<th width="10%">{$eBiz.lang.Withdrawals_request_status}</th>
+				<th width="25%">{$eBiz.lang.Withdrawals_checked_info}</th>
+			</tr>
+		{volist name="list" id="vo"}
+			<tr>
+				<td align="center"><span>{$vo.create_time}</span></td>
+				<td align="center">{$vo.money}</td>
+				<td align="center">{$vo.bank_name}</td>
+				<td align="center">{$vo.account_bank}</td>
+				{php}$status = [lang('Withdrawals_checking'),lang('Withdrawals_checked_succ'),lang('Withdrawals_checked_fail')];{/php}
+				<td align="center">{$status[$vo['status']]}</td>
+				<td align="center">{$vo.remark}</td>
+			</tr>
+		{/volist}			
+		</table>
+	</div>
+	<!-- <div class="block mt20 pl20 pb20">
+		<span class="b-note">为了保证您账户余额的安全，如需提现，请致电TB MALL客服进行申请和审核：000000000</span>
+	</div> -->
+	<div class="user-pagination">
+		{$page}
+	</div>
+</div>

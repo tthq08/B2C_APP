@@ -1,0 +1,29 @@
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-inline">  
+		<input type="text" name="{$name}"  autocomplete="off"  class="layui-input layui-disabled" value="{$value}" disabled="disabled" > 
+	</div>
+	<button type="button" class="layui-btn" onclick="openMap();">获取坐标</button>
+</div>
+<script type="text/javascript">
+	var index = '';
+	function openMap() {
+		var position = $('input[name="{$name}"]').val();
+		
+		index = layer.open({
+	      type: 2,
+	      title: "获取坐标",
+	      shadeClose: false,
+	      shade:  [0.8, '#393D49'],
+	      maxmin: true, //开启最大化最小化按钮
+	      area: ['90%', '90%'],
+	      content: "{:url('sys/comm/getMap')}?position="+position,
+	    }); 
+	    // layer.full(index);
+	}
+
+	function map_call_back(position) {
+		$('input[name="{$name}"]').val(position);
+		layer.close(index);
+	}
+</script>

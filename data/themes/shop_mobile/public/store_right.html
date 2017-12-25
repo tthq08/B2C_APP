@@ -1,0 +1,125 @@
+<div class="side-right">
+	<div class="side-content">
+		<div class="shop-filter">
+			<div class="cmall-item hasarrow">
+				<div class="left">全部商品</div>
+			</div>
+			<div class="cmall-section mt20" style="border-top: 1px solid #dedede;">
+				<div class="cmall-item hasarrow">
+					<div class="left">华为</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">小米</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">魅族</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">苹果</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">三星</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">努比亚</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">联想</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">乐视</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">华为</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">小米</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">魅族</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">苹果</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">三星</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">努比亚</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">联想</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">乐视</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">华为</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">小米</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">魅族</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">苹果</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">三星</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">努比亚</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">联想</div>
+				</div>
+				<div class="cmall-item hasarrow">
+					<div class="left">乐视</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{include file="public/right" /}
+<script type="text/javascript">
+	// 关注，取消关注店铺
+    function toggleShop(shop_id,obj) {
+    	$.ajax({
+    		url:"{:url('shop/Store/collect_shop')}",
+    		data:{
+    			id:shop_id
+    		},
+    		success: function(data){
+    			switch(data.code)
+    			{
+    				case 4001:
+    					layer.msg(data.msg,{time:1000},function () {
+    						location.href = "{:U('user/login')}";
+    					})
+    					break;
+
+    				case -1:
+    					layer.msg(data.msg);
+    					break;
+
+    				case -2:
+    					layer.msg(data.msg);
+    					break;
+
+    				case 1:
+    					layer.msg(data.msg,{time:1000},function () {
+    						$(obj).html('<i class="s-icon icon-follow"></i><span>取消</span>');
+    					});
+    					break;
+
+    				case 2:
+    					layer.msg(data.msg,{time:1000},function () {
+    						$(obj).html('<i class="s-icon icon-follow"></i><span>关注</span>');
+    					});
+    					break;
+    			}
+    		}
+    	});	
+    }
+</script>

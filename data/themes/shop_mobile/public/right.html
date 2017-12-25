@@ -1,0 +1,50 @@
+<!-- 右边个人固定 -->
+<div class="fd-user">
+	<div class="fdm" onclick="toggleUser()"></div>
+	<div class="fduser-msg" style="width: 5rem;">
+		<div class="item"><a href="{:U('shop/index/index')}" class="user-icon report-icon"><i></i><em class="b-title">首页</em></a></div>
+		<div class="item"><a href="{:U('user/index')}" class="user-icon report-icon"><i></i><em class="b-title">个人中心</em></a></div>
+		<div class="item"><a href="{:U('user/order_list')}" class="user-icon order-icon"><i></i><em class="b-title">我的订单</em></a></div>
+		<div class="item"><a href="{:U('User/account')}" class="user-icon wallet-icon"><i></i><em class="b-title">我的钱包</em></a></div>
+		<div class="item"><a href="{:tb_config('service_client_url',1)}" target="_blank" class="user-icon online-icon"><i></i><em class="b-title">联系客服</em></a></div>
+		{empty name="Think.session.user"}
+		<div class="item"><a href="{:U('user/login')}" class="user-icon online-icon"><i></i><em class="b-title">登录</em></a></div>
+		<div class="item"><a href="{:U('user/signup')}" class="user-icon online-icon"><i></i><em class="b-title">注册</em></a></div>
+		{/empty}
+	</div>
+</div>
+<!-- 返回顶部 -->
+<div class="backtop" onclick="backTop()"></div>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/common.js"></script>
+<script type="text/javascript">
+	function backTop() {
+		$('html,body').animate({'scrollTop': '0px'},300)
+	}
+
+	// Kakao分享  调用方法： <div id="kakaostory-share-button" data-url="http://TBMALL.iswweb.com"></div>
+  	window.kakaoAsyncInit = function () {
+    	Kakao.Story.createShareButton({
+      		container: '#kakaostory-share-button'
+	    });
+  	};
+
+  	(function (d, s, id) {
+	    var js, fjs = d.getElementsByTagName(s)[0];
+	    if (d.getElementById(id)) return;
+	    js = d.createElement(s); js.id = id;
+	    js.src = "//developers.kakao.com/sdk/js/kakao.story.min.js";
+	    fjs.parentNode.insertBefore(js, fjs);
+  	}(document, 'script', 'kakao-js-sdk'));
+
+  	// Naver分享 调用方法  naverShare('http://TBMALL.iswweb.com','TBMALL商城')
+  	function naverShare(url,title) {
+ 		var url = encodeURI(encodeURIComponent(url));
+      	var title = encodeURI(title);
+      	var shareURL = "http://share.naver.com/web/shareView.nhn?url=" + url + "&title=" + title;
+      	document.location = shareURL;
+  	}
+
+  	// twitter分享 调用方法 <a href="https://twitter.com/share" class="twitter-share-button" data-via="TBMALL" data-lang="ko" data-hashtags="TBMALL해외직구오픈마켓">트윗하기</a>
+  	!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){ js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');  		
+
+</script>

@@ -1,0 +1,22 @@
+<header class="header">
+	<div class="box clearfix">
+		<div class="header-left">
+			<a href="javascript:history.go(-1)" class="top-back">
+				<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+			</a>
+		</div>
+		<div class="header-middle header-search">
+		<form id="searchForm" action="{:U('goods/search')}" method="get">
+			<div class="search-box">
+				<div class="input"><input name="key" placeholder="搜索您想搜的内容" type="text" /></div>
+				<div class="search-btn" onclick="$('#searchForm').submit()"><img src="{:tb_config('resource_path',1)}mshop/images/search.png" alt="" /></div>
+			</div>
+		</form>
+		</div>
+		<div class="header-right">
+			<!-- <div class="filter-top">
+				<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="" />
+			</div> -->
+		</div>
+	</div>
+</header>

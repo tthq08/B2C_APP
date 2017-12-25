@@ -1,0 +1,262 @@
+<div class="content-wrapper">
+    <div class="index_content">
+        <div class="pageheader">
+            <h2>
+                <i class="fa fa-tachometer"></i>
+                {$eBiz.lang.index_left_home}
+            </h2>
+        </div>
+        <div class="index-main">
+            <?php
+                 $today_start = strtotime(date('Y-m-d').' 00:00:00');
+                 $today_end = strtotime(date('Y-m-d').' 23:59:59');
+            ?>
+
+            <div class="row cards">
+
+                <div class="card-container col-lg-3 col-sm-6 col-sm-12">
+                    <div class="card card-redbrown hover">
+                        <div class="front">
+
+                            <div class="media">
+                                <span class="pull-left">
+                                    <i class="fa fa-users media-object"></i>
+                                </span>
+
+
+                                <div class="media-body">
+                                    <small>新用户</small>
+                                    <h2 class="media-heading animate-number" data-value="{:api('member','User','getNewUserNum')}"
+                                        data-animation-duration="1500">
+                                        {:api('member','User','getNewUserNum')}</h2>
+                                </div>
+                            </div>
+
+                            <!-- <div class="progress-list">
+                              <div class="details">
+                                <div class="title">当月计划 %</div>
+                              </div>
+                              <div class="status pull-right bg-transparent-black-1">
+                                <span class="animate-number" data-value="83" data-animation-duration="1500">83</span>%
+                              </div>
+                              <div class="clearfix"></div>
+                              <div class="progress progress-little progress-transparent-black">
+                                <div class="progress-bar animate-progress-bar" data-percentage="83%" style="width: 83%;"></div>
+                              </div>
+                            </div> -->
+
+                        </div>
+                        <div class="back">
+                            <a href="#">
+                                <i class="fa fa-bar-chart-o fa-4x"></i>
+                                <span>Check Summary</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-container col-lg-3 col-sm-6 col-sm-12">
+                    <div class="card card-blue hover">
+                        <div class="front">
+
+                            <div class="media">
+                          <span class="pull-left">
+                            <i class="fa fa-shopping-cart media-object"></i>
+                          </span>
+                                <?php
+                                    $new_orders = db('shop_order') ->where('add_time','> time',$today_start)->count();
+                                ?>
+                                <div class="media-body">
+                                    <small>新订单</small>
+                                    <h2 class="media-heading animate-number" data-value="19214"
+                                        data-animation-duration="1500">{$new_orders|default=0}</h2>
+                                </div>
+                            </div>
+
+                            <!--  <div class="progress-list">
+                               <div class="details">
+                                 <div class="title">当月计划 %</div>
+                               </div>
+                               <div class="status pull-right bg-transparent-black-1">
+                                 <span class="animate-number" data-value="100" data-animation-duration="1500">100</span>%
+                               </div>
+                               <div class="clearfix"></div>
+                               <div class="progress progress-little progress-transparent-black">
+                                 <div class="progress-bar animate-progress-bar" data-percentage="100%" style="width: 100%;"></div>
+                               </div>
+                             </div> -->
+
+                        </div>
+                        <div class="back">
+                            <a href="#">
+                                <i class="fa fa-bar-chart-o fa-4x"></i>
+                                <span>Check Summary</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-container col-lg-3 col-sm-6 col-sm-12">
+                    <div class="card card-greensea hover">
+                        <div class="front">
+
+                            <div class="media">
+                          <span class="pull-left">
+                            <i class="fa fa-usd media-object"></i>
+                          </span>
+                                <div class="media-body">
+                                    <small>销售额</small>
+                                    <h2 class="media-heading animate-number" data-value="169541"
+                                        data-animation-duration="1500">{:number_format(api('shop','Order','getSalesVolume'),2)}</h2>
+                                </div>
+                            </div>
+
+                            <!-- <div class="progress-list">
+                              <div class="details">
+                                <div class="title">当月计划 %</div>
+                              </div>
+                              <div class="status pull-right bg-transparent-black-1">
+                                <span class="animate-number" data-value="42" data-animation-duration="1500">42</span>%
+                              </div>
+                              <div class="clearfix"></div>
+                              <div class="progress progress-little progress-transparent-black">
+                                <div class="progress-bar animate-progress-bar" data-percentage="42%" style="width: 42%;"></div>
+                              </div>
+                            </div> -->
+
+                        </div>
+                        <div class="back">
+                            <a href="#">
+                                <i class="fa fa-bar-chart-o fa-4x"></i>
+                                <span>Check Summary</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!--<div class="card-container col-lg-3 col-sm-6 col-xs-12">-->
+                    <!--<div class="card card-slategray hover">-->
+                        <!--<div class="front">-->
+
+                            <!--<div class="media">-->
+                          <!--<span class="pull-left">-->
+                            <!--<i class="fa fa-eye media-object"></i>-->
+                          <!--</span>-->
+
+                                <!--<div class="media-body">-->
+                                    <!--<small>访客</small>-->
+                                    <!--<h2 class="media-heading animate-number" data-value="9634"-->
+                                        <!--data-animation-duration="1500">9,634</h2>-->
+                                <!--</div>-->
+                            <!--</div>-->
+
+                            <!--&lt;!&ndash; <div class="progress-list">-->
+                              <!--<div class="details">-->
+                                <!--<div class="title">当月计划 %</div>-->
+                              <!--</div>-->
+                              <!--<div class="status pull-right bg-transparent-black-1">-->
+                                <!--<span class="animate-number" data-value="25" data-animation-duration="1500">25</span>%-->
+                              <!--</div>-->
+                              <!--<div class="clearfix"></div>-->
+                              <!--<div class="progress progress-little progress-transparent-black">-->
+                                <!--<div class="progress-bar animate-progress-bar" data-percentage="25%" style="width: 25%;"></div>-->
+                              <!--</div>-->
+                            <!--</div> &ndash;&gt;-->
+
+                        <!--</div>-->
+                        <!--<div class="back">-->
+                            <!--<a href="#">-->
+                                <!--<i class="fa fa-bar-chart-o fa-4x"></i>-->
+                                <!--<span>Check Summary</span>-->
+                            <!--</a>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+
+            <div class="row ibox">
+                <div class="ibox_wrap">
+                    <h3 class="ibox_wrap_tit">
+                        <i class="fa fa-gears"></i>
+                        版本信息
+                    </h3>
+                    <div class="shadowbox_table">
+                        <table cellpadding="0" cellspacing="0" class="system_table">
+                            <tbody>
+                            <tr>
+                                <td class="gray_bg">程序版本:</td>
+                                <td>Think BIZ v-1.0</td>
+                                <td class="gray_bg">更新时间:</td>
+                                <td>2017-04-10</td>
+                            </tr>
+                            <tr>
+                                <td class="gray_bg">程序开发:</td>
+                                <td>深圳市俊网网络有限公司</td>
+                                <td class="gray_bg">版权所有:</td>
+                                <td>深圳市俊网网络有限公司</td>
+                            </tr>
+                            <tr>
+                                <td class="gray_bg">官方授权:</td>
+                                <td><a href="" target="_blank">商业授权</a></td>
+                                <td class="gray_bg">官方论坛:</td>
+                                <td><a href="" target="_blank"></a></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row ibox">
+                <div class="ibox_wrap">
+                    <h3 class="ibox_wrap_tit">
+                        <i class="fa fa-gear"></i>
+                        系统信息
+                    </h3>
+                    <div class="shadowbox_table">
+                        <table cellpadding="0" cellspacing="0" class="system_table">
+                            <tbody>
+                            <tr>
+                                <td class="gray_bg">客户端IP:</td>
+                                <td>{$_SERVER['REMOTE_ADDR']}</td>
+                                <td class="gray_bg">服务器域名/IP:</td>
+                                <td>{:$_SERVER['SERVER_NAME']}</td>
+                            </tr>
+                            <tr>
+                                <td class="gray_bg">服务器环境:</td>
+                                <td>{:php_uname()}</td>
+                                <td class="gray_bg">PHP 版本:</td>
+                                <td>{$eBiz.PHP_VERSION}</td>
+                            </tr>
+                            <?php $gd_info = gd_info();
+                                  $Model = db('','',false);
+                                  $version = $Model->query("select version() as ver");
+                            $mysql_ver = $version[0]['ver'];
+                            ?>
+                            <tr>
+                                <td class="gray_bg">Mysql 版本:</td>
+                                <td>{$mysql_ver}</td>
+                                <td class="gray_bg">GD 版本:</td>
+                                <td>{$gd_info["GD Version"]}</td>
+                            </tr>
+                            <tr>
+                                <td class="gray_bg">文件上传限制:</td>
+                                <td>{:ini_get("upload_max_filesize")}</td>
+                                <td class="gray_bg">最大占用内存:</td>
+                                <td>{:ini_get("memory_limit")}</td>
+                            </tr>
+                            <tr>
+                                <td class="gray_bg">最大执行时间:</td>
+                                <td>{:ini_get("max_execution_time")}s</td>
+                                <td class="gray_bg">系统路径:</td>
+                                <td>{:getenv('DOCUMENT_ROOT')}</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

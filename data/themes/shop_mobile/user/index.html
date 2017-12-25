@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.User_index_page_title} - {:tb_config('web_site_title',1)}</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+	
+</head>
+<body>
+	{assign name="active_page" value="Home" /}
+	{include file="public/u_header" /}
+	<div class="m-user">
+		<div class="m-useravatar">
+			<img src="{empty name='$user.head_pic'}{:tb_config('resource_path',1)}mshop/picture/user.jpg{else/}{$user.head_pic}{/empty}" alt=""/>
+		</div>
+		<div class="m-userinfo">
+			<h2 class="m-userinfo-name">{$user.nickname}（{$user.email|hidemail}）</h2>
+			<p>
+				您现在的会员等级是
+				<span class="m-vip vip1">{:getTableValue('user_level',['id'=>$user['level']],'level_name')}</span>
+			</p>
+			<p>
+				升级到
+				<span class="m-vip vip2">{$next_lv.level_name}</span>
+				还需要<b class="m-num">{$points_need}</b>
+				经验
+			</p>
+			{assign name="reg_url" value=":url('shop/user/signup',['d'=>$user['sysid']],'',true)" /}
+		</div>
+		<div style="margin-top: 10px;">
+			<a class="m-manger" href="{:U('user/manager')}">管理<i></i></a>
+			<p data-url="{:base64_encode($reg_url)}" onclick="showQR(this);" style="font-size: 10px;margin-top: 3px;">
+				<a href="JavaScript:;">点击获取邀请注册二维码! 尽享好礼。</a>
+			</p>
+		</div>
+
+	</div>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body">
+		<section class="m-block mt10">
+			<div class="b-top">
+				<div class="b-left"><span class="user-icon wallet-icon"><i></i><em class="b-title">我的钱包</em></span></div>
+				<div class="b-right">
+					<a href="{:U('user/account')}" class="icon-btn arrow-right2">
+						<em>详细</em><i></i></a>
+				</div>
+			</div>
+			<div class="b-content">
+				<div class="box clearfix">
+					<div class="wallet-item">
+						<a href="{:U('user/account')}" class="num">
+							<span class="money-msg" money-num="{$user.user_money|default=0}元">{$user.user_money|default=0}元</span>
+							<!-- <span></span> -->
+						</a>
+						<p class="txt" class="hide-wallet" is-show="0">余额</p>
+					</div>
+					<a href="{:U('user/points')}" class="wallet-item">
+						<p class="num">
+							<span>{$user.pay_points|default=0}</span>p
+						</p>
+						<p class="txt">可用积分</p>
+					</a>
+					<a href="{:U('User/coupon')}" class="wallet-item">
+						<p class="num">
+							<span>{$useable_coupon|default=0}</span>c
+						</p>
+						<p class="txt">优惠券</p>
+					</a>
+					<!-- <a href="user_voucher.html" class="wallet-item">
+						<p class="num lock">
+							<img src="{:tb_config('resource_path',1)}mshop/images/images/u_clock.png" alt=""/>
+						</p>
+						<p class="txt">到期提醒</p>
+					</a> -->
+				</div>
+			</div>
+		</section>
+
+		<!-- 我的订单 -->
+		<section class="m-block mt10">
+			<div class="b-top">
+				<div class="b-left"><span class="user-icon order-icon"><i></i><em class="b-title">我的订单</em></span></div>
+				<div class="b-right">
+					<a href="{:U('shop/user/order_list')}" class="icon-btn arrow-right2"><em>详细</em><i></i></a>
+				</div>
+			</div>
+			<div class="b-content">
+				<div class="order-state">
+					<ul class="clearfix">
+						<li class="odrste-item">
+							<a href="{:U('shop/user/order_list',array('type'=>'1'))}">
+								<img src="{:tb_config('resource_path',1)}mshop/images/user_10.png" alt="" />
+								<p>待付款</p>
+								{notempty name="$order1"}<span class="summ">{$order1}</span>{/notempty}
+							</a>
+						</li>
+						<li class="odrste-item">
+							<a href="{:U('shop/user/order_list',array('type'=>'4'))}">
+								<img src="{:tb_config('resource_path',1)}mshop/images/user_09.png" alt="" />
+								<p>待收货</p>
+								{notempty name="$order4"}<span class="summ">{$order5}</span>{/notempty}
+							</a>
+						</li>
+						<li class="odrste-item">
+							<a href="{:U('user/return_goods')}">
+								<img src="{:tb_config('resource_path',1)}mshop/images/user_16.png" alt="" />
+								<p>退换/售后</p>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="order-search">
+					<form class="order-searchform" method="get" action="{:U('shop/user/order_list')}">
+						<input class="m-search-input" name="key" type="text" placeholder="输入你要查找的订单~！"/>
+						<input class="m-search-btn" type="submit" value="搜索"/>
+						<i class="m-search-line"></i>
+					</form>
+				</div>
+				<div class="m-order-time">
+					<ul class="order-timelist clearfix">
+						<li class="on">
+							<a href="{:U('shop/user/order_list',['type'=>'all','days'=>30])}">1个月内</a>
+						</li>
+						{assign name="curr_month" value=":date('n')" /}
+						{assign name="last_month" value=":date('n',strtotime('-1 month'))" /}
+						{assign name="ll_month" value=":date('n',strtotime('-2 month'))" /}
+						<li>
+							<a href="{:U('shop/user/order_list',['type'=>'all','month'=>$ll_month])}">{$ll_month}月</a>
+						</li>
+						<li>
+							<a href="{:U('shop/user/order_list',['type'=>'all','month'=>$last_month])}">{$last_month}月</a>
+						</li>
+						<li>
+							<a href="{:U('shop/user/order_list',['type'=>'all','month'=>$curr_month])}">{$curr_month}月</a>
+						</li>
+						<li>
+							<a href="{:U('shop/user/order_list')}">更早的历史</a>
+						</li>
+					</ul>
+				</div>
+				<!-- 订单列表-->
+				<div class="m-order-cata">
+					<div class="m-order-list">
+					{volist name="orders" id="vo"}
+						<div class="m-order-item">
+							<div class="m-order-head clearfix">
+								<span>{$vo.add_time}</span>
+								<a class="m-oreder-link" href="{:U('shop/User/order_detail',['id'=>$vo['id']])}">详情<i></i></a>
+							</div>
+							<div class="m-order-content">
+								<div class="m-goods-shop clearfix">
+
+									<span class="m-fight">
+										<img src="{:tb_config('resource_path',1)}mshop/images/u_fq.png" alt=""/>
+									</span>
+								</div>
+								{volist name="vo.goods_list" id="v"}
+								<div class="m-goods-info">
+									<div class="m-goods-wrap">
+										<div class="m-goods-thumb">
+											<img src="{$v.goods_id|goods_thum_images=200,200}" alt=""/>
+										</div>
+										<div class="m-goods-msg">
+											<p class="m-goods-ordernum">订单号：{$vo.order_sn|default=''}</p>
+											<p class="m-goods-name">{$v.goods_name|default=''}</p>
+											<p class="m-goods-description">选项：{$v.spec_title|default=''}</p>
+										</div>
+									</div>
+									<div class="m-goods-price clearfix">
+										<span>{:count($vo.goods_list)}件/{$vo.payable_price+$vo.postage}元</span>
+									</div>
+								</div>
+								{/volist}
+								<div class="m-goods-status clearfix">
+									<div class="status-left">
+										<!-- <p class="status-orange">预计今天到货</p> -->
+										{egt name="vo.status" value="4"}
+										<p class="status-express">
+											<a href="javascript:;">物流跟踪&gt</a>
+										</p>
+										{/egt}
+									</div>
+									<div class="status-btns">
+										{neq name="vo.status" value="0"}
+											{eq name="vo.is_pay" value="0"}
+												<a href="{:U('Cart/cart4',['order_id'=>$vo['id']])}" class="m-btn m-btn-pay">付款</a>
+												<a href="{:U('User/cancel_order',['id'=>$vo['id']])}" class="m-btn m-btn-wram">取消</a>
+											{/eq}
+											{eq name="vo.status" value="4"}
+												<a href="javascript:;" onclick="if(confirm('{$eBiz.lang.Order_receive_msg}?')) location.href='{:U('User/order_confirm',['id'=>$vo['id']])}'" class="m-btn m-btn-succ">确认收货</a>
+											{/eq}
+										{else/}
+											<a data-href="{:U('User/del_order',['id'=>$vo['id']])}" data-msg="{$eBiz.lang.Order_delete}" href="javascript:;" onclick="actOrd(this);" class="m-btn m-btn-wram">删除</a>
+										{/neq}
+										{egt name="vo.status" value="5"}
+											<a href="{:U('User/comment',['id'=>$vo['id']])}" class="m-btn m-btn-succ">评价</a>
+											<a href="{:U('User/return_goods',['order_id'=>$vo['id'],'order_sn'=>$vo['order_sn'],'goods_id'=>$v['goods_id']])}" class="m-btn m-btn-succ">申请售后</a>
+										{/egt}
+										{eq name="vo.status" value="6"}
+											<span>订单完成</span>
+										{/eq}
+										<!-- <a class="m-btn m-btn-succ" href="javascript:;">确认收货</a>
+										<a class="m-btn" href="javascript:;">退货/换货</a> -->
+									</div>
+								</div>
+							</div>
+						</div>
+					{/volist}
+
+					</div>
+					<p class="tips">*无法查看1年前的订单</p>
+<!-- 					<div class="m-pages">
+						<ul class="m-pagelist">
+							<li class="prev">
+								<a href="javascript:;">&laquo;</a>
+							</li>
+							<li class="active">
+								<a href="javascript:;">1</a>
+							</li>
+
+							<li>
+								<a href="javascript:;">2</a>
+							</li>
+
+							<li>
+								<a href="javascript:;">3</a>
+							</li>
+
+							<li class="next">
+								<a href="javascript:;">&raquo;</a>
+							</li>
+						</ul>
+					</div> -->
+				</div>
+			</div>
+		</section>
+
+		<!-- 我的关注-->
+		<section class="m-block mt10">
+			<div class="b-top">
+				<div class="b-left"><span class="user-icon follow-icon">
+					<i></i><em class="b-title">我的关注</em></span>
+				</div>
+				<div class="b-right">
+					<a href="{:U('user/user_collect')}" class="icon-btn arrow-right2">
+						<em>详细</em><i></i></a>
+				</div>
+			</div>
+
+			<div class="b-content">
+				<div class="m-com-list clearfix">
+					<div class="swiper-container list-container swiper-container-horizontal swiper-container-android">
+						<ul class="swiper-wrapper">
+						{volist name="goods_collect" id="vo"}
+							<li class="swiper-slide m-list-item">
+								<a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['goods_id']])}">
+									<div class="m-list-pic">
+										<img src="{$vo.goods_id|goods_thum_images=200,200}" alt=""/>
+									</div>
+									<p class="m-list-info">{:getTableValue('shop_goods',['id'=>$vo['goods_id']],'title')}
+									</p>
+									<div class="m-list-prices">
+										<del class="m-list-oldprice">{:round(getTableValue('shop_goods',['id'=>$vo['goods_id']],'market_price'))}元</del>
+										<p class="m-list-newprice">{:round(getTableValue('shop_goods',['id'=>$vo['goods_id']],'shop_price'))}元</p>
+									</div>
+								</a>
+							</li>
+						{/volist}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- 浏览记录-->
+		<section class="m-block mt10">
+			<div class="b-top">
+				<div class="b-left"><span class="user-icon views-icon">
+					<i></i><em class="b-title">浏览记录</em></span>
+				</div>
+				<div class="b-right">
+					<a href="{:U('user/goods_history')}" class="icon-btn arrow-right2">
+						<em>详细</em><i></i></a>
+				</div>
+			</div>
+			<div class="b-content">
+				<div class="m-com-list clearfix">
+					<div class="swiper-container list-container swiper-container-horizontal swiper-container-android">
+						<ul class="swiper-wrapper">
+						{volist name="history" id="vo"}
+							<li class="swiper-slide m-list-item">
+								<a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['id']])}">
+									<div class="m-list-pic">
+										<img src="{$vo.id|goods_thum_images=200,200}" alt=""/>
+									</div>
+									<p class="m-list-info">{$vo.title|default=''}
+									</p>
+									<div class="m-list-prices">
+										<del class="m-list-oldprice">{$vo.market_price}元</del>
+										<p class="m-list-newprice">{$vo.shop_price}元</p>
+									</div>
+								</a>
+							</li>
+						{/volist}							
+						</ul>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- user列表 -->
+		<!-- <div class="m-list-box mt10">
+			{assign name="reg_url" value=":url('shop/user/signup',['d'=>$user['sysid']],'',true)" /}
+			<div class="m-list" data-url="{:base64_encode($reg_url)}" onclick="showQR(this);">
+				<div class="b-left">
+					<span class="user-icon"><i></i><em class="b-title">邀请</em></span>
+				</div>
+				<div class="b-right"><a href="javascript:;" class="icon-btn arrow-right2"><em>{$reg_url}</em><i></i></a></div>
+				<div class="after-border"></div>
+			</div>
+			<div class="m-list">
+				<div class="b-left">
+					<span class="user-icon bbs-icon"><i></i><em class="b-title">社区论坛</em></span>
+				</div>
+				<div class="b-right"><a href="javascript:;" class="icon-btn arrow-right2"><em></em><i></i></a></div>
+				<div class="after-border"></div>
+			</div>
+			<div class="m-list">
+				<div class="b-left">
+					<span class="user-icon report-icon"><i></i><em class="b-title">投诉举报</em></span>
+				</div>
+				<div class="b-right"><a href="javascript:;" class="icon-btn arrow-right2"><em></em><i></i></a></div>
+			</div>
+		</div> -->
+		<!-- user列表 -->
+		<div class="m-list-box mt10">
+			<div class="m-list">
+				<a href="{:U('user/logout')}">
+					<div class="b-left">
+						<span class="user-icon logout-icon"><i></i><em class="b-title">退出</em></span>
+					</div>
+					<div class="b-right">
+						<a href="javascript:;" class="icon-btn arrow-right2">
+							<em></em><i></i>
+						</a>
+					</div>
+				</a>
+			</div>
+		</div>
+	</main>
+	<!-- footer -->
+	<footer class="footer footer-fixed">
+		<nav class="bar-nav clearfix">
+			<a href="{:U('shop/index/index')}" class="nav-item">
+				<i class="idex-icon nav-icon"></i>
+				<p>首页</p>
+			</a>
+			<a href="{:U('index/flash_buy')}" class="nav-item">
+				<i class="sck-icon nav-icon"></i>
+				<p>秒杀</p>
+			</a>
+			<a href="{:U('index/group_buy')}" class="nav-item">
+				<i class="ntc-icon nav-icon"></i>
+				<p>团购</p>
+			</a>
+			<a href="{:U('cart/cart')}" class="nav-item">
+				<i class="cart-icon nav-icon"></i>
+				<p>购物车</p>
+			</a>
+			<a href="{:U('user/index')}" class="nav-item on">
+				<i class="user-icon nav-icon"></i>
+				<p>个人中心</p>
+			</a>
+		</nav>
+	</footer>
+
+
+	<script type="text/javascript">
+		function showQR(obj) {
+			var url = $(obj).attr('data-url');
+			layer.open({
+		      type:1,
+		      title: '推广二维码',
+		      content: '<img src="{:U('index/qr_code')}?data='+url+'" width="170" >'
+		    });
+		}
+	</script>
+
+	<script type="text/javascript">
+		var _nav =(function(){
+			var nav = new Swiper('.nav-container', {
+				slidesPerView: 'auto',
+				paginationClickable: true,
+				spaceBetween: 0
+			});
+		})();
+		var _lsit =(function(){
+			var nav = new Swiper('.list-container', {
+				slidesPerView: 'auto',
+				paginationClickable: true,
+				spaceBetween: 0
+			});
+		})();
+
+		$('.hide-wallet').click(function() {
+			var me = $(this);
+			alert();
+			if(me.attr('is-show') == '0') {
+				me.text('显示余额');
+				me.attr('is-show','1');
+				me.siblings('.money-msg').text('****');
+			} else {
+				me.text('隐藏余额');
+				me.attr('is-show','0');
+				me.siblings('.money-msg').text(me.siblings('.money-msg').attr('money-num'));
+			}
+		})
+	</script>
+
+</body>
+</html>

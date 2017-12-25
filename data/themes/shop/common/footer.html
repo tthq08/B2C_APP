@@ -1,0 +1,36 @@
+<footer class="footer bus-footer">
+    <div class="footer-link">
+        <div class="w1200 clearfix container">
+            {list table="web_cate" condition="pid = 32 AND status = 1" field="id,name" item="vo" key="i" order="sort ASC,id DESC"}
+            <div class="link-item">
+                <h4>{$vo.name}</h4>
+                <ul>
+                    {assign name="cid" value="$vo.id" /}
+                    {list table="web_intact" condition="cid = $cid AND status = 1" item="v" key="k"}
+                    <li class="item"><a href="{:U('shop/index/article',['id'=>$v['id']])}">{$v.title}</a></li>
+                    {/list}
+                </ul>
+            </div>
+            {/list}
+            <div class="link-item">
+                <h4>商城手机端</h4>
+                <img src="picture/code.jpg" class="img-item" style="margin-left: 0px;" alt="" />
+                <div class="img-item"></div>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <div class="container w1200">
+            <h5>深圳市俊网网络有限公司</h5>
+            <div class="block">
+                <a href="https://www.trackingmore.com/" target="_blank">国际快递查询</a>
+                <a class="i" href="javascript:;">关于我们</a>
+                <a class="i" href="javascript:;">帮助中心</a>
+                <a class="i" href="javascript:;">联系我们</a>
+                <a class="i" href="javascript:;">网站合作</a>
+                <a class="i" href="javascript:;">法律声明及隐私</a>
+                <span>© 2003-2017 junnn.com 版权所有</span>
+            </div>
+        </div>
+    </div>
+</footer>

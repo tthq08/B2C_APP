@@ -1,0 +1,24 @@
+<style type="text/css">
+	.site-demo-upload,
+	.site-demo-upload img{width: 60px; height: 60px;}
+	.site-demo-upload{position: relative; background: #e2e2e2;}
+</style>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<img class="site-demo-upload" id="{$name}_src" src="{empty name='$value'}{tbimg module='Admin' src='upload.png'}{else/}{$value}{/empty}">
+    	<input type="file" data-val="{$name}" name="fileList" class="layui-upload-file">
+		<button class="layui-btn layui-btn-danger" type="button" onclick="remove{$name}Pic('{$name}');">移除图片</button>
+		<i>{$tips}</i>
+		<input type="hidden" name="{$name}" value="{$value}" id="{$name}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}>
+	</div>
+</div>
+<script>
+	function remove{$name}Pic(name)
+	{
+		var name_src = '#'+name+'_src';
+		$(name_src).attr('src',' ');
+		var name_id = '#'+name;
+		$(name_id).val(' ');
+	}
+</script>

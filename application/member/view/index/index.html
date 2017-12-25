@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/ico" href="" />
+	<!-- Css 加载-->
+	{tbcss module="Admin" src="../assets/css/vendor/animate/animate.min.css,../assets/css/vendor/bootstrap/bootstrap.min.css,../assets/css/reset.css,../assets/css/biz.css,../common/global.css,fonts.css,adminstyle.css"}
+	<!-- Js 加载-->
+	{tbjs module="Admin" src="../assets/js/jquery.js,../assets/js/vendor/bootstrap/bootstrap.min.js,../assets/js/vendor/nicescroll/jquery.nicescroll.min.js,../assets/js/vendor/animate-numbers/jquery.animateNumbers.js,../assets/js/biz.js"}
+
+	<title>{:tb_config('web_site_title',1,$lang_id)}</title>
+</head>
+<body class="{$sys_skin}" style="position: relative;">
+<!-- 主体内容 -->
+<div id="wrap">
+	<!-- 页面容器 -->
+	<div class="row">
+		<!-- 导航 -->
+		<div class="navbar navbar-fixed-top navbar-transparent-black" role="navigation" id="navbar">
+
+			<div class="navbar-header col-md-2">
+				<a class="navbar-brand" href="javascript:;">
+					<img src="{tbimg module='Admin' src='../common/images/logo.png'}" style="margin-top: -5px;">
+				</a>
+				<div class="sidebar-collapse">
+					<a class="collapse-btn" href="javascript:;"> <i class="fa fa-navicon"></i>
+					</a>
+				</div>
+			</div>
+
+			<div class="navbar-collapse">
+
+				<ul class="nav navbar-nav nav-item">
+					{volist name="module_list" id="vo"}
+					<li {eq name='vo.name' value='$url_param.module' }class="active"{/eq}>
+					<a href="{:url($vo['name'].'/index/index')}">
+						<i class="{$vo.icon}"></i>
+						{$vo.title}
+					</a>
+					</li>
+					{/volist}
+				</ul>
+
+				<!-- Quick Actions -->
+				<ul class="nav navbar-nav quick-actions">
+					<li>
+						<a href="/" target="_blank" title="{$eBiz.lang.index_icon_web}">
+							<img src="{tbimg module='Admin' src='../assets/images/ie.png'}" >
+						</a>
+					</li>
+					<li>
+						<a onclick="clearCache();" href="javascript:;" title="{$eBiz.lang.index_icon_clare}">
+							<img src="{tbimg module='Admin' src='../assets/images/reload.png'}">
+						</a>
+					</li>
+					<li class="dropdown divided user" id="current-user">
+						<div class="profile-photo">
+							<img src="{:session('admin_head')}" alt="">
+						</div>
+						<a class="dropdown-toggle options" data-toggle="dropdown" href="#">
+							{$admin.show}
+							<i class="fa fa-caret-down"></i>
+						</a>
+						<ul class="dropdown-menu arrow settings animated fadeInDown">
+
+							<li>
+
+								<h3>{$eBiz.lang.index_pannel_theme}</h3>
+								<ul id="color-schemes">
+									<li>
+										<a href="#" class="bg-1"></a>
+									</li>
+									<li>
+										<a href="#" class="bg-2"></a>
+									</li>
+									<li>
+										<a href="#" class="bg-3"></a>
+									</li>
+									<li>
+										<a href="#" class="bg-4"></a>
+									</li>
+									<li>
+										<a href="#" class="bg-5"></a>
+									</li>
+									<li>
+										<a href="#" class="bg-6"></a>
+									</li>
+								</ul>
+							</li>
+
+							<li class="divider"></li>
+
+							<li>
+								<a data-href="{:url('user/index/edit',['id'=>session('admin_id'),'me'=>1])}" onclick="showEdit(this);" href="javascript:;">
+									<i class="fa fa-user"></i>
+									{$eBiz.lang.index_pannel_profile}
+								</a>
+							</li>
+
+							<li class="divider"></li>
+
+							<li>
+								<a data-href="{:url('Sys/Login/logout')}" href="javascript:;" onclick="ajaxHref(this);">
+									<i class="fa fa-power-off"></i>
+									{$eBiz.lang.index_icon_logout}
+								</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<!-- /Quick Actions -->
+				<div>
+				</div>
+				<div class="side-box collapsed" id="sidebar">
+					<div class="side-menu">
+						<div class="side-menu-tab" >
+							<div class="menu-item">
+								{volist name="menu" id="vo"}
+								<a href="javascript:;" {empty name="vo.children"}data-url="{:url($vo['name'],$vo['attach'])}" data-id="{$vo.id}"{/empty} {eq name="i" value="1" }class="active"{/eq}>
+								<i class="{$vo.icon}"></i>
+								<h3>{$vo.title}</h3>
+								</a>
+								{/volist}
+							</div>
+							<div class="sub-box">
+								{volist name="menu" id="vo"}
+								<div class="sub-menu" style="display:{eq name="i" value="1" }block{else/}none{/eq};">
+								<div class="sub-menu-top">
+									{notempty name="vo.children"}
+									<ul class="subMenu clearfix">
+										{volist name="vo.children" id="v" key="key"}
+										<li style="border-radius: 3px;">
+											<a class="app-btn"  href="javascript:;" data-url="{:url($v['name'],$v['attach'])}" data-id="{$v.id}">
+												<p style="width: 25px;"><i class="{$v.icon}"></i></p>
+												<h4 style="overflow: hidden;" title="{$v.title}">{$v.title}</h4>
+											</a>
+										</li>
+										{/volist}
+									</ul>
+									{/notempty}
+								</div>
+							</div>
+							{/volist}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="nav-bottom clearfix">
+				<div class="nav-bottom-left">
+					<button id="start" class="dock-bottom" type="button" title="demo">
+						<div class="fa fa-user"></div>
+					</button>
+					<div class="quik-search">
+						<form class="">
+							<input type="text" placeholder="快速搜索">
+						</form>
+					</div>
+				</div>
+				<div class="bootom-nav">
+					<div class="menuTabs" style="margin-top: 6px;margin-right: 20px;">
+						{include file="sys@Base:footer" /}
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<div id="content" class="col-md-12">
+		{include file="index/main" /}
+	</div>
+	<!-- iframe页面外层 -->
+	<div id="deskContainer" style="height: 100%">
+
+	</div>
+	<!-- iframe页面外层 -->
+</div>
+</div>
+{tbjs module="Admin" src="../common/layui/layui.js,larry.js,index.js"}
+<script type="text/javascript">
+	function changLang (lang) {
+		$.get("{:url('Comm/changeLang')}",{lang:lang},function(){
+			location.reload();
+		})
+	}
+	function ajaxHref (obj) {
+		$.get($(obj).attr('data-href'),function(data){
+			layer.msg(data.msg,{time:1000},function () {
+				location.reload();
+			});
+		})
+	}
+	function clearCache () {
+		$.ajax({
+			url:'{:url("sys/Clear/clear")}',
+			success: function(data){
+				if (data.code==1) {
+					layer.msg(data.msg);
+				};
+			}
+		});
+	}
+	function showEdit (obj) {
+		var index = layer.open({
+			type: 2,
+			title: "{$eBiz.lang.comm_usrer_editme}",
+			shadeClose: false,
+			shade:  [0.8, '#393D49'],
+			maxmin: true, //开启最大化最小化按钮
+			area: ['60%', '400px'],
+			content: $(obj).attr('data-href')
+		});
+	}
+	function callback () {
+		location.reload();
+	}
+</script>
+</body>
+</html>

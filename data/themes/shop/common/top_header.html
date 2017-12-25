@@ -1,0 +1,39 @@
+
+<div class="topHeader">
+    <div class="container w1200 clearfix">
+        <div class="left fl">
+            {if condition="!empty(session('user'))"}
+            <ul>
+                <li class="item color--d81c1d"><a href="javascript:;">{$User.nickname}</a></li>
+                <li class="item"><a href="javascript:;">积分：{$User.pay_points}</a></li>
+                <li class="item"><a href="{:U('member/login/logout')}">退出登录</a></li>
+            </ul>
+            {else/}
+            <ul>
+                <li class="item color--d81c1d"><a href="{:U('member/login/index')}">登录</a></li>
+                <li class="item"><a href="{:U('member/login/reg')}">注册</a></li>
+            </ul>
+            {/if}
+        </div>
+        <div class="right fr">
+            <ul class="clearfix">
+                <li class="r-item has-sub">
+                    <a href="javascript:;">{$eBiz.lang.Comm_Top_Text_my_mall}</a>
+                    <ul class="r-subBox">
+                        <li class="sub-item"><a href="{:U('shop/User/order_list')}">{$eBiz.lang.Comm_Top_Text_my_order}</a></li>
+                        <li class="sub-item"><a href="{:U('shop/User/address_list')}">{$eBiz.lang.Comm_Top_Text_my_addr}</a></li>
+                    </ul>
+                </li>
+                <li class="r-item">
+                    <a href="{:U('shop/User/index')}">{$eBiz.lang.Comm_Top_Text_ucenter}</a>
+                </li>
+                <li class="r-item has-sub">
+                    <a href="javascript:;">{$eBiz.lang.Comm_Top_Text_collect}</a>
+                    <ul class="r-subBox">
+                        <li class="sub-item"><a href="{:U('shop/User/goods_collect')}">{$eBiz.lang.Comm_Top_Text_collect_goods}</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

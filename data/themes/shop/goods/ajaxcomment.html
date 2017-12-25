@@ -1,0 +1,90 @@
+{notempty name="commentlist"}
+{volist name="commentlist" id="v"}
+<div class="comment-item">
+	<div class="user-col">
+		<div class="user-info">
+			<img src="{$v['head_pic']|default=tb_config('resource_path',1).'shop/picture/user.jpg'}" alt="" />
+			<span>{$v['username']}</span>
+		</div>
+		<div class="user-level">钻石会员</div>
+	</div>
+	<div class="comment-col">
+		<div class="score">
+			<span class="com-score">
+			{for start="1" end="6" key="i"}
+				<i class="score-item {elt name='i' value='$v.goods_rank'}on{/elt}"></i>
+			{/for}
+			<!-- 
+				<i class="score-item on"></i>
+				<i class="score-item on"></i>
+				<i class="score-item on"></i>
+				<i class="score-item"></i> -->
+			</span>
+		</div>
+		<div class="txt">{$v['content']|htmlspecialchars_decode}</div>
+		<div class="comment-img">
+			<div class="thumb">
+			{foreach name="v['img']" item="v2" }
+				<a href="{$v2}" class="thumb-item"><img src="{$v2|common_thumb_img=60,60}" alt=""></a>
+			{/foreach}
+			</div>
+			<div class="show-img">
+				<span class="close"><img src="{:tb_config('resource_path',1)}shop/images/close.png" alt=""></span>
+				<div class="img">
+					{if condition="!empty($v['img'])"}
+						<img src="{$v['img']}" alt="">
+					{/if}
+				</div>
+				<span class="arrow prev"><img src="{:tb_config('resource_path',1)}shop/picture/a-l.png" alt=""></span>
+				<span class="arrow next"><img src="{:tb_config('resource_path',1)}shop/picture/a-r.png" alt=""></span>
+			</div>
+		</div>
+		<div class="message clearfix">
+			<div class="order-info fl">
+			{assign name="spec_item" value=":explode(' ',$v['spec_item'])" /}
+				{volist name="spec_item" id="vo"}
+				<span>{$vo}</span>
+				{/volist} 
+				<span>{$v['add_time']}</span>
+			</div>
+			<!--<div class="comment-op fr">-->
+				<!--<span>举报</span>-->
+				<!--<span class="praise">赞1000+</span>-->
+				<!--<span class="re">回复1000</span>-->
+			<!--</div>-->
+		</div>
+		{notempty name="v.reply"}
+		{volist name="v.reply" id="vv"}
+		{eq name="vv.is_reply" value="0"}
+		<?php
+			$times = strtotime($v['add_time'])-strtotime($vv['add_time']);
+			$days = round($times/3600/24);
+		?>
+		<div class="reply">
+			<p class="append-time">[购买{$days}天后追评]</p>
+			<p>{$vv.content|htmlspecialchars_decode}</p>
+		</div>
+		{else/}
+		<div class="reply store-reply">
+			<p>{:getTableValue('cust_shop',['id'=>$vv['shop_id']],'shop_name')} 回复：</p>
+			<p>{$vv.content|htmlspecialchars_decode}</p>
+			<p class="time">{$vv.add_time}</p>
+		</div>
+		{/eq}
+		{/volist}
+		{/notempty}
+	</div>
+</div>
+{/volist}
+{$page}
+{else/}
+暂无评价
+{/notempty}
+<script>
+    // 点击分页触发的事件
+    $("#ajax_comment_return .pagination  a").click(function(){
+        cur_page = $(this).data('p');
+        parent.location.href='#goods_evaluate';
+        ajaxComment(commentType,cur_page);
+    });
+</script>

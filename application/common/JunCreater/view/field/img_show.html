@@ -1,0 +1,20 @@
+<style type="text/css">
+	.site-demo-show,
+	.site-demo-show img{max-width: 240px; max-height: 240px;}
+	.site-demo-show{position: relative; background: #e2e2e2;}
+</style>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}<p><i>点击图片放大查看</i></p></label>
+	<div class="layui-input-block">
+		<img class="site-demo-show" id="{$name}_src" src="{$value}" onclick="showBig(this);">
+	</div>
+</div>
+<script type="text/javascript">
+	function showBig (obj) {
+		top.layer.open({
+	      type:1,
+	      title: false,
+	      content: '<img src="'+$(obj).attr('src')+'">'
+	    });
+	}
+</script>

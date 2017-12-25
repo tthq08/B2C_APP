@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Login_page_title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f5f6f8">
+
+	<header class="header login-header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Login_user_login}</h5>
+			</div>
+			<div class="header-right"></div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body">
+		<form id="loginForm" method="post" action="">
+			<div class="login-wrap">
+				<div class="block mt30">
+					{ad_list cid='25' item='ad' limit='1'}
+					<a href="{$ad.ad_link}" {eq name="ad.target" value="1"}target="_blank"{/eq} ><img src="{$ad.ad_pic}" alt="{$ad.ad_title}" width="100%" ></a>
+					{/ad_list}
+				</div>
+				<div class="login-form-box">
+					<div class="login-f-block">
+						<input type="text" id="username" name="username" class="input--100" placeholder="{:lang('Login_username_place')}" value="{if condition='!empty($username)'}{$username}{/if}" />
+					</div>
+					<div class="login-f-block">
+						<input type="password" id="password" name="pass" class="input--100" placeholder="{:lang('Login_pass_place')}" />
+					</div>
+					<div class="form-note clearfix mt15">
+						<div class="f-left">
+							<span class="state-check">
+								<input name="remember" type="checkbox" value="1" {if condition="!empty($remember)"}checked{/if} id="login-state" />
+								<label for="login-state">{$eBiz.lang.Login_remember_pass}</label>
+							</span>
+						</div>
+						<!-- <div class="f-right">
+							<a class="icon-btn flw-pas"><i></i><em>找回密码</em></a>
+						</div> -->
+					</div>
+					<div class="btn-box mt30">
+						<div class="m-btn login-btn">
+							<a href="javascript:;" onclick="checkSubmit();" class="login">{$eBiz.lang.Login_login_do}</a>
+							<span>/</span>
+							<a href="{:U('user/signup')}" class="signup">注册</a>
+						</div>
+					</div>
+					<div class="note tcenter mt20">
+						<!-- <a href="javascript:;">忘记账号</a>&nbsp;&nbsp;&nbsp;&nbsp; -->
+						<a href="{:U('shop/user/reset_pwd')}"><i></i><em>{$eBiz.lang.Login_reset_pass}</em></a>
+					</div>
+				</div>
+			
+				<!-- 快速登录 -->
+				<div class="quick-logon mt50">
+					<div class="guess-title">
+						<h5>{$eBiz.lang.Login_fast_login}</h5>
+					</div>
+					<!--<div class="clearfix mt10">-->
+						<!--<a href="{:U('member/apilogin/login',['oauth'=>'facebooks'])}" class="quick-item"><img src="{:tb_config('resource_path',1)}mshop/picture/login_09.png" alt="" /></a>-->
+						<!--<a href="{:U('member/apilogin/login',['oauth'=>'naver'])}" class="quick-item"><img src="{:tb_config('resource_path',1)}mshop/picture/login_11.png" alt="" /></a>-->
+						<!--<a href="{:U('member/apilogin/login',['oauth'=>'kakao'])}" class="quick-item"><img src="{:tb_config('resource_path',1)}mshop/picture/login_13.png" alt="" /></a>-->
+					<!--</div>-->
+				</div>
+			</div>
+		</form>
+	</main>
+	{include file="public/footbar" /}
+
+</body>
+
+<script type="text/javascript">
+	function checkSubmit()
+    {
+        /* $('.msg-err').hide();
+         $('.J-errorMsg').empty(); */
+        var username = $.trim($('#username').val());
+        var password = $.trim($('#password').val());
+		var remember = $.trim($('#remember').val());
+        /* 	var verify_code = $.trim($('#verify_code').val()); */
+        if(username == ''){
+            layer.msg('{:lang("Login_username_null")}');
+            return false;
+        }
+
+        if(password == ''){
+            layer.msg("{:lang('Login_pass_null')}");
+            return false;
+        }
+
+        $.ajax({
+            type : 'post',
+            url : '{:U("member/login/dologin")}',
+            data : {username:username,password:password,remember:remember},
+            dataType : 'json',
+            success : function(res){
+                if(res.code == 1){
+                    layer.msg(res.msg);
+                    location.reload();
+                }else{
+                    layer.msg(res.msg,{time:2000},function () {
+                        if (res.code==1001) {
+                            window.location.href = "{:U('user/reset_pwd')}";
+                        }                            
+                    });
+                }
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg("{:lang('Login_net_error')}");
+            }
+        })
+
+    }
+
+</script>
+</html>

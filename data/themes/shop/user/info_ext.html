@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Info_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/foundation-datepicker.css" />
+
+	<style type="text/css">
+	.user-info-tooltop .i-img { position: relative;overflow: hidden;line-height: 85px; }
+	.user-info-tooltop .i-img .mask {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.4);
+		color: #eee;
+		text-align: center;
+		display: none;
+		/*display: block;*/
+	}
+	.user-info-tooltop .i-img:hover .mask {
+		display: block;
+	}
+	.user-info-tooltop .i-img input {
+		position: absolute;
+		opacity: 0;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}
+	</style>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong><a href="{:U('user/info')}">{$eBiz.lang.Info_page_title}</a></strong>
+					<strong style="margin-left: 20px;color:red;"><a href="{:U('user/info_ext')}">更多个人信息</a></strong>
+				</div>
+				<!-- 个人信息 -->
+				<div class="user-message-section j-user-section mt10 p20">
+					<div class="user-message-box">
+					<form id="userForm" name="userForm" method="POST" action="">
+
+						<div class="user-message-item">
+							<div class="m-name">婚姻状况：</div>
+							<div class="m-msg">
+								<input type="radio" name="sex" id="sex_0" value="0" class="ml10" {eq name='user.sex' value="0" }checked{/eq}><label for="sex_0">未婚</label>
+								<input type="radio" name="sex" id="sex_1" value="1" class="ml10" {eq name='user.sex' value="1" }checked{/eq}><label for="sex_1">已婚</label>
+								<input type="radio" name="sex" id="sex_2" value="2" class="ml10" {eq name='user.sex' value="2" }checked{/eq}><label for="sex_2">离异</label>
+								<input type="radio" name="sex" id="sex_3" value="3" class="ml10" {eq name='user.sex' value="3" }checked{/eq}><label for="sex_3">丧偶</label>
+							</div>
+						</div>
+
+						<div class="user-message-item">
+							<div class="m-name">教育程度：</div>
+							<div class="m-msg">
+								<input type="text" name="education_lv" value="{$user.education_lv|default=''}" class="input-500" />
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">所在行业：</div>
+							<div class="m-msg">
+								<input type="text" name="vocation" value="{$user.vocation|default=''}" class="input-500" />
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">退款银行：</div>
+							<div class="m-msg">
+								<input type="text" name="bank_name" value="{$user.bank_name|default=''}" class="input-500" />
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">银行账号：</div>
+							<div class="m-msg">
+								<input type="text" name="bank_number" value="{$user.bank_number|default=''}" class="input-500" />
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">银行账户：</div>
+							<div class="m-msg">
+								<input type="text" name="bank_account" value="{$user.bank_account|default=''}" class="input-500" />
+							</div>
+						</div>
+						
+						<div class="btn-box">
+							<div class="user-message-item mt40">
+								<div class="m-name"></div>
+								<input type="hidden" name="user_id" value="{$user_id}">
+								<div class="m-msg"><a href="javascript:;" onclick="postForm();" class="cmall-btn-d">{$eBiz.lang.Info_btn_submit}</a></div>
+							</div>
+						</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/xxUploadImg.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/foundation-datepicker.js"></script>
+	<script type="text/javascript">
+		var nowTemp = new Date();
+		var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+		var checkin = $('#dpd1').fdatepicker({
+			format: 'yyyy-mm-dd',
+			onRender: function (date) {
+				// return date.valueOf() < now.valueOf() ? 'disabled' : '';
+				return '';
+			}
+		}).on('changeDate', function (ev) {
+			if (ev.date.valueOf() > checkout.date.valueOf()) {
+				var newDate = new Date(ev.date)
+				newDate.setDate(newDate.getDate() + 1);
+				checkout.update(newDate);
+			}
+			checkin.hide();
+		}).data('datepicker');
+
+
+	    function postForm() {
+	    	$.ajax({
+	    	    type : "POST",
+	    	    url:$('#userForm').attr('action'),
+	    	    data :$('#userForm').serialize(),
+	    	    dataType : 'json',
+	    	    success: function(data){
+	    			layer.msg(data.msg,{time:1000},function () {
+	    				if (data.code==1) {
+	    					location.reload();
+	    				}
+	    			})
+	    	    }
+	    	});
+	    }
+
+	    function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1020px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+	</script>
+	
+</body>
+</html>

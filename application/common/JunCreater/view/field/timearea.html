@@ -1,0 +1,15 @@
+{php}
+	$times = empty($value)?['','']:explode('~',$value);
+{/php}
+<div class="layui-input-inline" style="width: auto;">
+	<label class="layui-form-label" style="display: inline-block;width:auto;padding: 5px 0px;">{$title}</label>
+	<input style="display: inline-block;width: 38%;" type="text" name="{$name}[]" id="{$name}_start" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$times[0]}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+	~
+	<input style="display: inline-block;width: 38%;" type="text" name="{$name}[]" id="{$name}_end" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$times[1]}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+</div>
+
+<script>
+layui.use('laydate', function(){
+  var laydate = layui.laydate;
+})
+</script>

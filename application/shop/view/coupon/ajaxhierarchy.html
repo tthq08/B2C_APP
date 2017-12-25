@@ -1,0 +1,71 @@
+<div class="layui-form-item">
+    <label class="layui-form-label">发放层级</label>
+    <div class="layui-input-block">
+        <div style="float: left; margin-right: 10px;">
+            <input type="text" name="" id="level" placeholder="" style="width: 70px;" autocomplete="off" class="layui-input" value="{if condition="isset($config.level)"}{$config.level}{else/}3{/if}" onkeyup="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+        </div>
+        <button type="button" class="layui-btn layui-btn-small layui-btn-warm" style="margin-top: 4px;" onclick="get_level();">确定</button>
+    </div>
+</div>
+<div id="level_form">
+    {if condition="isset($config.level_proportion)"}
+    {foreach name="$config.level_proportion" item="vo" key="k"}
+    <div class="layui-form-item" id="level_{$k}">
+        <label class="layui-form-label">第{$k+1}级：</label>
+        <div class="layui-input-block"><div style="float: left;">
+            <span style="float: left; line-height: 40px;">分成比例：</span>
+            <input type="text" name="hierarchy[{$k}]" id="level_proportion_{$k}" placeholder="0" style="width: 50px;float: left;" autocomplete="off" class="layui-input level_proportion" value="{$vo}">
+            <span style="float: left; line-height: 40px; font-size: 14px;">%</span>
+        </div>
+        </div>
+    </div>
+    {/foreach}
+    {/if}
+</div>
+
+<script>
+    //循环输出等级输入
+    function get_level() {
+        //获取
+        var level = $("#level").val();
+        var  html = ''
+        for (var i=0;i < level;i++){
+            //检测ID是否存在
+            var level_id = '#level_'+i;
+            if($(level_id).length==0){
+//            <div style="float: left"><span style="float: left; line-height: 40px;">名称：</span><input type="text" name="level_name_'+i+'" id="level_name_'+i+'" placeholder="请输入名称" style="width: 150px;float: left;" autocomplete="off" class="layui-input" value=""></div>
+                html += '<div class="layui-form-item" id="level_' + i + '">' +
+                            '<label class="layui-form-label">第'+Number(i+1)+'级：</label>' +
+                            '<div class="layui-input-block">' +
+                                '<div style="float: left;">' +
+                                    '<span style="float: left; line-height: 40px;">满足人数：</span>' +
+                                    '<input type="text" name="hierarchy['+i+'][peopel_num]" id="level_proportion_'+i+'" placeholder="0" style="width: 90px;float: left;" autocomplete="off" class="layui-input level_proportion" value="">' +
+                                '</div>' +
+                                '<div style="float: left; margin-left: 20px;">' +
+                                    '<span style="float: left; line-height: 40px;">优惠券额度：</span>' +
+                                    '<input type="text" name="hierarchy['+i+'][quota]" id="level_proportion_'+i+'" placeholder="0" style="width: 90px;float: left;" autocomplete="off" class="layui-input level_proportion" value="">' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+            }else{
+                var level_proportion_id = '#level_proportion_'+i;
+                var level_proportion_id_value = $(level_proportion_id).val();
+                html += '<div class="layui-form-item" id="level_' + i + '">' +
+                            '<label class="layui-form-label">第'+Number(i+1)+'级：</label>' +
+                            '<div class="layui-input-block">' +
+                                '<div style="float: left;">' +
+                                    '<span style="float: left; line-height: 40px;">满足人数：</span>' +
+                                    '<input type="text" name="hierarchy['+i+'][peopel_num]" id="level_proportion_'+i+'" placeholder="0" style="width: 90px;float: left;" autocomplete="off" class="layui-input level_proportion" value="'+level_proportion_id_value+'">' +
+                                '</div>' +
+                                '<div style="float: left; margin-left: 20px;">' +
+                                    '<span style="float: left; line-height: 40px;">优惠券额度：</span>' +
+                                    '<input type="text" name="hierarchy['+i+'][quota]" id="level_proportion_'+i+'" placeholder="0" style="width: 90px;float: left;" autocomplete="off" class="layui-input level_proportion" value="'+level_proportion_id_value+'">' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>';
+            }
+        }
+        $("#level_form").html(html);
+    }
+
+</script>

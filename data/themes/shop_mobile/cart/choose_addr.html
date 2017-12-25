@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>选择收货地址</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<!-- body -->
+	<main class="cmall-body pb30" id="address_list">
+	{volist name="lists" id="vo"}
+		<div class="address-item" {eq name="vo.id" value='$curr_id'}style="background:#f7e2e2;"{else/}onclick="choose_addr('{$vo.id}');"{/eq}>
+			<div class="msg">
+				<div class="top clearfix">
+					<span class="n">{$vo.consignee}</span>
+					<span class="phone fr">{$vo.mobile|hidetel|default=''}</span>
+				</div>
+				<div class="txt">{$vo.address}</div>
+			</div>
+		</div>
+	{/volist}	
+	</main>
+	<div style="text-align: center;">
+		<button style="width: 90%;text-align: center;padding: 7px;background: #04d3f7;color: #fff;font-size: 20px;" onclick="add_addr(this)" data-href="{:U('user/add_address')}">新增地址</button>
+	</div>
+
+</body>
+	<script type="text/javascript">
+		function choose_addr(id) {
+			$.ajax({
+				url:"{:U('cart/getAddrInfo')}",
+				data:{id:id},
+				success: function(data){
+					parent.address_callback(data);
+				}
+			});	
+		}
+		function add_addr(obj) {
+			var url = $(obj).attr('data-href');
+			layer.open({
+				type: 2,
+				title: '新增收货地址',
+				shadeClose: true,
+				shade: 0.8,
+				area: ['99%', '99%'],
+				content: url,
+				end:function () {
+					location.reload();
+				}
+			}); 
+		}
+	</script>
+</html>

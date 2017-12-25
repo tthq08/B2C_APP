@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>{$eBiz.lang.login_title}</title>
+	<meta name="renderer" content="webkit">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="format-detection" content="telephone=no">
+	<!-- load css -->
+	{tbcss module="Admin" src="../common/layui/css/layui.css,login.css"}
+</head>
+<body>
+<div class="layui-canvs"></div>
+<div class="layui-layout layui-layout-login">
+	<h1>
+		<strong>{$eBiz.lang.login_tab_title}</strong>
+		<em>{$eBiz.lang.login_tab_descript}</em>
+	</h1>
+	<!--<div class="larry-login">-->
+	<!--<select class="login_txtbx" style="height:100%;width:100%;" id="lang" onchange="changLang();">-->
+	<!--<option>{$eBiz.lang.login_lang_title}:{$lang_now}</option>-->
+	<!--{volist name="lang_list" id="lang"}-->
+	<!--<option value="{$lang.lang}">{$lang.title}</option>-->
+	<!--{/volist}-->
+	<!--</select>-->
+	<!--</div>-->
+	<form id="loginForm" action="{:url('Sys/login/login')}" method="post">
+		<div class="layui-user-icon larry-login">
+			<input type="text" name="username" placeholder="{$eBiz.lang.login_tab_usrname_tip}" class="login_txtbx"/>
+		</div>
+		<div class="layui-pwd-icon larry-login">
+			<input type="password" name="password" placeholder="{$eBiz.lang.login_tab_password_tip}" class="login_txtbx"/>
+		</div>
+		<div class="layui-submit larry-login">
+			<input type="button" value="{$eBiz.lang.login_tab_btn_submit}" class="submit_btn"/>
+		</div>
+	</form>
+	<div class="layui-login-text">
+		<p>{$eBiz.lang.login_tab_copyright}</p>
+		<p>粤ICP备16085989号-8 <a href="http://www.junnet.net" title="">junnet.net</a></p>
+	</div>
+</div>
+{tbjs module="Admin" src="../common/layui/lay/dest/layui.all.js,login.js,../jsplug/jparticle.jquery.js"}
+{if condition="$valid_open eq 1 AND $valid_type eq 'jigsaw'"}
+<script type="text/javascript" src="{:tb_config('wy_js_src',1,$lang_id)}"></script>
+{/if}
+<script type="text/javascript">
+	$(function(){
+		$(".layui-canvs").jParticle({
+			background: "#141414",
+			color: "#E6E6E6"
+		});
+
+		//登录
+		$(".submit_btn").click(function(){
+			if ($('input[name="username"]').val()=='') {
+				layer.msg('{$eBiz.lang.user_is_empty}');
+				$('input[name="username"]').focus();
+				return false;
+			};
+			if ($('input[name="password"]').val()=='') {layer.msg('{$eBiz.lang.pwd_is_empty}');$('input[name="password"]').focus();return false;};
+			if ($('input[name="code"]').val()=='') {layer.msg('{$eBiz.lang.valid_is_empty}');$('input[name="code"]').focus();return false;};
+			{if condition="$valid_open eq 1 AND $valid_type eq 'gee'"}
+			if ($('input[name="geetest_challenge"]').val()=='') {
+				layer.msg('{$eBiz.lang.valid_is_error}');
+				return false;
+			};
+			{/if}
+			$.ajax({
+				url: "{:url('Sys/login/login')}",
+				type: 'POST',
+				data: $("#loginForm").serialize(),
+				success: function (info) {
+					if (info.code === 1) {
+						setTimeout(function () {
+							top.layer.closeAll();
+							if (info.url=='') {
+								top.location.reload();
+							}else{
+								top.location.href = info.url;
+							}
+						}, 1000);
+					}
+					layer.msg(info.msg);
+				}
+			});
+		});
+
+	});
+	function changLang () {
+		var lang = $("#lang").val();
+		$.get("{:url('Comm/changeLang')}",{lang:lang},function(){
+			location.reload();
+		})
+	}
+	$(document).keyup(function(event){
+		if(event.keyCode ==13){
+			$(".submit_btn").trigger("click");
+		}
+	});
+
+	{if condition="$valid_open eq 1 AND $valid_type eq 'jigsaw'"}
+	var opts = {
+		"element": 'pintu', // 可以是验证码容器id，也可以是HTMLElement
+		"captchaId": "{:tb_config('wy_appid',1,$lang_id)}", // 这里填入申请到的验证码id
+		"width": 350, // 验证码组件显示宽度
+		"mode": "float",
+	}
+	new NECaptcha(opts);
+	{/if}
+
+</script>
+</body>
+</html>

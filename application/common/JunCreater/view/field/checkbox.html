@@ -1,0 +1,9 @@
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+	{volist name="option" id="vo"}
+		<input type="checkbox" name="{$name}[{$i}]" value="{$key}" title="{$vo}" lay-skin="primary" {if condition="in_array($vo,$value)"}checked=""{/if}><div class="layui-unselect layui-form-checkbox layui-form-radioed"><i class="layui-anim layui-icon"></i><span>{$vo}</span></div>
+	{/volist}
+	<i>{$tips}</i>
+	</div>
+</div>

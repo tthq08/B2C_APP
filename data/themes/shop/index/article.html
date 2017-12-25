@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$info.title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/question.css" />
+</head>
+<body class="has-right">
+
+<!-- 广告 -->
+{include file="common/ad_top"}
+<!-- top -->
+{include file="common/top_header"}
+<!-- header -->
+{include file="common/header"}
+<!-- nav -->
+{include file="common/nav"}
+
+<!-- 右侧功能栏 -->
+{include file="common/right_column"}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 当前位置、已筛选 -->
+			<div class="c-location-section">
+				<ul class="">
+					<li class="location-item has"><a href="/">首页</a></li>
+					<li class="location-item has"><a href="javascript:;">公告资讯</a></li>
+					<li class="location-item"><span>{$info.title}</span></li>
+				</ul>
+			</div>
+
+			<div class="news-section">
+				<div class="clearfix">
+					<div class="left-800 fl">
+						<div class="news-editor-box">
+							<div class="news-editor">
+								<div class="msg-title">{$info.title}</div>
+								<div class="content">
+									<div class="m-time">时间:{$info.create_time}</div>
+									{$info.web_cont|htmlspecialchars_decode}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="right fr">
+
+	{ad_list cid="31" item="v"}
+						<div class="mb20">
+						<a href="{$v.ad_link}" {if condition="$v['target'] eq 1"}target="_blank"{/if}><img src="{$v['ad_pic']}" alt="" /></a>
+						</div>
+	{/ad_list}
+					</div>
+				</div>
+			</div>
+
+			<!-- 横条、活动 -->
+			<div class="block mt40">
+
+{ad_list cid="32" item="v"}
+						<a href="{$v.ad_link}" {if condition="$v['target'] eq 1"}target="_blank"{/if}><img src="{$v['ad_pic']}" alt="" /></a>
+{/ad_list}
+			</div>
+
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+
+
+</body>
+</html>

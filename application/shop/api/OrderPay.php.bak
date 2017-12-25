@@ -1,0 +1,774 @@
+<?php
+// +----------------------------------------------------------------------
+// | ThinkBiz System
+// | 功能： b2b2c 插入订单功能,购物车商品金额结算功能
+// +----------------------------------------------------------------------
+// | 版权所有 2013~2017 深圳市俊网网络有限公司 [ http://www.junnet.net ]
+// +----------------------------------------------------------------------
+// | 官方网站：http://www.junnet.net
+// +----------------------------------------------------------------------
+// | 作者: 吴跃忠 <357397264@qq.com>
+// +----------------------------------------------------------------------
+/**
+ * 备注： 该金额结算功能不可改,如进行功能变换请参照策略模式编写。
+ *
+ */
+
+namespace app\shop\api;
+
+use think\Db;
+use app\shop\api\Compute;
+
+class OrderPay
+{
+
+    /**
+     * 用户id
+     * @var int
+     */
+    public $user;
+
+    /**
+     * 设置购物车id
+     * @var array
+     */
+    public $cartList = [];
+
+
+    /**
+     * 用户可使用的优惠券
+     * ['shop1':{'优惠券id'),'shop2':{'优惠券id'}]
+     * @var array
+     */
+    public $couponList = [];
+
+
+    /**
+     * 已经计算过的优惠券
+     * @var array
+     */
+    private $selectedCoupons = [];
+
+
+    /**
+     * 前台用户选择的优惠券(提交订单时使用)
+     * ['商家id'=>'优惠券id']
+     * @var array
+     */
+    public $orderCoupons = [];
+
+
+    /**
+     * BIZ券
+     * ['优惠券1','优惠券2','优惠券3']
+     * @var array
+     */
+    public $bizCoupons = [];
+
+
+    /**
+     * 是否使用积分
+     * @var bool
+     */
+    public $isUsePoints = false;
+
+
+    /**
+     * order_pay 信息
+     * @var array
+     */
+    private $order_pay = [];
+
+
+    /**
+     * 商家|订单
+     * @var array
+     */
+    private $shopList = [];
+
+
+    /**
+     * 订单列表
+     * @var array
+     */
+    private $orderList = [];
+
+
+    /**
+     * 订单商品列表
+     * @var array
+     */
+    private $goodsList = [];
+
+
+    /**
+     * 商品id列表
+     * @var array
+     */
+    private $goodsIdList = [];
+
+
+    /**
+     * 订单下的分类列表
+     * @var array
+     */
+    private $goodsCategoryList = [];
+
+
+    /**
+     * 订单分类列表
+     * @var array
+     */
+    private $shopGoodsCategoryList = [];
+
+
+    /**
+     * 商家分类优惠券
+     * @var array
+     */
+    private $shopCategoryCoupons = [];
+
+
+    /**
+     * 平台商品分类优惠券
+     * @var array
+     */
+    private $platformCoupons = [];
+
+
+    /**
+     * 用户积分余额
+     * @var int
+     */
+    private $userPoints;
+
+
+    /**
+     * 是否需要插入到数据库
+     * @var bool
+     */
+    private $isInsert = false;
+
+
+    /**
+     * 计算类实例
+     * @var \stdClass
+     */
+    private $compute;
+
+
+    /**
+     * 用户选中的地址id(提交订单时传入)
+     * @var int
+     */
+    public $address_id;
+
+
+    /**
+     * 发票抬头(提交订单时传入)
+     * @var
+     */
+    protected $invoice_title;
+
+
+    /**
+     * 用户备注(提交订单时传入)
+     * @var
+     */
+    protected $user_remark;
+
+
+    /**
+     * 获取的优惠券信息
+     * @var
+     */
+    public $couponInfoList = [];
+
+
+    /**
+     * OrderPay constructor.
+     */
+    public function __construct()
+    {
+        $this->compute = new Compute();
+        $this->time = NOW_TIME;
+    }
+
+
+    /**
+     * 获取用户积分余额
+     * @return mixed
+     */
+    private function selectUserPoints()
+    {
+        // 获取用户积分余额
+        $this->userPoints = getTableValue('users', 'id=' . $this->user, 'pay_points');
+    }
+
+
+    /**
+     * 获取订单中的所有商家,一个商家内的商品为1个订单
+     * @return $this
+     */
+    private function shopList()
+    {
+        // 取出商家数量
+        $shopList = Db::name('shop_cart')->where('user_id', $this->user)->where('id', 'in', $this->cartList)->group('shop_id')->where('status', 1)->where('selected', 1)->column('shop_id');
+
+        $this->shopList = $shopList;
+
+        return $this;
+    }
+
+
+    /**
+     * 循环计算的所有订单
+     * @return array
+     */
+    private function computeOrder()
+    {
+        $shopList = $this->shopList;
+
+        // 总金额
+        $totalPrice = 0;
+        // 总支付金额
+        $payPrice = 0;
+        // 总使用积分
+        $totalPoints = 0;
+        // 总使用积分金额
+        $totalPointsPrice = 0;
+        // 总优惠金额
+        $discountPrice = 0;
+        // 总邮费
+        $postage = 0;
+        // 优惠券优惠金额
+        $couponPrice = 0;
+
+        foreach ($shopList as $k => $shop) {
+            // 获取当前订单下的所有购物车商品
+            $cartList = Db::name('shop_cart')->where('shop_id', $shop)->where('id', 'in', $this->cartList)->where('user_id', $this->user)->where(['status' => 1, 'selected' => 1])->select();
+
+            $order[$k] = ['total_price' => 0, 'payable_price' => 0, 'discount_price' => 0, 'points' => 0, 'points_price' => 0, 'coupon_price' => 0, 'postage' => 0];
+
+            // 循环查询价格
+            foreach ($cartList as $ck => $cart) {
+                // 获取商品信息
+                $cartGoods = $this->cartAmount($cart);
+
+                // 计算订单金额
+                $order[$k]['total_price'] += $cartGoods['total_price'];
+                $order[$k]['payable_price'] += $cartGoods['payable_price'];
+                $order[$k]['discount_price'] += $cartGoods['discount_price'];
+                $order[$k]['points'] += $cartGoods['points'];
+                $order[$k]['points_price'] += $cartGoods['points_price'];
+                //计算商品邮费
+                $order[$k]['postage'] += $cartGoods['postage'];
+            }
+
+            // 计算优惠券优惠
+            $orderCouponPrice = $this->orderCouponPrice($shop, $order[$k]['payable_price']);
+            if (!empty($orderCouponPrice)) {
+                $order[$k]['coupon_id'] = $orderCouponPrice['coupon_id'];
+                $order[$k]['coupon_price'] += $orderCouponPrice['price'];
+                $order[$k]['payable_price'] -= $orderCouponPrice['price'];
+                $couponPrice += $orderCouponPrice['price'];
+            }
+
+            // 计算订单优惠
+            $orderPromId = compute()->orderPrice($order[$k]['payable_price'], true);
+            $orderPromPrice = compute()->orderPrice($order[$k]['payable_price']);
+            $order[$k]['order_prom_id'] = $orderPromId;
+            $order[$k]['order_prom_price'] = $orderPromPrice;
+
+            // 更新支付金额
+            $order[$k]['payable_price'] -= $orderPromPrice;
+            // 更新优惠金额
+            $order[$k]['discount_price'] += $orderPromPrice;
+
+
+            if ($this->isInsert == true) {
+                //创建订单号
+                $order[$k]['order_sn'] = createOrderSn();
+                //获取地址信息
+                $address = Db::name('user_address')->where('id', $this->address_id)->field('base_addr,en_address,consignee,mobile,zip,country,province,city,district,address')->find();
+                 $order[$k]['province'] = $address['province'];
+                 $order[$k]['city'] = $address['city'];
+                 $order[$k]['district'] = $address['district'];
+                $order[$k]['address'] = $address['address'];
+                $order[$k]['invoice_title'] = $this->invoice_title;
+                $order[$k]['user_remark'] = $this->user_remark;
+                //获取商户ID
+                $order[$k]['cid'] = 0;//商户ID
+                $order[$k]['shop_id'] = $shop;//店铺ID
+                $order[$k]['consignee'] = $address['consignee'];//收货人
+                $order[$k]['phone'] = $address['mobile'];//手机号码
+                $order[$k]['zipcode'] = $address['zip'];//邮编
+                $order[$k]['user_id'] = session('user.id');//用户ID
+                $order[$k]['add_time'] = date('Y:m:d H:i:s', NOW_TIME);
+                $order[$k]['last_pay_time'] = date('Y-m-d H:i:s', strtotime('+ 2days'));
+            } else {
+                // 获取用户除商品,商品分类之外的优惠券,通过订单价格
+                $this->findCoupon($order[$k]['payable_price'], $shop);
+            }
+
+            $this->orderList[$shop] = $order[$k];
+
+            // 叠加支付总金额
+            $totalPrice += $order[$k]['total_price'];
+            // 总支付金额
+            $payPrice += $order[$k]['payable_price'];
+            // 总使用积分
+            $totalPoints += $order[$k]['points'];
+            // 总使用积分金额
+            $totalPointsPrice += $order[$k]['points_price'];
+            // 总优惠金额
+            $discountPrice += $order[$k]['discount_price'];
+            // 总邮费
+            $postage += 0;
+
+        }
+        // 计算biz券产生优惠
+        $bizCouponPrice = $this->bizCouponPrice($payPrice);
+
+
+        // 更新支付金额
+        $payPrice -= $bizCouponPrice;
+
+        $orderPay = [
+            'total_price' => $totalPrice,
+            'payable_price' => $payPrice,
+            'points' => $totalPoints,
+            'points_price' => $totalPointsPrice,
+            'discount_price' => $discountPrice,
+            'coupon_price' => $couponPrice,
+            'biz_coupon_price' => $bizCouponPrice,
+            'postage' => $postage,
+            'last_pay_time' => date('Y-m-d H:i:s', strtotime('+ 2days')),
+        ];
+
+        $this->order_pay = $orderPay;
+    }
+
+
+    /**
+     * 计算单个购物车内容的金额
+     * @param $cartInfo
+     * @return array
+     */
+    private function cartAmount($cartInfo)
+    {
+
+        // 商品应付金额
+        $goods_payable_price = compute()->promGoodsPrice($cartInfo['goods'], $cartInfo['spec_key'],false, $cartInfo['goods_num']);
+
+        $shop_id = $cartInfo['shop_id'];
+
+        // 商品总金额
+        if (empty($cartInfo['spec_id'])) {
+            // 无规格,取商品价格算总金额
+            $goods_total_price = $cartInfo['shop_price'] * $cartInfo['goods_num'];
+        } else {
+            // 有规格,取规格价格算总金额
+            $spec_price = Db::name('shop_spec_price')->where('id', $cartInfo['spec_id'])->value('price');
+            $goods_total_price = $spec_price * $cartInfo['goods_num'];
+        }
+
+        // 积分使用金额
+        $points_price = 0;
+        $points = 0;
+        if (!empty($this->isUsePoints) && $this->isUsePoints == true && $this->userPoints > 0) {
+            // 商品使用的积分金额
+            $points_price = api('shop', 'compute', 'pointsPrice', [$cartInfo['goods'], $this->userPoints]) * $cartInfo['goods_num'];
+            // 商品使用的积分
+            $points = $points_price * tb_config('web_point', 1, 1);
+            // 更新用户总积分
+            $this->userPoints -= $points;
+            // 更新商品应付金额
+            $goods_payable_price = $goods_payable_price - $points_price;
+        }
+
+        $this->goodsList[$cartInfo['shop_id']][$cartInfo['id']] = [
+            'goods_id' => $cartInfo['goods'],
+            'payable_price' => $goods_payable_price,
+            'total_price' => $goods_total_price,
+            'discount_price' => $goods_total_price - $goods_payable_price,
+            'pay_price' => round($goods_payable_price / $cartInfo['goods_num'], 2),
+            'postage' => 0,
+            'shop_id' => $cartInfo['shop_id'],
+            'shop_price' => $cartInfo['shop_price'],
+            'goods_num' => $cartInfo['goods_num'],
+            'goods_name' => $cartInfo['goods_name'],
+            'points' => $points,
+            'points_price' => $points_price,
+            'spec_id' => $cartInfo['spec_id'],
+            'spec_key' => $cartInfo['spec_key'],
+        ];
+
+        $this->goodsIdList[$cartInfo['goods']] = $goods_payable_price;
+
+        // 规格ID
+        if (!empty($cartInfo['spec_id'])) {
+            $this->goodsList[$cartInfo['shop_id']][$cartInfo['id']]['spec_title'] = getTableValue('shop_spec_price', 'id=' . $cartInfo['spec_id'], 'key_name');
+        } else {
+            $this->goodsList[$cartInfo['shop_id']][$cartInfo['id']]['spec_title'] = '';
+        }
+
+        // 查找优惠券
+        $this->findGoodsCoupon($cartInfo['goods'], (float)$goods_payable_price, $shop_id);
+
+        $nowCate_id = getTableValue('shop_goods', 'id=' . $cartInfo['goods'], 'cat_id');
+
+        // 当前店铺该分类下的价格总和
+        $this->shopGoodsCategoryList[$shop_id] = empty($this->shopGoodsCategoryList[$shop_id]) ? [] : $this->shopGoodsCategoryList[$shop_id];
+
+        $this->shopGoodsCategoryList[$shop_id][$nowCate_id] = empty($this->shopGoodsCategoryList[$shop_id][$nowCate_id]) ? 0 : $this->shopGoodsCategoryList[$shop_id][$nowCate_id];
+
+        $this->shopGoodsCategoryList[$shop_id][$nowCate_id] += $goods_payable_price;
+
+        // 当前所有该分类下的价格总和
+        $this->goodsCategoryList[$nowCate_id] = empty($this->goodsCategoryList[$nowCate_id]) ? 0 : $this->goodsCategoryList[$nowCate_id];
+
+        $this->goodsCategoryList[$nowCate_id] += $goods_payable_price;
+
+        return $this->goodsList[$cartInfo['shop_id']][$cartInfo['id']];
+    }
+
+
+    /**
+     * 查找除商品和商品分类之外的优惠券
+     * @param float $orderPrice
+     * @return array
+     */
+    protected function findCoupon($orderPrice, $shop_id)
+    {
+        // 查询店铺下的该分类优惠券
+        $time = NOW_TIME;
+        $where = '`coupon_level` <> 1 and `start_time` <= ' . $time . ' and `end_time` >= ' . $time . ' and `used_num` < `num` and `status` = 1' . ' and `money` <=' . $orderPrice .' and `user` = '.$this->user;
+
+        $coupons = Db::name('user_coupon')->where($where)->order('end_time asc')->select();
+        $whereShop = '`shop_id` = ' . $shop_id;
+        $shopCoupons = Db::name('user_coupon')->where($where)->order('end_time asc')->where($whereShop)->select();
+        array_merge($coupons, $shopCoupons);
+        // 放到当前订单下的优惠券列表
+        foreach ($coupons as $k => $coupon) {
+            foreach ($this->shopList as $shop) {
+                if (empty($coupon['shop_id']) || $coupon['shop_id'] == $shop) {
+                    if (empty($this->couponList[$shop_id])) {
+                        $this->couponList[$shop_id] = [];
+                    }
+                    if (!in_array($coupon, $this->couponList[$shop_id])) {
+                        array_push($this->couponList[$shop_id], $coupon);
+                    }
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * 查找商品优惠券
+     * @param int $goods_id 商品id
+     * @param int $temporary_price 计算价格
+     * @param int $shop 店铺id
+     * @return array
+     */
+    protected function findGoodsCoupon($goods_id, $temporary_price, $shop)
+    {
+        // 条件
+        $time = NOW_TIME;
+        $where = 'uc.`coupon_level` <> 1 and uc.`start_time` <= ' . $time . ' and uc.`end_time` >= ' . $time . ' and uc.`used_num` < `num` and uc.`status` = 1' . ' and uc.`money` <=' . $temporary_price . ' and uc.`shop_id`=' . $shop;
+        // 查找优惠券
+        $couponList = Db::name('user_coupon')->alias('uc')->join('__USER_COUPON_BIND__ ucb', 'ucb.user_coupon = uc.id')->where('ucb.goods', $goods_id)->where($where)->field('uc.*')->order('uc.`end_time` asc')->select();
+
+        if (empty($this->couponList[$shop])) {
+            $this->couponList[$shop] = [];
+        }
+
+        foreach ($couponList as $k => $coupon) {
+            if (!in_array($coupon['id'], $this->couponList[$shop])) {
+                $this->couponList[$shop][$coupon['id']] = $coupon;
+            }
+        }
+
+    }
+
+
+    /**
+     * 查找商品分类优惠券
+     * @return array
+     */
+    protected function findGoodsCategoryCoupon()
+    {
+
+        foreach ($this->shopGoodsCategoryList as $shop => $categoryList) {
+            foreach ($categoryList as $category => $price) {
+                // 查询店铺下的该分类优惠券
+                $time = NOW_TIME;
+                $where = 'uc.`coupon_level` <> 1 and uc.`start_time` <= ' . $time . ' and uc.`end_time` >= ' . $time . ' and uc.`used_num` < `num` and uc.`status` = 1' . ' and uc.`money` <=' . $price;
+                $shopWhere = 'uc.`shop_id`=' . $shop;
+
+                $shopCoupons = Db::name('user_coupon')->alias('uc')->join('__USER_COUPON_BIND__ ucb', 'ucb.`user_coupon` = uc.`id`')->where('ucb.`goods_category`', $category)->where($where)->where($shopWhere)->order('us.`end_time` asc')->select();
+                // 放入
+                $this->shopCategoryCoupons[$shop][$category] = $shopCoupons;
+
+                // 查询无店铺的该分类优惠券
+                $platformCoupons = Db::name('user_coupon')->alias('uc')->join('__USER_COUPON_BIND__ ucb', 'ucb.`user_coupon` = uc.`id`')->where('ucb.`goods_category`', $category)->where($where)->where('shop_id', 0)->order('us.`end_time` asc')->select();
+                $this->platformCoupons[$category] = $platformCoupons;
+
+                // 放到当前订单下的优惠券列表
+                foreach ($shopCoupons as $k => $coupon) {
+                    if (!in_array($coupon, $this->couponList[$shop])) {
+                        array_push($this->couponList[$shop], $coupon);
+                    }
+                }
+
+            }
+        }
+    }
+
+
+    /**
+     * 计算biz券产生的金额
+     * @return mixed
+     */
+    private function bizCouponPrice($price)
+    {
+        $couponPrice = 0;
+        if (!empty($this->bizCoupons)) {
+            foreach ($this->bizCoupons as $k => $coupon) {
+                $couponInfo = api('shop', 'Coupon', 'userCouponInfoFromId', [$coupon]);
+                $this->couponInfoList[$coupon] = $couponInfo;
+                if (empty($couponInfo) || $couponInfo['user'] != $this->user) {
+                    return (int)0;
+                }
+                if ($couponInfo['start_time'] < $this->time && $couponInfo['end_time'] > $this->time && !in_array($couponInfo['id'], $this->selectedCoupons)) {
+                    // 总金额减少
+                    $price -= $couponInfo['quota'];
+                    if( $price <= 0 )
+                    {
+                        return $couponPrice;
+                    }
+                    $this->selectedCoupons[] = $couponInfo['id'];
+                    // 金额叠加
+                    $couponPrice += $couponInfo['quota'];
+                }
+            }
+        }
+        return $couponPrice;
+    }
+
+
+    /**
+     * 订单优惠券金额计算
+     * @return mixed
+     */
+    private function orderCouponPrice($shop_id, $price)
+    {
+        // 查询订单的优惠券
+        if (!empty($this->orderCoupons[$shop_id])) {
+            $couponId = $this->orderCoupons[$shop_id];
+            $couponInfo = api('shop', 'Coupon', 'userCouponInfoFromId', [$couponId]);
+
+            if (empty($couponInfo) || $couponInfo['user'] != $this->user) {
+                return (int)0;
+            }
+            if ($couponInfo['start_time'] < $this->time && $couponInfo['end_time'] > $this->time && !in_array($couponInfo['id'], $this->selectedCoupons)) {
+                // 如果是针对商品
+                $couponPrice = 0;
+                if (!empty($couponInfo['goods'])) {
+                    // 检测商品是否具备使用该优惠券资格
+                    if (array_key_exists($couponInfo['goods'], $this->goodsIdList)) {
+                        if ($this->goodsIdList[$couponInfo['goods']] > $couponInfo['money']) {
+                            // 获取当前商品的价格,扣除当前商品和订单的价格
+                            $cprice = $this->goodsList[$shop_id][$couponInfo['goods']]['payable_price'];
+
+                        } else {
+                            return (int)0;
+                        }
+                    } else {
+                        return (int)0;
+                    }
+                } // 如果是针对商品分类
+                elseif (empty($couponInfo['goods']) && !empty($couponInfo['goods_category'])) {
+
+                    if (array_key_exists($couponInfo['goods_category'], $this->shopGoodsCategoryList[$shop_id])) {
+                        if ($this->shopGoodsCategoryList[$shop_id][$couponInfo['goods_category']] > $couponInfo['money']) {
+                            // 获取当前商品分类的价格,扣除当前订单的价格
+                            $cprice = $this->shopGoodsCategoryList[$shop_id][$this->shopGoodsCategoryList[$shop_id][$couponInfo['goods_category']]];
+                        } else {
+                            return (int)0;
+                        }
+                    } else {
+                        return (int)0;
+                    }
+                } else {
+                    if ($price > $couponInfo['money']) {
+                        $cprice = $price;
+                    } else {
+                        return (int)0;
+                    }
+                }
+                if ($couponInfo['discount_type'] == 1) {
+                    // 折扣
+                    $couponPrice = round($cprice * $couponInfo['quota'] / 100);
+                } elseif ($couponInfo['discount_type'] == 2) {
+                    // 金额抵扣
+                    $couponPrice = $cprice - $couponInfo['quota'];
+                }
+                $price = $price - $couponPrice;
+                // 放入已经使用的优惠券当中
+                $this->selectedCoupons[] = $couponInfo['id'];
+                $this->couponInfoList[$couponInfo['id']] = $couponInfo;
+
+                return ['price' => $price, 'coupon_id' => $couponInfo['id']];
+            } else {
+                return (int)0;
+            }
+        }
+        return (int)0;
+    }
+
+
+    /**
+     * 启动项
+     * 该启动项顺序不可乱
+     * @return mixed
+     */
+    private function startupItem()
+    {
+        // 启动查询用户积分余额
+        $this->selectUserPoints();
+
+        // 启动店铺|订单整理
+        $this->shopList();
+
+        // 启动订单计算
+        $this->computeOrder();
+    }
+
+
+    /**
+     * 获取金额数据
+     * @return array
+     */
+    public function get()
+    {
+        $this->startupItem();
+        $jsonData = [
+            'order_pay' => $this->order_pay,
+            'order_list' => $this->orderList,
+            'goods_list' => $this->goodsList,
+        ];
+
+        return json_encode($jsonData);
+    }
+
+
+    /**
+     * 插入订单
+     * @return mixed
+     */
+    public function insert()
+    {
+        $this->isInsert = true;
+        $this->startupItem();
+
+        Db::startTrans();
+        try {
+            $orderIdList = $this->insertOrder();
+            $serial_id = $this->insertOrderPay($orderIdList);
+            $this->deteleCart();
+            // 修改优惠券使用次数
+            $this->updateUsedCoupon();
+            Db::commit();
+        } catch (\ErrorException $e) {
+            Db::rollback();
+            return $e;
+        }
+        $jsonData = [
+            'order_pay' => $this->order_pay,
+            'order_list' => $this->orderList,
+            'goods_list' => $this->goodsList,
+            'serial_id' => $serial_id,
+        ];
+        return json_encode($jsonData);
+    }
+
+
+    /**
+     * 插入订单表
+     * @return mixed
+     */
+    private function insertOrder()
+    {
+        $idList = [];
+        // 插入
+        foreach ($this->orderList as $order) {
+            $order_id = Db::name('shop_order')->insertGetId($order);
+            $idList[] = $order_id;
+            $this->insertOrderGoods($order['shop_id'], $order_id);
+        }
+        return $idList;
+    }
+
+    /**
+     * 删除提交的购物车
+     * @return mixed
+     */
+    private function deteleCart()
+    {
+        //删除购物车中已经提交的商品
+        Db::name('shop_cart')->where('user_id',$this->user)->where('id','in',$this->cartList)->delete();
+    }
+
+
+    /**
+     * 插入订单商品表
+     * @return mixed
+     */
+    private function insertOrderGoods($shop_id, $order_id)
+    {
+        foreach ($this->goodsList[$shop_id] as $orderGoods) {
+            $orderGoods['order_id'] = $order_id;
+            Db::name('shop_order_goods')->insert($orderGoods);
+        }
+    }
+
+
+    /**
+     * 插入订单支付表
+     * @return mixed
+     */
+    private function insertOrderPay($orderIdList)
+    {
+        $this->order_pay['serial_sn'] = createSerialSn();
+        $this->order_pay['order'] = implode(',', $orderIdList);
+        $this->order_pay['add_time'] = date('Y-m-d H:i:s', NOW_TIME);
+        $this->order_pay['user_id'] = session('user.id');
+        $insertId = Db::name('shop_order_pay')->insertGetId($this->order_pay);
+        return $insertId;
+    }
+
+
+    private function updateUsedCoupon()
+    {
+        foreach ($this->selectedCoupons as $coupon)
+        {
+            // 获取信息
+            $couponInfo = $this->couponInfoList[$coupon];
+            // 修改使用次数
+            if ( $couponInfo['used_num'] + 1 == $couponInfo['num'] )
+            {
+                $data['is_use'] = 1;
+            }
+            $data['use_time'] = $this->time;
+            Db::name('user_coupon')->where('id',$coupon)->update($data);
+            Db::name('user_coupon')->where('id',$coupon)->setInc('used_num');
+            // 增加优惠券的使用次数
+            Db::name('shop_coupon')->where('id',$couponInfo['coupon'])->setInc('used_num');
+        }
+    }
+
+
+}

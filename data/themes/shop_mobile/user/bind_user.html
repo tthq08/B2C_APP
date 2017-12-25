@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>绑定用户 - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="public/static" /}
+	<style type="text/css">
+		.send-btn {
+		    height: 1.7rem;
+		    line-height: 1.8rem;
+		    border-radius: 0.1rem;
+		    background: #3f94d4;
+		    color: #fff;
+		    font-size: .7rem;
+		    vertical-align: middle;
+		    display: inline-block;
+		}
+		.btn-disabled, .btn-disabled:hover{
+			background: #adabab;
+		}
+	</style>
+</head>
+<body>
+
+	<header class="header signup-header header-absolute">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">绑定用户</h5>
+			</div>
+			<div class="header-right"></div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body">
+	<form id="bindForm" name="bindForm" method="post" action="">
+		<div class="signup-tooltop">
+			<h1>绑定TBMALL账户</h1>
+			<p>只需一个免费账号，即时掌握所有产品的特价信息</p>
+		</div>
+		<div class="signup-wrap">
+			<div class="signup-f-block clearfix">
+				<div class="sf-left">手机号</div>
+				<div class="sf-right"><input type="text" id="account" name="account" class="input--100" placeholder="{:lang('Login_username_place')}" value="" /></div>
+			</div>
+			<!-- 验证码 后台开启短信验证后才会显示 -->
+			{php} $sms_on = tb_config('web_regis_sms_enable',1);{/php}
+			{eq name="sms_on" value="1"}
+			<div class="signup-f-block clearfix">
+				<div class="sf-left">图形验证码</div>
+				<div class="sf-right">
+					<input placeholder="{:lang('Reg_pic_code')}" type="text" id="verify_code" name="verify_code" class="input--50" />
+					<img src="{:captcha_src()}" style="width:120px;height:1.4rem;" class="verifyImg" id="verifyImg" onclick="javascript:this.src='{:captcha_src()}?time='+Math.random();">
+				</div>
+			</div>
+			<div class="signup-f-block clearfix">
+				<div class="sf-left">手机验证码</div>
+				<div class="sf-right">
+					<input placeholder="{:lang('Reg_mobile_code')}" id="code" name="code" type="text" class="input--60" />
+					<button type="button" onclick="send_sms_reg_code()" style="border:none;" id="send_sms" class="code-btn">{$eBiz.lang.Reg_send_code}</button>
+				</div>
+			</div>
+			{/eq}
+			<div class="block">
+				<span class="login-check">
+					<input type="checkbox" id="agree">
+					<label for="agree">已认真阅读并同意</label>
+					<a href="javascript:;">《用户注册协议》</a>
+				</span>
+			</div>
+			<!-- <div class="block mt30 soth-block">
+				<h4>来自TBMALL的简报</h4>
+				<p>
+					<span class="login-check">
+						<input type="checkbox" id="other1" name="sms_msg" value="1">
+						<label for="other1"></label>
+					</span>
+					<span>通过短信获取有关TBMALL产品、服务的公告、推荐和更新、（可选）</span>
+				</p>
+				<p class="mt10">
+					<span class="login-check">
+						<input type="checkbox" id="other2" name="mail_msg" value="1">
+						<label for="other2"></label>
+					</span>
+					<span>通过邮件获取有关TBMALL产品、服务的公告、推荐和更新、（可选）</span>
+				</p>
+			</div> -->
+			<div class="btn-box mt30">
+				<button type="button" id="btn_submit" onclick="reg_submit();" disabled="" class="m-btn login-btn btn-disabled">确认绑定</button>
+			</div>
+		</div>
+	</form>
+	</main>
+</body>
+
+<script type="text/javascript">
+	$(function() {
+		$("#agree").click(function() {
+			if ($(this).is(":checked")) {
+				$("#btn_submit").removeAttr("disabled");
+				$("#btn_submit").removeClass("btn-disabled");
+			} else {
+				$("#btn_submit").attr("disabled", true);
+				$("#btn_submit").addClass('btn-disabled');
+			}
+		});
+	});
+
+	function reg_submit() {
+    	var mobile = $('input[name="account"]').val();
+    	if (mobile=='') {
+    		layer.msg('用户手机号为空。');
+    		return false;
+    	}
+
+    	{eq name="sms_on" value="1"}
+    	var verify_code = $('input[name="verify_code"]').val();
+    	var code = $('input[name="code"]').val();
+    	if (code=='') {
+    		layer.msg('手机验证码为空，请输入');
+    		return false;
+    	}
+    	{/eq}
+    	$.ajax({
+    	    type : "POST",
+    	    url:$('#bindForm').attr('action'),
+    	    data : $('#bindForm').serialize(),
+    	    dataType : 'json',
+    	    success: function(data){
+    			layer.msg(data.msg,{time:1000},function () {
+    				if (data.code) {
+    					location.href = data.url;
+    				}
+    			});
+    	    }
+    	});
+    }
+
+ 	function send_sms_reg_code(){
+        var mobile = $('input[name="mobile"]').val();
+        if (mobile=='') {
+        	layer.alert('{:lang("Reg_phone_null")}', {icon: 2});
+            return;
+        };
+        
+        var code = $('#veri_code').val();
+        if (code=='') {
+        	layer.alert('{:lang("Reg_pic_code_null")}', {icon: 2});
+            return;
+        };
+
+        var url = "{:U('member/login/send_sms_reg_code')}";
+		$.ajax({
+	        type : "POST",
+	        url:url,
+	        data : {
+	        	'mobile':mobile,
+	        	'code':code
+	        },
+	        dataType : 'json',
+	        success: function(data){
+				layer.msg(data.msg,{time:1000},function () {
+					if (data.code==1) {
+						$('#send_sms').attr("disabled","disabled");				
+						$('#send_sms').addClass("no");				
+						intAs = "{:tb_config('sms_code_time',1)}"; // 手机短信超时时间
+		                jsInnerTimeout('send_sms',intAs);						
+					};
+				});
+	        }
+	    });
+    }
+	 $('#count_down').removeAttr("disabled");
+	    //倒计时函数
+	    function jsInnerTimeout(id,intAs)
+	    {
+	        var codeObj=$("#"+id);
+	        intAs--;
+	        if(intAs<=-1)
+	        {
+	            codeObj.removeAttr("disabled");
+	            codeObj.html("{:lang('Reg_send_code')}");
+	            return true;
+	        }
+
+	        codeObj.html(intAs+'{:lang("Reg_time_unit")}');
+
+	        setTimeout("jsInnerTimeout('"+id+"',"+intAs+")",1000);
+	    };
+</script>
+</html>

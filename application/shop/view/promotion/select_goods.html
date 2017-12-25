@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+        <form class="layui-form">
+            {$form_Html}
+            {:token()}
+            <div class="layui-form-item">
+                <label class="layui-form-label">{$eBiz.lang.search_goods}</label>
+                <div class="layui-input-block">
+                    <input type="text" id="searchStr" name="searchStr" style="width: 300px; float: left" required  lay-verify="required" placeholder="{$eBiz.lang.search_goods}" autocomplete="off" class="layui-input">
+                    <div class="layui-input-block">
+                        <button type="button" id="search" class="layui-btn" style="float: left" lay-filter="*">{$eBiz.lang.search}</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="goods_list">
+           {include file="promotion/select_goods_table"}
+        </div>
+
+</section>
+
+<script type="text/javascript">
+    $('#search').click(function () {
+        //获取要传递的信息
+        var pid_f = $("#select_pid_f").val();
+        var pid_s = $("#select_pid_s").val();
+        var pid = $("#select_pid").val();
+        var search_str = $('#searchStr').val();
+        var loading = layer.load(0, {shade: false});
+        $.post("{:url('promotion/select_goods')}",{
+            'pid_f' : pid_f,
+            'pid_s' : pid_s,
+            'pid' : pid,
+            'search_str' : search_str,
+        },function (data) {
+            layer.close(loading);
+            $('#goods_list').html(data);
+        });
+    });
+    function closeIndex() {
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        $("input:{$inputtype}[name='goods']:checked").each(function(){
+            var goods_id = $(this).val();
+            var title_id = '#goods'+goods_id+' .title';
+            var title = $(title_id).html();
+            var price_id = '#goods'+goods_id+' .price';
+            var price = $(price_id).html();
+            var stock_id = '#goods'+goods_id+' .stock';
+            var stock = $(stock_id).html();
+            parent.fillGoods(goods_id,title,price,stock);
+        });
+        parent.layer.close(index);
+    }
+    /**
+     * 找到商品规格
+     * @param id
+     */
+    function findGoodsSpec() {
+        //查看是不是选中状态
+        var checked_id =$("input[name='goods']:checked").val();
+        if( $('#goodsSpec'+checked_id).length >0 ){
+            return false;
+        }
+        //通过ajax获取商品规格
+        var loading = layer.load(0, {shade: false});
+        $.post("{:url('promotion/getGoodsSpec')}",{
+            'goods_id' : checked_id,
+        },function (data) {
+            layer.close(loading);
+            if( data.code == 1 )
+            {
+                //删除之前的spec
+                $('.goodsSpec').remove();
+                $('#goods'+checked_id).after(data.msg);
+            }else{
+                $('.goodsSpec').remove();
+                layer.msg(data.msg);
+            }
+        });
+    }
+    function delGoods(id){
+        $('#goods'+id).remove();
+        $('.goodsSpec'+id).remove();
+    }
+</script>
+</body>
+</html>

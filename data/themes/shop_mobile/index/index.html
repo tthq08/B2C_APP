@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Index_page_title} - {:tb_config('web_site_title',1)}</title>
+
+	{include file="public/static" /}
+	<style type="text/css">
+		.phone-icon{
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+		}
+	</style>
+</head>
+<body style="background: #f3f3f3">
+
+	<header class="header idx-header header-fixed">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('Index/classify')}" class="top-classify">
+					<img src="{:tb_config('resource_path',1)}mshop/images/idx_06.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle idx-header-search">
+			<form id="searchForm" action="{:U('goods/search')}" method="get">
+				<div class="idx-search-box">
+					<div class="sah-img"><img src="{:tb_config('resource_path',1)}mshop/images/idx_09.png" alt=""></div>
+					<div class="search-btn" onclick="$('#searchForm').submit()"><img src="{:tb_config('resource_path',1)}mshop/images/idx_12.png" alt="" /></div>
+					<input type="text" name="key" placeholder="{$eBiz.lang.Index_search_tips}" style="border:0px;">
+					<!-- <a href="search.html" class="input">{$eBiz.lang.Index_search_tips}</a> -->
+				</div>
+			</form>
+			</div>
+			<div class="header-right">
+				<div class="top-cart">
+				<a href="{:U('cart/cart')}">
+					<img src="{:tb_config('resource_path',1)}mshop/images/idx_03.png" width="24" alt="" />
+				</a>
+				</div>
+			</div>
+		</div>
+	</header>
+	<div class="idx-nav">
+		<div class="swiper-container idxnav-container">
+		  	<ul class="swiper-wrapper">
+		  	{volist name="shopNav" id="vo" mod="10" key="i"}
+			    <li class="swiper-slide item"><a href="{:U($vo['url'])}">{$vo.name}</a></li>
+			{/volist}
+		  	</ul>
+		</div>
+	</div>
+	<!-- body -->
+	<main class="cmall-body">
+		<!-- banner 轮播图 -->
+		<section class="idx-slide" style="padding-top: 3.5rem;">
+			<div class="slidebox">
+				<div class="swiper-container banner-container">
+				  	<div class="swiper-wrapper">
+				  	{ad_list cid='22' item='ad' limit='5'}
+					    <div class="swiper-slide"><a href="{$ad.ad_link}" {eq name="ad.target" value="1"}target="_blank"{/eq} ><img src="{$ad.ad_pic}" alt="{$ad.ad_title}"></a></div>
+					{/ad_list}
+				  	</div>
+				  	<div class="swiper-pagination"></div>
+				</div>
+			</div>
+		</section>
+		<!-- icon -->
+		<div class="idx-function">
+			<div class="swiper-container func-container">
+			  	<div class="swiper-wrapper">
+				    <!-- 自定义导航 -->
+			    	{volist name="shopNav" id="vo" mod="10" key="i"}
+			    	{eq name="mod" value="0"}
+				    <div class="swiper-slide">
+				    	<dl class="clearfix">
+			    	{/eq}
+				    		<dd class="func-item func-item1">
+				    			<a href="{:U($vo['url'])}">
+				    				<!-- <i class="idx-icon idx-icon1"></i> -->
+				    				<img src="{$vo.icon}" class="phone-icon" >
+				    				<p>{$vo.name}</p>
+				    			</a>
+				    		</dd>
+
+				    {if condition='$mod eq 9 OR $i eq count($shopNav)'}
+				    	</dl>
+				    </div>
+				    {/if}
+		    		{/volist}
+			  	</div>
+			  	<div class="swiper-pagination"></div>
+			</div>
+		</div>
+
+		<div class="idx-section seckill">
+			<div class="idx-top clearfix">
+
+				<div class="t-left">
+					<div class="idx-title">
+						<h5 class="max">TIME SALE</h5>
+						<p class="min">{$eBiz.lang.Index_flash_buy}</p>
+					</div>
+					<div class="countD">
+						<div class="cl"><span class="sw">{$now_time_slot.time}</span></div>
+						<div class="cr">
+							<p>{$eBiz.lang.Index_flash_buy_running}</p>
+							<p>{$eBiz.lang.Index_flash_buy_end_left}
+								<span class="time countdown">
+									<span class="hours">00</span>:
+									<span class="minutes">00</span>:
+									<span class="seconds">00</span>
+								</span>
+							</p>
+						</div>
+					</div>
+				</div>
+				<div class="t-right"><a href="{:U('flash_buy')}" class="t-more">more ></a></div>
+			</div>
+			<div class="idx-block">
+				<div class="skl-itembox swiper-container">
+
+					<ul class="swiper-wrapper  clearfix">
+					{volist name="list" id="vo"}
+						<li class="swiper-slide skl-item">
+							<a href="{:U('goods/activity',['id'=>$vo['goods']['id']])}">
+								<div class="pic"><img src="{:common_thumb_img($vo['goods']['thumb'],230,230)}" alt=""></div>
+								<div class="info">
+									<div class="skl-name">{$vo.goods.title}</div>
+									<!-- <div class="skl-msg">神器神器神器神器</div> -->
+									<div class="skl-price"><strong>{:web_currency()}{$vo.goods.price}</strong></div>
+								</div>
+							</a>
+						</li>
+					{/volist}						
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- 团购活动 -->
+		<div class="idx-section">
+			<div class="idx-top clearfix">
+				<span class="line"></span>
+				<div class="t-left">
+					<div class="idx-title">
+						<h5 class="max">TIME GROUP BUY</h5>
+						<p class="min">{$eBiz.lang.Index_group_buy}</p>
+					</div>
+				</div>
+				<div class="t-right"><a href="{:U('group_buy')}" class="t-more">more ></a></div>
+			</div>
+			<?php 
+				$nowTime =date('Y-m-d H:i:s');
+				$groups = db('shop_promotion_group','',false) ->where('start_time','<= time',$nowTime) ->where('end_time','> time',$nowTime) ->where('is_end',0)->limit(4)->select();
+			?>
+			{volist name="groups" id="vo"}
+			<div class="idx-content {neq name='i' value='0'}mt10{/neq}">
+			{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+				<div class="clearfix">
+					<div class="dc-left">
+						<div class="skl-activity-img"><a href="{:U('goods/activity',['id'=>$vo['goods']])}"><img src="{$goods.id|goods_thum_images=240,170}" alt="{$goods.title}" /></a>{$goods.title}</div>
+					</div>
+					<div class="dc-right">
+						<div class="skl-activity-msg">
+							<div class="aty-countdown" data-end="{$vo.end_time}" style="width:140px;">
+								<span style="width: 140px;">{$eBiz.lang.Index_group_buy_end}：{$vo.end_time}</span>
+								
+							</div>
+							<div class="aty-name"><strong>{$eBiz.lang.Index_group_buy_tips}</strong></div>
+							<div class="aty-txt">{$goods.title}</div>
+							<div class="aty-price">
+								<strong class="p color--c10923">{$vo.price}<small>元</small></strong>
+								<span class="m ml10"><del>{$goods.shop_price}元</del></span>
+							</div>
+							<!-- <div class="">剩余：1200件</div> -->
+							<div class="btn-box">
+								<a href="{:U('goods/activity',['id'=>$vo['goods']])}" class="btn">{$eBiz.lang.Index_group_buy_join}</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{/volist}
+
+		</div>
+		<!-- 产品 -->
+		<div class="idx-section">
+			<div class="idx-top clearfix">
+				<span class="line"></span>
+				<div class="t-left">
+					<div class="idx-title">
+						<h5 class="max">COMMAND BRANDS</h5>
+						<p class="min">{$eBiz.lang.Index_brand_goods}</p>
+					</div>
+				</div>
+				<div class="t-right"><a href="javascript:;" class="t-more">more ></a></div>
+			</div>
+			<!-- 品牌区广告 -->
+			<style type="text/css">
+			    .idx-product  img { width: 100%;vertical-align: top; }
+				.idx-product .idx-product-left{ float: left;width: 30%; }
+				.idx-product .idx-product-right{ float: left;width: 70%; }
+			</style>
+			<div class="idx-content swiper-container">
+				<div class="idx-wrapper swiper-wrapper">		
+					<div class="swiper-slide idx-product clearfix">
+						<a href="" class="idx-product-left">
+							<img  src="/uploads/image/20170818/bb66edc68c2e0f4d7835955984e7fc7e.png">
+						</a>
+						<a href="" class="idx-product-right">
+							<img  src="/uploads/goods/20170818/4637a6d660d0dee6b0f8ec730f3d088e.jpg">
+						</a>
+					</div>
+					<div class="swiper-slide idx-product clearfix">
+						<a href="" class="idx-product-left">
+							<img  src="/uploads/image/20170818/bb66edc68c2e0f4d7835955984e7fc7e.png">
+						</a>
+						<a href="" class="idx-product-right">
+							<img  src="/uploads/goods/20170818/4637a6d660d0dee6b0f8ec730f3d088e.jpg">
+						</a>
+					</div>
+				</div>
+
+				<!-- <div class="idx-product clearfix">
+				{ad_list cid='23' item='ad' limit='5' key="i"}
+				{assign name="mod" value="$i%2" /}
+				{eq name="i" value="0"}
+					<div class="p-col">
+						<a href="{$ad.ad_link}" class="ipdt-item {eq name='i' value='0'}big{/eq}">
+							<div class="pic"><img src="{$ad.ad_pic}" alt=""></div>
+						</a>
+					</div>
+				{/eq}
+				{if condition="$i gt 0"}
+					{eq name="mod" value="1"}
+					<div class="p-col">
+					{/eq}
+					<a href="{$ad.ad_link}">
+						<!-- <div class="info">
+							<div class="n">{$ad.ad_name}</div>
+							<div class="m">{$ad.ad_title|default=''}</div>
+						</div> -->
+					<!-- 	<div class="pic"><img src="{$ad.ad_pic}" alt=""></div>
+					</a>
+					{eq name="mod" value="0"}
+					</div>
+					{/eq}
+				{/if}
+				{/ad_list}
+				</div> -->
+			</div>
+		</div>
+		<!-- 品牌 -->
+		<div class="idx-section">
+			<div class="idx-top clearfix">
+				<span class="line"></span>
+				<div class="t-left">
+					<div class="idx-title">
+						<h5 class="max">BRANDS SHOP</h5>
+						<p class="min">{$eBiz.lang.Index_brand_shop}</p>
+					</div>
+				</div>
+				<div class="t-right"><a href="javascript:;" class="t-more">more ></a></div>
+			</div>
+			<div class="idx-content">
+				<div class="idx-brand idx-block clearfix">
+				{list table='shop_brand' field='id,name,logo' condition='status = 1 AND is_home_comm = 1 AND trash = 0' limit='10' order='sort ASC,id DESC' item="vo" key="i"  }
+					<a href="javascript:;" class="ibd-item"><img src="{$vo.logo}" alt="" /></a>
+				{/list}					
+				</div>
+			</div>
+		</div>
+
+		<!-- 手机端楼层 -->
+		{assign name="j" value="1"/}
+		{category_list pid="0" item="vo" key="k"}
+		{if condition="($vo['is_hot'] eq 1)"}
+		{assign name="ad_switch" value=":tb_config('floor_ad_switch',1,$lang)"/}
+		<!-- 商品 -->
+		<div class="idx-section">
+			<div class="idx-top clearfix">
+				<span class="line"></span>
+				<div class="t-left">
+					<div class="idx-title">
+						<h5 class="max">{$vo.name}</h5>
+						<!-- <p class="min">점롯데백</p> -->
+					</div>
+				</div>
+				<div class="t-right">
+					<a href="{:U('shop/Goods/goodsList',['id'=>$vo['id']])}" class="t-more">more ></a>
+				</div>
+			</div>
+			{assign name="big_ad" value=":getFloorAd($vo['id'],10,1)" /}
+			{assign name="min_ad" value=":getFloorAd($vo['id'],11,2)" /}
+			{assign name="down_ad" value=":getFloorAd($vo['id'],12,3)" /}
+			{if condition="empty($big_ad) eq false AND empty($min_ad) eq false"}
+			<div class="idx-content">
+				<div class="idx-goods idx-block clearfix">
+					{notempty name="big_ad"}
+					<div class="igoods-col w40 fl">
+						<a href="{$big_ad[0]['url']}" class="igoods-item big" style="width: 100%">
+							<div class="pic"><img src="{$big_ad[0]['img']}" alt=""></div>
+							<!-- <div class="info">{$big_ad[0]['title']}</div> -->
+						</a>
+					</div>
+					{/notempty}
+					{notempty name="min_ad"}
+					<div class="igoods-col w60 fr">
+					{volist name="min_ad" id="vo"}
+						<a href="{$vo.url}" class="igoods-item ml" style="width: 100%;">
+							<div class="pic"><img src="{$vo.img}" alt=""></div>
+							<!-- <div class="info">{$vo.title}</div> -->
+						</a>
+					{/volist}
+					</div>
+					{/notempty}
+					{notempty name="down_ad"}
+					{volist name="down_ad" id="vo"}
+					<a href="{$vo.url}" class="igoods-item">
+						<div class="pic"><img src="{$vo.img}" alt=""></div>
+						<!-- <div class="info">{$vo.title}</div> -->
+					</a>
+					{/volist}
+					{/notempty}
+				</div>
+			</div>
+			{/if}
+		</div>
+		<!-- 广告轮播图 -->
+		<div class="idx-section">
+			<div class="swiper-container idxad-container">
+			  	<div class="swiper-wrapper">
+			  	{floor_ad_list cid="$vo['id']" pid="12" limit="3" item="ad" }
+				    <div class="swiper-slide"><a href="{$ad.url}"><img src="{$ad.img}" alt=""></a></div>
+				{/floor_ad_list}
+			  	</div>
+			  	<div class="swiper-pagination"></div>
+			</div>
+		</div>
+		{/if}
+		{/category_list}
+
+		<!--  -->
+		<section class="guess-you-like idx-section mt20" >
+			<div class="lrline-title color--c10923">
+				<div class="txt" style="background: #f3f3f3;">
+					<h5 class="max">ALL PRODUCT DISPLAY</h5>
+					<p class="min">{$eBiz.lang.Index_all_goods}</p>
+				</div>
+			</div>
+			<div class="guess-content clearfix" id="all_goods_list">
+				
+			</div>
+			<div class="mall-block mt30" style="text-align: center;">
+				<button type="button" id="more_goods_btn" onclick="loadMoreGoods();" class="product-btn">{$eBiz.lang.Index_Text_show_more}<img src="{:tb_config('resource_path',1)}shop/images/down-red.png" width="10" alt=""></button>
+			</div>
+		</section>
+	</main>
+	{include file="public/right" /}
+
+	{include file="public/footbar" /}
+
+	<!-- <script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/common.js"></script> -->
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+	<script type="text/javascript">
+		var banner = new Swiper('.banner-container', {
+			autoplay: 5000,//可选选项，自动滑动
+			pagination : '.swiper-pagination'
+		})
+		var nav = new Swiper('.idxnav-container', {
+			autoplay: false,//可选选项，自动滑动
+			slidesPerView: 'auto',
+	        paginationClickable: true,
+	        spaceBetween: 0
+		})
+
+		var _skl = new Swiper('.skl-itembox', {
+			autoplay: false,//可选选项，自动滑动
+			slidesPerView: 'auto',
+	        paginationClickable: true,
+	        spaceBetween: 0
+		});
+
+
+		var _idx = new Swiper('.idx-content', {
+			autoplay: false,//可选选项，自动滑动
+			slidesPerView: 'auto',
+	        paginationClickable: true,
+	        spaceBetween: 0
+		});
+
+		var func = new Swiper('.func-container', {
+			autoplay: false,//可选选项，自动滑动
+			pagination : '.swiper-pagination'
+		})
+		var ad = new Swiper('.idxad-container', {
+			autoplay: false,//可选选项，自动滑动
+			pagination : '.swiper-pagination'
+		})
+
+		var goods_page = 0;
+
+		// header固定
+		var win = $(window);
+		$(document).ready(function() {
+			var header = $('.header');
+			var hTop = $('.idx-slide').outerHeight();
+			var top = 0;
+			win.scroll(function() {
+				top = $(document).scrollTop();
+				if(top > hTop/2) {
+					header.css('background','#c10923');
+				} else {
+					header.css('background','transparent');
+				}
+			})
+			loadMoreGoods();
+		})
+
+		
+		// 加载更多商品
+		function loadMoreGoods() {
+			$('#more_goods_btn').attr('disable',true);
+			if (goods_page>0) {
+				var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2				
+			}
+			$.ajax({
+				url:"{:U('Index/ajaxGoods')}",
+				data:{
+					page:goods_page
+				},
+				success: function(data){									
+					$('#all_goods_list').append(data);
+					layer.close(index);
+					$('#more_goods_btn').attr('disable',false);
+					if (data!='') {
+						goods_page ++;						
+					}
+				}
+			});	
+		}
+	</script>
+	<!-- 倒计时 -->
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.downCount.js"></script>
+	<script class="source" type="text/javascript">
+        $('.countdown').downCount({
+            date: '{$now_time_slot.end_time|date="Y-m-d H:i:s",###}',
+            offset: +8
+        }, function () {
+            // alert('倒计时结束!');
+        });
+        // $('.aty-countdown').downCount({
+        //     date: '07/23/2017 20:00:00',
+        //     offset: +8
+        // }, function () {
+        //     // alert('倒计时结束!');
+        // });
+    </script>
+	
+</body>
+</html>

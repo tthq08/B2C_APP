@@ -1,0 +1,16 @@
+<div class="inter-det-list">
+	{volist name="list" id="vo"}
+	<div class="inter-det-item">
+		<p class="inter-det-item-time">{$vo.change_time|date="Y-m-d H:i:s",###}</p>
+		<div class="det-item-msg {elt name='vo.ior' value='0'}reduce{/elt} clearfix">
+			<span class="det-item-msg-left">
+				{$vo.remark}
+			</span>
+			<span class="det-item-msg-right">
+				<b>{gt name="vo.ior" value="0"}+{else/}-{/gt}{$vo.score}</b>
+				<small>p</small>
+			</span>
+		</div>
+	</div>
+	{/volist}
+</div>

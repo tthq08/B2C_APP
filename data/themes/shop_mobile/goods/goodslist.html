@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>产品列表 - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="public/static" /}
+</head>
+<body>
+
+	{include file="public/header" /}
+	<!-- body -->
+	<main class="cmall-body fixed-body fixed-footer-body">
+		<!-- 排序 -->
+		<section class="cmall-sort">
+			<ul class="clearfix">
+				<li class="sort-item ">
+					<a href="{:filterUrl('sort')}">
+						<span>综合</span>
+					</a>
+				</li>
+				<li class="sort-item {if condition="$sort == 'sale'"}down{/if}"><a href="{:filterUrl('sort',['sale'=>''])}"><span>销量</span><i></i></a></li>
+				<li class="sort-item {if condition="$sort == 'price'"}{if condition="$sort_asc == 'down'"}down{else/}up{/if}{/if}"><a href="{if condition="$sort_asc == 'down'"}{:filterUrl('sort',['price'=>'up'])}{else/}{:filterUrl('sort',['price'=>'down'])}{/if}"><span>价格</span><i></i></a></li>
+			</ul>
+		</section>
+		<section class="product-list-box">
+		{foreach name="goodsList" item="v" key="k"}
+			<a href="{:U('shop/Goods/goodsInfo',array('id'=>$v['id']))}" class="product-item">
+				<div class="pic">
+					<img src="{$v.thumb|common_thumb_img=200,200}" alt="" />
+				</div>
+				<div class="info">
+
+					<div class="shop-name">
+						{eq name="v.is_new" value="1"}
+							<span class="tag mr5">全新</span>
+						{/eq}
+						{eq name="v.is_comm" value="1"}
+							<span class="tag mr5">推荐</span>
+						{/eq}
+					</div>
+					<div class="p-title">{$v.title}</div>
+					<div class="p-price">
+						<strong class="price c-fc3">{$v['shop_price']}<small>元</small></strong>
+						<del class="c-fc9 ml5">{$v['market_price']}元</del>
+					</div>
+					<div class="p-comment">
+						<!-- 已有<strong class="c-fc4">2100+</strong>条评论  好评率97% -->
+					</div>
+				</div>
+			</a>
+		{/foreach}
+		</section>
+	</main>
+	<!-- footer -->
+	{include file="public/right" /}
+	{include file="public/footbar" /}
+
+	<!-- 遮罩 -->
+	<!-- <div class="cmall-mask"></div>
+	<div class="filter-layer cmall-layer">
+		<div class="top">
+			<h4>请选择品牌</h4>
+			<span class="close-layer" onclick="closeLayer()"></span>
+		</div>
+		<div class="content">
+			<div class="filter-checkbox">
+				<ul class="clearfix">
+					<li class="flt-check on">
+						<input id="brand1" type="checkbox" checked />
+						<label for="brand1">华为</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand2" type="checkbox" />
+						<label for="brand2">小米</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand3" type="checkbox" />
+						<label for="brand3">魅族</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand4" type="checkbox" />
+						<label for="brand4">苹果</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand5" type="checkbox" />
+						<label for="brand5">三星</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand7" type="checkbox" checked />
+						<label for="brand7">华为</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand8" type="checkbox" />
+						<label for="brand8">小米</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand9" type="checkbox" />
+						<label for="brand9">魅族</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand10" type="checkbox" />
+						<label for="brand10">苹果</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand11" type="checkbox" />
+						<label for="brand11">三星</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand12" type="checkbox" checked />
+						<label for="brand12">华为</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand13" type="checkbox" />
+						<label for="brand13">小米</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand14" type="checkbox" />
+						<label for="brand14">魅族</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand15" type="checkbox" />
+						<label for="brand15">苹果</label>
+					</li>
+					<li class="flt-check on">
+						<input id="brand17" type="checkbox" />
+						<label for="brand17">三星</label>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="btn-box clearfix">
+			<a href="javascript:;" class="btn confirm-btn">确定</a>
+			<a href="javascript:;" class="btn reset-btn">重置</a>
+		</div>
+	</div> -->
+
+
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+	<script type="text/javascript">
+		$(window).load(function() {
+			var fil = $('.filter');
+			var w = 0;
+			fil.find(".flt-item").each(function() {
+				w += Math.ceil(Number($(this).outerWidth(true)));
+				console.log(Math.ceil(Number($(this).outerWidth(true))))
+			})
+			fil.find('ul').width(w);
+		})
+
+		// 筛选弹窗
+		$('.filter').on('click','.flt-item',function() {
+			$('.cmall-mask').show();
+			$('.filter-layer').addClass('zoombig')
+		})
+		// 重置筛选
+		$('.filter-layer .reset-btn').click(function() {
+			$('.filter-checkbox .flt-check input').prop('checked',false);
+		})
+		// 关闭筛选弹窗
+		function closeLayer() {
+			$('.cmall-mask').hide();
+			$('.filter-layer').removeClass('zoombig');
+		}
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	{assign name="seo" value=":api('shop','goods','getSeo',[$goods.id])"}
+	<meta name="keyword" content="{$seo.seo_keyword}">
+	<meta name="description" content="{$seo.seo_description}">
+	<title>
+		{if condition="empty($seo.seo_title)"}
+		{$goods.title}-{:tb_config('web_site_title',1,$lang)}
+		{else/}
+		{$seo.seo_title}
+		{/if}
+	</title>
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="{$goods.title}" />
+	<meta property="og:description"   content="{$goods.goods_remark}" />
+	<meta property="og:image"         content="http://{$_SERVER['SERVER_NAME']}{$goods.thumb}" />
+	{include file="common/static" /}
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/message.css" />
+	
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/pc_common.js"></script>
+	<!-- <script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/panelRight.js"></script> -->
+	<style type="text/css">
+	.lSSlideOuter {
+		width: 100%;
+		padding: 0 20px;
+	}
+	.lSSlideWrapper {
+		height: auto;
+	}
+	.lSAction {
+		visibility: hidden;
+		opacity: 0;
+		transition: .3s;
+	}
+	.lSAction > a {
+		background-image: url({:tb_config('resource_path',1)}shop/images/controls1.png);
+		overflow: visible;
+	}
+	.lSSlideWrapper:hover .lSAction {
+		visibility: visible;
+		opacity: 1;
+	}
+	</style>
+
+	<style type="text/css">
+		/*商品详情页面包屑*/
+		.breadcrumb{ width: 100%; margin: auto;}
+		.breadcrumb i,.breadcrumb .index,.crumbs-nav,.crumbs-arrow,.breadcrumb .last{ float: left; line-height: 24px;}
+		.crumbs-arrow{ font-family: simsun; font-style: normal;	padding: 0 6px;}
+		.crumbs-nav { position: relative; z-index: 2;}
+		.crumbs-nav .crumbs-title{ display: inline-block; height: 22px; padding: 0 25px 0 10px; line-height: 22px; position: relative; z-index: 1;border: 1px solid transparent;}
+		.crumbs-nav .crumbs-title .icon{ position: absolute; right: 8px; top: 9px; display: block; width: 11px; height: 6px; background-position: 0 -62px;}
+		.crumbs-nav .crumbs-drop{ display: none; border: 1px solid #E31939; width: 352px; padding: 10px 0 10px 10px; position: absolute; left: 0; top: 22px; background: #FFF;}
+		.crumbs-nav .crumbs-drop li{ float: left; width: 78px; height: 24px; overflow: hidden; line-height: 24px; margin-right: 10px; text-overflow: ellipsis; white-space: nowrap;}
+		.crumbs-nav.curr { z-index: 13;}
+		.crumbs-nav.curr .crumbs-title{ border: 1px solid #E31939; height: 23px; background: #fff; border-bottom: 0;	}
+		.crumbs-nav.curr .crumbs-title .icon{ background-position: 0 0;}
+		.crumbs-nav.curr .crumbs-drop{ display: block;}
+		.crumbs-nav .crumbs-search{ width: 180px; height: 22px; line-height: 22px; border: 1px solid #eee; display: inline-block; position: relative;}
+		.crumbs-nav .crumbs-search .search-term{ border: none; width: 150px; height: 22px; line-height: 22px; padding: 0px 5px; color: #999;}
+		.crumbs-nav .crumbs-search .search-button{ border: none; position: absolute; top: 0px; right: 0px; width: 22px; height: 22px; padding: 0px; display: inline-block; background-color: #eee; background-position: -20px -122px; cursor: pointer;}
+
+		.breadcrumb-spe .crumbs-title{ border: none; padding: 0px 5px;}
+		.breadcrumb-spe .crumbs-nav .crumbs-title .icon{ display: none;}
+		.breadcrumb i, .crumbs-nav .crumbs-title .icon{ background: url("{:tb_config('resource_path',1)}shop/images/common-icon.png") no-repeat;    background-position: 0 -62px;}
+	</style>
+</head>
+<body class="has-right">
+
+	<!-- top -->
+	{include file="common/top_header"}
+
+	<!-- header -->
+	{include file="common/header"}
+
+	<!-- nav -->
+	{include file="common/nav"}
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	<main class="main pb50">
+		<!-- 当前位置、已筛选 -->
+		<div class="c-location-section background-location">
+			<!-- <div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="index.html">首页</a></li>
+					<li class="location-item has"><a href="list.html">列表</a></li>
+				</ul>
+			</div> -->
+			<div class="container w1200">
+				<div class="breadcrumb clearfix">
+					<a href="{:U('/')}" class="index">首页</a>
+					<span class="crumbs-arrow">&gt;</span>
+					{category id="$goods['cat_id']" key="good" item="vo"}
+					<div class="crumbs-nav crumbs-nav0">
+						<a class="crumbs-title" href="{:U('shop/Goods/goodsList',['id'=>$vo['id']])}">{$vo.name} <i class="icon"></i>
+						</a>
+						<div class="crumbs-drop">
+							<ul class="crumbs-drop-list">
+								{foreach name="vo.brothers" item="v" key="k"}
+									<li>
+										<a href="{:U('shop/Goods/goodsList',array('id'=>$v['id']))}">{$v['name']}</a>
+									</li>
+								{/foreach}
+							</ul>
+						</div>
+					</div>
+					{/category}
+					<span class="crumbs-arrow">&gt;</span>
+					<span class="last">{$goods.title|mb_substr=0,40}</span>
+				</div>
+			</div>	
+		</div>
+	</div>
+	<!-- 选中当前分类弹出同级分类JS -->
+	<script type="text/javascript">
+		$(function() {
+			$('.breadcrumb .crumbs-nav').hover(function() {
+				$(this).toggleClass('curr');
+			})
+		});
+	</script>
+
+		<!-- 商品参数、规格 -->
+		<div class="product-message-intro">
+			<div class="container w1200 clearfix">
+				<!-- 图片展示 -->
+				<div class="preview-wrap fl">
+					<div class="magnifier" id="magnifier1">
+						<div class="magnifier-container">
+							<div class="images-cover"></div>
+							<!--当前图片显示容器-->
+							<div class="move-view"></div>
+							<!--跟随鼠标移动的盒子-->
+						</div>
+						{notempty name="goods_images_list"}
+						<div class="magnifier-assembly">
+							<div class="magnifier-btn">
+								<span class="magnifier-btn-left"></span>
+								<span class="magnifier-btn-right"></span>
+							</div>
+							<!--按钮组-->
+		<?php 
+			foreach ($goods_images_list as $key => $imgs) {
+				$smallImg[] = get_sub_images($imgs,$imgs['goods_id'],90,80);
+				$midImg[] = get_sub_images($imgs,$imgs['goods_id'],500,500);
+				$largeImg[] = get_sub_images($imgs,$imgs['goods_id'],800,800);
+			}
+			$defaultIMG = $midImg[0];
+			$defaultBigIMG = $largeImg[0];
+	 	?>
+							<div class="magnifier-line">
+								<ul class="clearfix animation03">
+								{volist name="smallImg" id="V"}
+									<li>
+										<div class="small-img">
+											<img big-img="{$largeImg[$key]}" max-img="{$midImg[$key]}" src="{$V}" />
+										</div>
+									</li>
+								{/volist}
+									
+								</ul>
+							</div>
+							<!--缩略图-->
+						</div>
+						<div class="magnifier-view"></div>
+						<!--经过放大的图片显示容器-->
+						{/notempty}
+					</div>
+					<div class="block">
+					<?php $cart_key='';
+							if(isset($lowPriceKey)){
+								$cart_key = implode('_',$lowPriceKey);
+							}?>
+						<style type="text/css">
+							     .fl-share { position: relative; width: 50px; }
+							     .fl-share:hover .share-box{
+							     	display: block;
+							     }
+							     .share-box { 
+							     	display: none;
+							     	position: absolute;
+							     	left: 48px;
+							     	top: 0px;
+							     	padding: 10px;
+							     	width: 220px;
+							     	
+							     	background: #fff;
+							     	border:1px solid #eee;
+							     	z-index: 100;
+							     }
+							     .share-box .share-btn {
+							     	display: inline-block;
+							     	vertical-align: top;
+							     	margin-right: 5px;
+							     }
+							     .share-btn img {
+									width: 40px;
+									height: 40px;
+								}
+							</style>
+						<span class="fl-btn fl-follow" onclick="collectGoods('{$goods.id}','{$cart_key}');"><i></i><em>关注</em></span>
+					</div>
+				</div>
+				<!-- 属性 -->
+				<div class="message-info-wrap fr">
+					<div class="p-name">{$goods.title}</div>
+					<div class="p-msg" style="font-size: 13px; color: #e72a00;">{$goods.goods_remark}</div>
+					<div class="news"></div>
+					<div class="act-top">
+						<div class="right countdown">
+							<span>距离结束</span>
+							<span class="time days">00</span>
+							<span>天</span>
+							<span class="time hours">00</span>
+							<span>:</span>
+							<span class="time minutes">00</span>
+							<span>:</span>
+							<span class="time seconds">00</span>
+						</div>
+					</div>
+					<div class="p-summary">
+						<div class="summary-item summary-price">
+							<span>单价：</span>
+							<span class="price mr20 color--b1191a" >{:web_currency()}{$goods_price}</span>
+							{if condition="!$goods['market_price'] > 0"}
+							<del class="price"><small>{:web_currency()}{$goods.market_price}</small></del>
+
+							{/if}
+						</div>
+						<div class="summary-item summary-express">
+							<span>配送：</span>
+							<span>平台</span>
+							<span class="c ml30">包邮</span>
+						</div>
+						<div class="summary-item">
+							<span class="mr50">单重：{$goods.weight/1000}kg</span>
+						</div>
+					</div>
+					<!-- 属性、规格 -->
+					<form id="buy_goods_form" name="buy_goods_form" method="post" >
+					<div class="p-area">
+					{assign name="sort" value="0" /}
+					{foreach name="filter_spec" item="v" key="k"}
+						<div class="area-item" id="gSpec_{$sort}">
+							<div class="n">{$v.name}：</div>
+							<div class="m">
+							{foreach name="v.item" item="v2" key="k2"}
+							{eq name="sort" value="0"}
+								{notempty name="v2.icon"}
+									<label for="c{$k}{$k2}" data-url="{$v2.href}" class="check-item {in name='v2.id' value='$lowPriceKey'} on{/in} {notin name='v2.spec_key' value='$goods_specs'} disabled{/notin}">
+									{in name="v2.spec_key" value="$goods_specs"}
+										<input type="radio" id="c{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}" {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+										<span data-id="{$v2.id}" title="{$v2.item}"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+									{else/}
+										<span data-id="{$v2.id}" title="{$v2.item} 无此商品" onclick="showSpecs('{$v2.id}','{$v2.spec_key}','{$second_spec}',this);"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+									{/in}
+									</label>
+								{else/}
+									<label for="c{$k}{$k2}" data-url="{$v2.href}" class="check-item {in name='v2.id' value='$lowPriceKey'} on{/in} {notin name='v2.spec_key' value='$goods_specs'} disabled{/notin}">
+									{in name="v2.spec_key" value="$goods_specs"}
+										<input type="radio" id="c{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+										<span data-id="{$v2.id}" title="{$v2.item}">{$v2.item}</span>
+									{else/}
+										<span data-id="{$v2.id}" title="{$v2.item} 无此商品"  onclick="showSpecs('{$v2.id}','{$v2.spec_key}','{$second_spec}',this);">{$v2.item}</span>
+									{/in}
+									</label>
+								{/notempty}
+							{else/}
+								{notempty name="v2.icon"}
+									<label for="c{$k}{$k2}" data-url="{$v2.href}" class="check-item {in name='v2.id' value='$lowPriceKey'} on{/in} {notin name='v2.spec_key' value='$goods_specs'} disabled{/notin}">
+									{in name="v2.spec_key" value="$goods_specs"}
+										<input type="radio" id="c{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}" {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+										<span data-id="{$v2.id}" title="{$v2.item}"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+									{else/}
+										<span data-id="{$v2.id}" title="{$v2.item} 无此商品"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+									{/in}
+									</label>
+								{else/}
+									<label for="c{$k}{$k2}" data-url="{$v2.href}" class="check-item {in name='v2.id' value='$lowPriceKey'} on{/in}{notin name='v2.spec_key' value='$goods_specs'} disabled{/notin}">
+									{in name="v2.spec_key" value="$goods_specs"}
+										<input type="radio" id="c{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+										<span data-id="{$v2.id}" title="{$v2.item}">{$v2.item}</span>
+									{else/}
+										<span data-id="{$v2.id}" title="{$v2.item} 无此商品">{$v2.item}</span>
+									{/in}
+									</label>
+								{/notempty}
+							{/eq}
+							{/foreach}
+							</div>
+						</div>
+					{php}$sort ++;{/php}
+					{/foreach}
+						
+					</div>
+					<!-- 附加信息 -->
+					<div class="p-extra-message">
+						<div class="extra-item">
+							<div class="n">选中：</div>
+							<div class="m clearfix">
+								<div class="e-list e-n" style="width: 340px;">
+									<p>{$goods.title|mb_substr=0,35,'utf-8'}...</p>
+									<p>{$spec_str}</p>
+								</div>
+								<div class="e-list e-num">
+									<div class="shop-num">
+										<span class="num-btn reduce">-</span>
+										<input type="text" style="width:40px;" name="goods_num" id="goods_num" value="1" />
+										<span class="num-btn add" data-max="1000">+</span>
+									</div>
+								</div>
+								<!-- <div class="e-list e-ex">
+									<span class="ex-item ex-item-1">减免20,000</span>
+								</div> -->
+								<div class="e-list e-price" id="selected_total">{:web_currency()}{$goods_price}</div>
+								<div class="e-list e-contorl"></div>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="goods_id" value="{$goods.id}" />
+					<input type="hidden" id="goods_stock" name="goods_stock" value="{$goods_stock}" />
+					<div class="btn-box mt40">
+						<span class="p mr20" id='goods_total'>{:web_currency()}{$goods_price}</span>
+						<input type="hidden" id="fee_total" value="{$goods_price}">
+						<a href="javascript:;" onClick="javascript:AjaxAddCart({$goods.id},$('#goods_num').val(),1);" class="cmall-cart-btn">加入购物车</a>
+						<a href="javascript:;" onClick="ajaxBuy();" class="cmall-cart-btn" style="background: #3CBE06;">直接购买</a>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<!-- 配件 -->
+		{notempty name="bind_goods"}
+		<div class="container w1200 mt30">
+		<form id="bindFrom" method="post" action="ajaxBindCart">
+			<div class="message-parts-box detail fittings">
+				<div class="detail-nav detail-tab-nav">
+					<ul class="parts-tab-nav-box clearfix">
+					{volist name="bind_goods" id="vo" key="i"}
+						<li class="item tab-item {eq name='i' value='1'}on{/eq}" data-tab="{$i}"><a href="javascreipt:;">{$vo.title}</a></li>
+					{/volist}
+					</ul>
+				</div>
+				<div class="content pb20 pt20">
+					<div class="master">
+						<div class="p-list">
+							<div class="p-img"><a href="javascript:;"><img width="100" height="100" src="{$goods.thumb|common_thumb_img=100,100}" alt="" /></a></div>
+							<div class="p-name">
+								<a href="javascript:;" target="_blank">{$goods.title}</a>
+							</div>
+							<i class="plus"></i>
+						</div>
+					</div>
+					<div class="suits">
+					{volist name="bind_goods" id="vo" key="k"}
+						<div class="detail-tab-list {eq name='k' value='1'}on{/eq}" data-tab="{$k}">
+							<div class="imageGallery-box">
+								<ul class="imageGallery gallery list-unstyled">
+								{volist name="vo.goods" id="v"}
+									<li class="p-list">
+										<div class="p-img"><a href="{:U('shop/goods/goodsInfo',['id'=>$v['goods_id']])}"><img width="100" height="100" src="{$v.goods_thumb|common_thumb_img=100,100}" alt="{$v.goods_title}" title="{$v.goods_title}" /></a></div>
+										<div class="p-name">
+											<a href="{:U('shop/goods/goodsInfo',['id'=>$v['goods_id']])}" target="_blank">{$v.goods_title}</a>
+										</div>
+										<div class="p-name">
+											<a href="{:U('shop/goods/goodsInfo',['id'=>$v['goods_id']])}" target="_blank">{$v.spec_name}</a>
+										</div>
+										<div class="p-price">
+											<input type="checkbox" class="suits-input" onchange="logFittings(this,'{$k}_{$v.goods_id}')" data-id="{$k}_{$v.goods_id}" id="info-{$k}_{$v.goods_id}" value="{$v.goods_id}#{$v.spec_key}" class="" />
+											<label for="info-{$k}_{$v.goods_id}"><strong class="color--df3133 fs14">￦{$v.spec_price}</strong></label>
+
+										</div>
+									</li>
+								{/volist}									
+								</ul>
+							</div>
+						</div>
+					{/volist}
+					</div>
+					<div class="infos">
+						<i class="equal">=</i>
+						<p class="selected mb5">已选<span class="cunt">0</span>个配件</p>
+						<p class="total-price mb5">组合价<strong id="bind_total" class="color--df3133 fs18 p">￦0</strong></p>
+						<div class="btn-box">
+							<input type="hidden" id="bind_goods" value="">
+							<a href="javascript:;" onclick="addBindCart();" class="buy-btn">加入购物车</a>
+							<a href="javascript:;" class="other-btn">直接购买</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+		</div>
+		{/notempty}
+		<!-- 商品详情 -->
+		<div class="shop-detail">
+			<div class="container w1200">
+				<div class="box clearfix">
+					<!-- 左边 -->
+					<div class="aside">
+						<!-- 达人选购 -->
+						<div class="choose-shop mt10">
+							<div class="title">
+								<h5>达人选购</h5>
+							</div>
+							<div class="content">
+							{list table="shop_goods" condition="status = 1 AND trash = 0" order="sales_sum DESC" limit="5" item="vo" key="i"}
+								<div class="choose-shop-list">
+									<div class="pic"><a href="javascript:;"><img src="{$vo.id|goods_thum_images=218,218}" alt="{$vo.title}"></a></div>
+									<div class="info">
+										<div class="name"><a href="javascript:;">{$vo.title}</a></div>
+										<div class="price">{:web_currency()}{$vo.shop_price}</div>
+									</div>
+								</div>
+							{/list}
+							</div>
+						</div>
+						<!-- 广告图 -->
+						<div class="aside-ad">
+							<div class="ad-block mt10"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/m_46.png" alt=""></a></div>
+							<div class="ad-block mt10"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/m_49.png" alt=""></a></div>
+							<div class="ad-block mt10"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/m_51.png" alt=""></a></div>
+						</div>
+					</div>
+					<!-- 详情 -->
+					<div class="detail">
+						<div class="detail-nav detail-tab-nav">
+							<ul class="detail-tab-nav-box">
+								<li class="item tab-item on" data-tab="1" onclick="detailTab(this,1)"><a href="#shop-detail">商品详情</a></li>
+								<!-- <li class="item tab-item" data-tab="2" onclick="detailTab(this,2)"><a href="#shop-detail">规格与包装</a></li> -->
+								<li class="item tab-item" data-tab="2" onclick="detailTab(this,2)"><a href="#shop-detail">售后保障</a></li>
+								<li class="item tab-item" data-tab="3" onclick="detailTab(this,3)"><a href="#shop-detail">商品评价</a></li>
+
+							</ul>
+						</div>
+						<div class="detail-content">
+							<div class="detail-tab-list detail-m on" data-tab="1">
+								<div class="box p-parameter">
+									<ul class="p-parameter-list clearfix">
+	                                    <li class="list">品牌：{:getTableValue('shop_brand',['id'=>$goods['brand_id']],'name')}</li>
+	                                    <li class="list">货号：{$goods.goods_sn}</li>
+									</ul>
+									{if condition="empty($attribute) eq false AND empty($attr_list) eq false"}
+									<ul class="p-parameter-list clearfix">
+
+										{foreach name="attr_list" item="v" key="k"}
+	                                    {notempty name="$attribute[$k]['attr_value']"}
+										{notempty name="v"}
+	                                    <li class="list" title="{$v}">{$attribute[$k]['attr_value']|default=''}：{$v}</li>
+										{/notempty}
+										{/notempty}
+	                                    {/foreach}
+										
+									</ul>
+									{/if}
+									<!-- <div class="block more">
+										<a href="javascript:;">更多参数>></a>
+									</div> -->
+								</div>
+								{$goods_content|htmlspecialchars_decode|htmlspecialchars_decode}
+							</div>
+							
+							<div class="detail-tab-list detail-guarantee" data-tab="2">
+								<div class="mt mt10">售后保障</div>
+								<div class="content">
+									<div class="guarantee-item">
+										{:htmlspecialchars_decode(tb_config('shop_sale_safe',1))}
+									</div>
+									
+								</div>
+							</div>
+							<div class="detail-tab-list detail-comment" data-tab="3">
+								<div class="mt mt10">商品评价</div>
+								<div class="content">
+									<!-- 评论内容 -->
+									{comment_fraction goods="$goods['id']" id="comment_f"}
+									<div class="comment-filter">
+										<ul class="c-filter">
+											<li class="item on" onclick="ajaxcomment(1,1);"><a href="javascript:;">全部评价（{$comment_f.num_total}）</a></li>
+											<!-- <li class="item"><a href="javascript:;">晒图（100+）</a></li>
+											<li class="item"><a href="javascript:;">追评（100+）</a></li> -->
+											<li class="item" onclick="ajaxcomment(2,1);"><a href="javascript:;">好评（{$comment_f.num_good}）</a></li>
+											<li class="item" onclick="ajaxcomment(3,1);"><a href="javascript:;">中评（{$comment_f.num_mid}）</a></li>
+											<li class="item" onclick="ajaxcomment(4,1);"><a href="javascript:;">差评（{$comment_f.num_bad}）</a></li>
+										</ul>
+									</div>
+									<!-- 评论列表 -->
+									<div class="comment-list-box" id="ajax_comment_return">
+										<!-- 商品评价列表 -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="container w1200">
+			<!-- 推荐 -->
+			<div class="recommend-product mt40">
+				<div class="container w1200">
+					<div class="top">商品精选</div>
+					<div class="box clearfix">
+					{list table="shop_goods" condition="status = 1 AND trash = 0"  order="sales_sum DESC" limit="5" item="vo" key="i"}
+						<div class="shop-list-p">
+							<div class="pic">
+								<a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}"><img src="{$vo.id|goods_thum_images=220,220}" alt=""></a>
+								<div class="btn-box"><a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}" class="cmall-btn-d">查看详情</a></div>
+							</div>
+							<div class="info">
+								<div class="tag">
+									{eq name="vo.is_new" value="1"}
+										<span class="item">全新</span>
+									{/eq}
+									{eq name="vo.is_comm" value="1"}
+										<span class="item item-a">推荐</span>
+									{/eq}
+								</div>
+								<p class="title"><a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}">{$vo.title}</a></p>
+								<p class="price">
+									<del>{:web_currency()}{$vo.market_price}</del>
+									<span class="color--9b1b33">{:web_currency()}{$vo.shop_price}</span>
+								</p>
+							</div>
+						</div>
+					{/list}
+						
+					</div>
+				</div>
+			</div>
+
+			<!-- 横条、活动 -->
+			<div class="block mt40"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/list_03.jpg" alt="" /></a></div>
+			<div class="block mt10"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/list_10.jpg" alt="" /></a></div>
+		</div>
+
+	</main>
+
+	{include file='common/footer'/}
+
+
+	<script src="{:tb_config('resource_path',1)}shop/js/magnifier.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.lightSlider.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.imageGallery').lightSlider({
+				speed: 800,
+				slideMove: 5,
+		      	item:5,
+		      	slideMargin:10,
+		      	enableTouch: false,
+		      	enableDrag: false,
+		      	pager: false
+		    });
+		})
+	</script>
+	<script type="text/javascript">
+	$(function() {
+		var magnifierConfig = {
+			magnifier : "#magnifier1",//最外层的大容器
+			width : 500,//承载容器宽
+			height : 500,//承载容器高
+			moveWidth : 300,//如果设置了移动盒子的宽度，则不计算缩放比例
+			zoom : 1.8//缩放比例
+		};
+		var _magnifier = magnifier(magnifierConfig);
+
+		// 固定商品详情
+		var tab = $('.detail-tab-nav-box');
+		var t = tab.offset().top;
+		var l = tab.offset().left;
+		var w = tab.width();
+		$(window).scroll(function() {
+			var top = $(window).scrollTop();
+			if(top >= t) {
+				tab.css({
+					'position': 'fixed',
+					'top': '0px',
+					'left': l + 'px',
+					'width': w + 'px',
+					'z-index': '999'
+				})
+			} else {
+				tab.css('position','static');
+			}
+		})
+
+		commentType = 1; // 评论类型
+        ajaxcomment(1,1);// ajax 加载评价列表
+        ajaxconsult(1);// ajax 加载咨询列表
+	});
+
+	 // 用ajax分页显示评论
+    function ajaxcomment(type,page){
+
+        $.ajax({
+            type : "GET",
+            url:"{:U('shop/Goods/ajaxComment',['goods_id'=>$goods['id']])}?type="+type+"&page="+page,//+tab,
+            success: function(data){
+                $("#ajax_comment_return").html('');
+                $("#ajax_comment_return").append(data);
+            }
+        });
+    }
+
+    function showQues() {
+    	var user_id = "{$eBiz.session.user.id}";
+    	if (user_id=="") {
+    		layer.msg('发布咨询提问，需要登录，请先行登录',{time:1500},function() {
+    			openWinLogin();    			
+    		});
+    		return false;
+    	}
+
+    	var index = layer.open({
+		  type: 2,
+		  title: "商品咨询",
+		  shadeClose: false,
+		  shade:  [0.8, '#393D49'],
+		  maxmin: true, //开启最大化最小化按钮
+		  area: ['420px', '240px'],
+		  content: "{:U('goods/ask_ques',['goods_id'=>$goods['id']])}"
+		});
+
+    }
+
+     // 用ajax分页显示评论
+    function ajaxconsult(page){
+
+        $.ajax({
+            type : "GET",
+            url:"{:U('shop/Goods/ajaxConsult',['goods_id'=>$goods['id']])}?page="+page,//+tab,
+            success: function(data){
+                $("#ajax_consult_return").html('');
+                $("#ajax_consult_return").append(data);
+            }
+        });
+    }
+
+    function collectGoods(goods_id,spec_key) {
+    	$.ajax({
+    		url:"{:U('Goods/goods_collect')}",
+    		data:{
+    			goods_id:goods_id,
+    			spec_key:spec_key
+    		},
+    		success: function(data){
+    			layer.msg(data.msg,{time:2000},function () {
+    				openWinLogin();
+    			});
+    		}
+    	});	
+    }
+
+    // 关注，取消关注店铺
+    function toggleShop(shop_id,obj) {
+    	$.ajax({
+    		url:"{:url('shop/Shop/collect_shop')}",
+    		data:{
+    			id:shop_id
+    		},
+    		success: function(data){
+    			switch(data.status)
+    			{
+    				case 0:
+    					location.href="{:url('User/login')}";
+    					break;
+
+    				case -1:
+    					layer.msg(data.msg);
+    					break;
+
+    				case -2:
+    					layer.msg(data.msg);
+    					break;
+
+    				case 1:
+    					layer.msg(data.msg,{time:1000},function () {
+    						$(obj).html('<img src="{:tb_config('resource_path',1)}shop/images/m_17.png" alt=""><span>取消关注</span>');
+    					});
+    					break;
+
+    				case 2:
+    					layer.msg(data.msg,{time:1000},function () {
+    						$(obj).html('<img src="{:tb_config('resource_path',1)}shop/images/m_17.png" alt=""><span>关注店铺</span>');
+    					});
+    					break;
+    			}
+    		}
+    	});	
+    }
+
+  
+
+	// 规格选择
+	$('.area-item').on("change",'.check-item input',function() {
+		var me = $(this);
+		// console.log(me.attr('data-url'))
+		if(me.attr('disabled')) { return ; }
+		if(me.prop('checked')) {
+			me.parent().addClass("on").siblings().removeClass('on');
+			me.prop('checked',true);
+		}
+		location.href = me.parent().attr('data-url');
+	})
+
+	// 详情tab
+	function detailTab(obj,num) {
+		// var el = $('.detail-tab-list[data-tab=' + num + ']');
+		var me = $(obj);
+		el = me.parent().parent().siblings().find('.detail-tab-list[data-tab=' + num + ']');
+		me.addClass('on').siblings('.tab-item').removeClass('on');
+		el.fadeIn().siblings('.detail-tab-list').fadeOut();
+	}
+
+	// 查看评论图片
+	$('.comment-item .comment-img').on('click','.thumb-item',function(e) {
+		e.preventDefault();
+		var me = $(this);
+		var num = me.index();
+		me.addClass('on').siblings('.thumb-item').removeClass('on');
+		var src = me.attr('href');
+		// console.log(num);
+		me.parent().siblings('.show-img').fadeIn();
+		var showImg = me.parent().siblings('.show-img').find('.img img');
+		showImg.hide().attr('src',src).fadeIn();
+	})
+	// 关闭查看评论图片
+	$('.comment-item .comment-img').on('click','.show-img .close',function() {
+		$(this).parent().fadeOut();
+		$(this).parent().siblings('.thumb').find('.thumb-item.on').removeClass('on');
+	});
+	$('.comment-item .comment-img').on('click','.show-img .prev',function() {
+		var me = $(this);
+		toggleImg(0,me);
+	})
+	$('.comment-item .comment-img').on('click','.show-img .next',function() {
+		var me = $(this);
+		toggleImg(1,me);
+	})
+	// 按钮切换评论图片事件
+	function toggleImg(num,obj) {
+		// console.log(obj);
+		var cur,curNum;
+		var thumb = obj.parent().siblings('.thumb').find('.thumb-item');
+		var len = thumb.length;
+		if(num == 0) {
+			// console.log('prev')
+			cur = obj.parent().siblings('.thumb').find('.thumb-item.on').prev();
+			curNum = cur.index();
+		}
+		if(num == 1) {
+			// console.log('next')
+			cur = obj.parent().siblings('.thumb').find('.thumb-item.on').next();
+			curNum = cur.index();
+		}
+		// console.log(curNum);
+		if(curNum < 0) { return ; }
+		thumb.eq(curNum).addClass('on').siblings('.thumb-item').removeClass('on');
+		var src = cur.attr('href');
+		// var num = obj.index();
+		// console.log(num)
+		// console.log(len)
+		var showImg = cur.parent().siblings('.show-img').find('.img img');
+		showImg.hide().attr('src',src).fadeIn();
+	}
+
+	// 附件
+	function logFittings(obj) {
+		var input = $('.suits-input:checked');
+		var id = '';
+		var num = input.length;
+		var vl = '';
+		input.each(function() {
+			id += $(this).attr('data-id') + ',';
+			vl += $(this).val()+',';
+		})
+		$('#bind_goods').val(vl);
+		$('.fittings .infos .cunt').text(num);
+
+		$.ajax({
+			url:"{:U('Goods/ajaxCountBinds')}",
+			data:{
+				keys:vl
+			},
+			success: function(data){
+				var total_fee = $('#fee_total').val();
+				total_fee = parseInt(total_fee) + parseInt(data.fee);
+				$('#bind_total').html('￦'+total_fee);
+			}
+		});	
+	}
+
+	function addBindCart() {
+		var bind_goods = $('#bind_goods').val();
+		var data = $('#buy_goods_form').serialize();
+		data = data+'&binds='+bind_goods;
+		$.ajax({
+		    type : "POST",
+		    url:"{:U('Cart/ajaxBindCart')}",
+		    data : data,
+		    dataType : 'json',
+		    success: function(data){
+				if(data.code < 0)
+				{
+					layer.alert(data.msg, {icon: 2});
+					return false;
+				}else{
+			   		layer.msg('加入购物车成功',{time:1000},function() {
+				   		location.href = "{:U('shop/Cart/cart')}";   
+			   		});
+			   }
+			   
+		    }
+		});
+	}
+
+	// 查看手机问答
+	$('.detail-qa').on('click','.qa-item .answer .more',function() {
+		var me = $(this);
+		var is = me.attr('data-is')
+		// console.log(is)
+		if(is == '1') {
+			me.attr('data-is','0');
+			me.text('收起回答')
+		} else if(is == '0') {
+			me.attr('data-is','1');
+			me.text('查看剩余回答');
+		}
+		me.parent().siblings('.an-item').toggle();
+	})
+
+
+	// 购物车数量操作
+	$('.shop-num .reduce').click(function() {
+		var input = $('#goods_num');
+		var num = Number(input.val());
+		if(num == 1) {
+			layer.msg('不能小于1');
+			return ;
+		} else {
+			input.val(--num);
+			ajaxChangNum();
+		}
+	})
+	$('.shop-num .add').click(function() {
+		var input = $('#goods_num');
+		var num = Number(input.val());
+		var max = Number($(this).attr('data-max'));
+		if(num == max) {
+			layer.msg('不能大于' + max);
+			return ;
+		} else {
+			input.val(++num);
+			ajaxChangNum();
+		}
+	})
+
+	function ajaxChangNum() {
+		$.ajax({
+			url:"{:U('ajaxChangNum')}",
+			data:{
+				price:"{$goods_price}",
+				nums:$('#goods_num').val()				
+			},		
+			success: function(data){
+				$('#selected_total').html(data.data);
+				$('#fee_total').val(data.fee);
+				$('#goods_total').html(data.data);
+			}
+		});	
+	}
+
+	function ajaxBuy() {
+		$.ajax({
+			type : "POST",
+			url:"{:U('shop/Cart/ajaxAddCart')}",
+			data : $('#buy_goods_form').serialize(),
+			dataType : 'json',
+			success: function(data){
+				location.href = '{:url("shop/cart/cart2")}?cart='+data.data.id;
+			}
+		});
+	}
+	
+
+	function showSpecs(spec,spec_key,item,obj) {
+		$(obj).parent().addClass('on').siblings().removeClass('on');
+		$(obj).parent().addClass('on').siblings().find('input').prop('checked',false);
+		$.ajax({
+			url:"{:U('getChooseSpec')}",
+			data:{
+				goods_id:"{$goods.id}",
+				item:item,
+				spec_key:spec_key,
+				spec:spec
+			},	
+			success: function(data){
+				var Html = '<div class="n">请选择：</div><div class="m">';
+				for (var i = 0; i < data.length; i++) {
+					var kes = data[i];
+					if (kes.enable) {
+						Html += '<label for="c'+kes.spec_key+'" data-url="'+kes.href+'" class="check-item">'
+							+ '<input type="radio" id="c'+kes.spec_key+'" name="goods_spec['+item+']" value="'+kes.key+'"/><span title="'+kes.key_name+'">'+kes.key_name+'</span>'
+							+ '</label>';
+					}else{
+						Html += '<label for="c'+kes.spec_key+'" data-url="'+kes.href+'" class="check-item disabled">'
+							+ '<span title="'+kes.key_name+' 无此商品">'+kes.key_name+'</span>'
+							+ '</label>';
+					}
+				}
+				Html += '</div></div>';
+				$('#gSpec_1').html(Html);
+				$('#gSpec_1').addClass('messageajax-on');
+				// $('#gSpec_1').css('background','#ffe6e6');
+			}
+		});	
+	}
+
+	// 附件切换
+	$('.fittings .parts-tab-nav-box').on('click','.tab-item',function() {
+		var me = $(this);
+		var id = me.attr('data-tab');
+		me.addClass('on').siblings('.tab-item').removeClass('on');
+		$('.fittings .suits').find('.detail-tab-list[data-tab="' + id + '"]').addClass('on').siblings('.detail-tab-list').removeClass('on');
+	})
+	</script>
+	<script src="{:tb_config('resource_path',1)}shop/js/jquery.downCount.js"></script>
+	<script type="text/javascript">
+
+		$('.countdown').downCount({
+            date: '{$end_time}',
+            offset: +8
+        }, function () {
+        	location.reload();        		
+        });
+	</script>
+	<script type="text/javascript">
+		// Kakao分享  调用方法： <div id="kakaostory-share-button" data-url="http://TB MALL.iswweb.com"></div>
+	  	window.kakaoAsyncInit = function () {
+	    	Kakao.Story.createShareButton({
+	      		container: '#kakaostory-share-button'
+		    });
+	  	};
+
+	  	(function (d, s, id) {
+		    var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) return;
+		    js = d.createElement(s); js.id = id;
+		    js.src = "//developers.kakao.com/sdk/js/kakao.story.min.js";
+		    fjs.parentNode.insertBefore(js, fjs);
+	  	}(document, 'script', 'kakao-js-sdk'));
+
+	  	// Naver分享 调用方法  naverShare('http://TB MALL.iswweb.com','TB MALL商城')
+	  	function naverShare(url,title) {
+	 		var url = encodeURI(encodeURIComponent(url));
+	      	var title = encodeURI(title);
+	      	var shareURL = "http://share.naver.com/web/shareView.nhn?url=" + url + "&title=" + title;
+	      	document.location = shareURL;
+	  	}
+
+	</script>
+	
+</body>
+</html>

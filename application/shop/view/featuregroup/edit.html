@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<body>
+<div style="padding: 30px">
+    <form class="layui-form" action="{:U('Featuregroup/save')}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:lang('feature_group_list_field_name')}</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" value="{$fg.name}">
+                <input type="hidden" name="type" value="{$type}">
+                <input type="hidden" name="id" value="{$fg.id}">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:lang('feature_group_list_field_item')}</label>
+            <div class="layui-input-inline">
+                <select name="city" lay-filter="item" lay-search>
+                    <option value="" selected>{:lang('search')}</option>
+                    {volist name="itemList" id="vo"}
+                    <option value="{$vo.id}" class="item{$vo.id}">{$vo.name}</option>
+                    {/volist}
+                </select>
+            </div>
+
+            <div class="layui-input-inline" >
+                <button class="layui-btn layui-btn-danger" type="button" onclick="removeItemList();">{:lang('feature_group_list_clear_select')}</button>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item" >
+            <div class="layui-input-block" id="select-item">
+                {foreach name="selectItemList" key="key" item="name"}
+                <input type="checkbox" class="item_{$key}" name="item[{$key}]" title="{$name}" value="{$key}" checked>
+                {/foreach}
+            </div>
+        </div>
+
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">{:lang('feature_group_list_field_remark')}</label>
+            <div class="layui-input-block">
+                <textarea name="remark" placeholder="请输入内容" class="layui-textarea">{$fg.remark}</textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:lang('feature_group_list_field_status')}</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="status" value="1" lay-skin="switch" {eq name="$fg.status" value="1"}checked{/eq}>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">{:lang('feature_group_list_field_sort')}</label>
+            <div class="layui-input-inline">
+                <input type="text" name="sort" value="{$fg.sort}" autocomplete="off" class="layui-input" >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        var item_name = '';
+        var item_value = '';
+        var form = '';
+        layui.use('form', function(){
+            form = layui.form();
+
+            form.on('select(item)', function(data){
+                var name_id = '.item'+data.value;
+                item_name = $(name_id).html();
+                item_value = data.value;
+                addItem();
+            });
+
+            form.on('submit(*)', function(data){
+                $.ajax({
+                    type:'post',
+                    url:$('.layui-form').attr('action'),
+                    data:data.field,
+                    success:function (data) {
+                        if( data.code == 1 )
+                        {
+                            var frame = layer.confirm('修改成功,是否需要继续修改其他数据?', {
+                                btn: ['需要','返回列表'] // 按钮
+                            }, function(){
+                                location.reload();
+                            },function () {
+                                parent.location.reload();
+                                parent.layer.closeAll();
+                            });
+                        }
+                        else{
+                            layer.alert('修改失败,原因:\n'+data.msg);
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+        function addItem() {
+            if( item_value != '' && item_name !='' )
+            {
+                var item_class = '.item_'+item_value;
+                if( $(item_class).val() == '' || $(item_class).val() == undefined ){
+                    var checkbox_html = '<input type="checkbox" class="item_'+item_value+'" name="item['+item_value+']" title="'+item_name+'" value="'+item_value+'" checked>';
+                    $('#select-item').append(checkbox_html);
+                    form.render();
+                }
+            }
+        }
+        function removeItemList() {
+            var frame = layer.confirm('你确定要清空选择的分组成员么?', {
+                btn: ['确定','不了'] //按钮
+            }, function(){
+                $('#select-item').html(' ');
+                layer.close(frame);
+            });
+        }
+    </script>
+
+
+
+
+</div>
+</body>
+<script>
+
+</SCRIPT>
+</html>

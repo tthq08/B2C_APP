@@ -1,0 +1,123 @@
+{include file="common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+<!-- 弹出新增收货地址 -->
+
+<div class="address-layer cmall-layer" style="display: block;">
+	<!-- <div class="topbar">
+		<span>添加收货地址</span>
+		<span class="close-layer" onclick="closeAddress()"></span>
+	</div> -->
+	<div class="layer-content mt40">
+		<div class="editor-address-box">
+		<form id="addrForm" action="{:U('shop/cart/set_address')}" method="post">
+			<div class="address-form">
+				<div class="address-form-row clearfix mb15">
+					<div class="form-item-v1 w48 fl">
+						<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_consignee_name}</p>
+						<input type="text" name="consignee" value="{$addr.consignee|default=''}" placeholder="{:lang('Addr_form_lang_kr')}" class="input--40" />
+						<input type="text" name="consignee_en" value="{$addr.consignee_en|default=''}" placeholder="{:lang('Addr_form_lang_en')}" class="input--40" style="margin-right: 10px;" />
+					</div>
+					<div class="form-item-v1 w48 fr">
+						<p class="f-name mb5">{$eBiz.lang.Addr_form_mail}</p>
+						<input type="text" name="email" value="{$addr.email|default=''}"  placeholder="{$eBiz.lang.Addr_form_mail}" class="input--100" />
+					</div>
+				</div>
+				<div class="address-form-row clearfix mb15">
+					<div class="form-item-v1 w48 fl">
+						<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_mobile}</p>
+						<input type="text" name="mobile" value="{$addr.mobile|default=''}"  placeholder="{$eBiz.lang.Addr_form_mobile}" class="input--100" onpaste="this.value=this.value.replace(/[^\d-]/g,'')" onKeyUp="this.value=this.value.replace(/[^\d-]/g,'')" maxlength="15" />
+					</div>
+					<div class="form-item-v1 w48 fr">
+						<p class="f-name mb5">{$eBiz.lang.Addr_form_phone}</p>
+						<input type="text" name="phone" value="{$addr.phone|default=''}"  placeholder="{$eBiz.lang.Addr_form_phone}" class="input--100" onpaste="this.value=this.value.replace(/[^\d-]/g,'')" onKeyUp="this.value=this.value.replace(/[^\d-]/g,'')" maxlength="15"/>
+					</div>
+				</div>
+				<div class="address-form-row clearfix mb15">
+					<div class="form-item-v1 w48 fl">
+					<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_zipcode}</p>
+						<input type="text" id="sample6_postcode" name="zip" value="{$addr.zip|default=''}"  placeholder="{:lang('Addr_form_zipcode_place')}" class="input--60" maxlength="15"/>
+						<a href="javascript:;" onclick="sample6_execDaumPostcode()" class="address-btn w30" style="margin-left: 21px;line-height: 36px;">{$eBiz.lang.Addr_form_btn_search}</a>
+					</div>
+					
+					<!-- <div class="form-item-v1 w33 fl">
+						<select name="province" id="province" onChange="get_city(this,'{:U('shop/user/getAddressList',['level'=>2])}')" class="province input--90">
+						    <option value="0">{$eBiz.lang.Addr_form_province}</option>
+						    {volist name="province" id="p"}
+                                <option {if condition="isset($addr['province']) AND $addr['province'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+                            {/volist}
+						</select>
+					</div>
+					<div class="form-item-v1 w33 fl">
+						<select name="city" id="city" onChange="get_area(this,'{:U('shop/user/getAddressList',['level'=>3])}')" class="province input--90">
+						    <option  value="0">{$eBiz.lang.Addr_form_city}</option>
+						    {notempty name="city"}
+						    {volist name="city" id="p"}
+                                <option {if condition="$addr['city'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+                            {/volist}
+						    {/notempty}
+						</select>
+					</div>
+					<div class="form-item-v1 w33 fl">
+						<select name="district" id="district" class="province input--90">
+						    <option value="0">{$eBiz.lang.Addr_form_distri}</option>
+						    {notempty name="district"}
+						    {volist name="district" id="p"}
+						        <option {if condition="$addr['district'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+						    {/volist}
+						    {/notempty}
+						</select>
+					</div> -->
+					<div class="form-item-v1 w48 fr">
+						<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_clearance}</p>
+						<input type="text" name="clearance_sn" value="{$addr.clearance_sn|default=''}"  placeholder="{:lang('Addr_form_clearance_place')}" class="input--50" maxlength="30"/>
+						<a href="https://unipass.customs.go.kr/csp/persIndex.do" target="_blank" class="address-btn w40" style="margin-left: 21px;line-height: 36px;">{$eBiz.lang.Addr_form_clearance_btn}</a>
+					</div>
+				</div>
+				<div class="address-form-row clearfix mb15">
+					<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_base_address}</p>
+					<div class="form-item-v1">
+						<input type="text" id="sample6_address" name="base_addr" value="{$addr.base_addr|default=''}" readonly="" class="input--100" />
+					</div>
+				</div>
+				<div class="address-form-row clearfix mb15">
+					<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_addr_detail}</p>
+					<div class="form-item-v1">
+						<input type="text" id="sample6_address2" name="address" value="{$addr.address|default=''}"  placeholder="{$eBiz.lang.Addr_form_addr_detail}" class="input--100" />
+					</div>
+				</div>				
+				<div class="address-form-row clearfix">
+					<p class="f-name mb5"><span class="impor">*</span>{$eBiz.lang.Addr_form_en_address}：</p>
+					<div class="form-item-v1">
+						<span id="en_address">{$addr.en_address|default=''}</span>
+						<input type="hidden" id="en_addr" name="en_address" value="{$addr.en_address|default=''}">
+					</div>
+				</div>
+
+				<div class="address-form-row btn-box center mt20">
+					{:token()}
+					<input type="hidden" name="id" value="{$addr.id|default=''}">
+					<a href="javascript:;" onclick="postForm();" class="address-btn w70">{$eBiz.lang.Addr_form_btn_sav}</a>
+				</div>
+			</div>
+		</form>
+		</div>
+	</div>
+</div>
+<script src="https://ssl.daumcdn.net/dmaps/map_js_init/postcode.v2.js"></script>
+<script type="text/javascript">
+
+	function postForm() {
+    	$.ajax({
+    	    type : "POST",
+    	    url:$('#addrForm').attr('action'),
+    	    data :$('#addrForm').serialize(),
+    	    dataType : 'json',
+    	    success: function(data){
+    			parent.layer.msg('设置成功',{time:1000},function () {
+    				parent.address_callback(data);
+    			})
+    	    }
+    	});
+    }
+</script>

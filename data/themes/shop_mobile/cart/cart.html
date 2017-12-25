@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Cart_page_title} - {:tb_config('web_site_title',1)}</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f0f2f5">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Cart_page_title} </h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="images/filter.png" width="24" alt="" />
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-body fixed-footer-body">
+
+		<!-- 购物车列表 -->
+		<form name="cart_form" id="cart_form" action="{:U('shop/cart/ajaxCartList')}">
+		<section class="cartCon" id="ajax_return">
+			<!-- Ajax加载购物车列表 -->
+		</section>
+		</form>
+		<!-- 猜你喜欢 -->
+		<section class="guess-you-like">
+			<div class="guess-title">
+				<h5>{$eBiz.lang.Cart_guess_like}</h5>
+			</div>
+			<div class="guess-content clearfix">
+			{volist name="recomm_goods" id="vo"}
+				<a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['id']])}" class="guess-list">
+					<div class="pic"><img src="{$vo.id|goods_thum_images=200,200}" alt="" /></div>
+					<div class="info">
+						<div class="g-name">{$vo.title}</div>
+						<div class="g-price">
+							<span class="price">{$vo['shop_price']}<small>元</small></span>
+							<del>{$vo['market_price']}元</del>
+						</div>
+					</div>
+				</a>
+			{/volist}				
+			</div>
+		</section>
+		<!-- 提交订单 -->
+		<div class="cart-statements">
+			<div class="fl s-left">
+				<div class="reset-check">
+					<input type="checkbox" class="shop-check" id="cart-allcheck" />
+					<label for="cart-allcheck">{$eBiz.lang.Cart_select_all}</label>
+				</div>
+				<div class="sett-summ">
+					<h5>{$eBiz.lang.Cart_total}：<span class="p" style="color:red;" id="cart_total"></span><small style="color:red;">元</small></h5>
+					<!-- <p>总额：307500 <span>立减：{:web_currency()}35.00</span></p> -->
+				</div>
+			</div>
+			<div class="fr s-right">
+				<a href="{:U('cart/cart2')}" class="sett-btn">{$eBiz.lang.Cart_gobuy}</a>
+			</div>
+		</div>
+	</main>
+	{include file="public/right" /}
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			ajax_cart_list(); // ajax 请求获取购物车列表
+		});
+
+		var before_request = 1; // 上一次请求是否已经有返回来, 有才可以进行下一次请求
+
+		function ajax_cart_list(){
+
+			if(before_request == 0) // 上一次请求没回来 不进行下一次请求
+			    return;
+			before_request = 0;
+
+			$.ajax({
+				type : "POST",
+				url:"{:U('Cart/ajaxCartList')}",//+tab,
+				data : $('#cart_form').serialize(),// 你的formid
+				success: function(data){
+					if (data.code==0) {
+						layer.msg(data.msg);
+						var info = data.data;
+						$("input[name='goods_num["+info.cart_id+"]']").val(info.nums);
+						before_request = 1;	
+						// return false;
+					}else{						
+						$("#ajax_return").empty().append(data);
+						before_request = 1;	
+					}
+				}
+			});
+
+		}
+
+		//商品加减操作  //事件写在行间，所以需放在document ready 外面
+	 	function switch_num(num,cart_id,store_count)
+		{
+			var num2 = parseInt($("input[name='goods_num["+cart_id+"]']").val());
+			num2 += num;
+			if(num2 < 1) num2 = 1; // 保证购买数量不能少于 1
+			if(num2 > store_count)  num2 = store_count;
+
+	        $("input[name='goods_num["+cart_id+"]']").val(num2);
+	        // $('#header_cart_nums').html(num2);
+			ajax_cart_list(); // ajax 更新商品价格 和数量
+			//更新商品信息
+	  	}
+
+	  	function del_cart(ids){
+		 	$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/ajaxDelCart')}",//+tab,
+				data:{ids:ids}, // 
+			    dataType:'json',		
+				success: function(data){
+
+				   if(data.code == 1){
+				   	    layer.msg(data.msg,{time:1000},function () {
+					    	ajax_cart_list(); // ajax 请求获取购物车列表				   	    	
+				   	    });
+				   }else{
+					   //layer.msg(data.msg);
+					   layer.msg(data.msg)
+				   }	   			   
+				}
+			});
+		}
+
+		// 数量操作
+		// function goodsQuantity(obj,type) {
+		// 	var me = $(obj);
+		// 	var input = me.siblings('input');
+		// 	var curVal = Number(input.val());
+		// 	if(type == '0') {
+		// 		// 减操作
+		// 		if(--curVal < 1) { alert('数量不允许为1,如要删除请点击编辑按钮'); return ; }
+		// 		input.val(curVal);
+		// 	} else if(type == '1') {
+		// 		input.val(++curVal);
+		// 	}
+		// }
+
+	</script>
+	
+</body>
+</html>

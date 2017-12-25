@@ -1,0 +1,99 @@
+<div id="main" style="width: 80%;height:450px; margin: 0 auto;">
+
+</div>
+<script type="text/javascript">
+
+    var myChart = echarts.init(document.getElementById('main'));
+
+    var names = {:json_encode($names)};
+    var output = {$output};
+    var input = {$input};
+
+    var option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow',
+                label: {
+                    show: true
+                }
+            }
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                mark: {show: true},
+                dataView: {show: true, readOnly: false},
+                magicType: {show: true, type: ['line', 'bar']},
+                restore: {show: true},
+                saveAsImage: {show: true}
+            }
+        },
+        calculable: true,
+        legend: {
+            data: ['支出', '收入'],
+            itemGap: 5
+        },
+        grid: {
+            top: '12%',
+            left: '10%',
+            right: '10%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: names
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                name: '积分收支',
+                axisLabel: {
+                    formatter: function (a) {
+                        a = +a;
+                        return isFinite(a)
+                                ? echarts.format.addCommas(+a)
+                                : '';
+                    }
+                }
+            }
+        ],
+        dataZoom: [
+            {
+                show: true,
+                start: 94,
+                end: 100
+            },
+            {
+                type: 'inside',
+                start: 94,
+                end: 100
+            },
+            {
+                show: true,
+                yAxisIndex: 0,
+                filterMode: 'empty',
+                width: 30,
+                height: '80%',
+                showDataShadow: false,
+                left: '93%'
+            }
+        ],
+        series: [
+            {
+                name: '支出',
+                type: 'bar',
+                data: output
+            },
+            {
+                name: '收入',
+                type: 'bar',
+                data: input
+            }
+        ]
+    };
+
+    myChart.setOption(option);
+</script>

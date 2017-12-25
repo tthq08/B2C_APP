@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Account_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<!-- 用户信息 -->
+				<div class="j-user-section user-introduct plr20-section">
+					<div class="wallet-introduct">
+						<div class="wallet-item">
+							<ul class="clearfix">
+								<li class="w-item">
+									<div class="wa-value">
+										<p class="t">{$eBiz.lang.Account_account_mny}</p>
+										<p class="mt20"><span class="n">{:web_currency()}{$user.user_money}</span></p>
+									</div>
+									<div class="wa-intr fr" style="text-align: right;">
+										<a href="{:U('User/recharge')}" class="wa-btn wa-recharge-btn">{$eBiz.lang.Account_recharge}</a>
+										<a href="{:U('User/withdrawals')}" class="wa-btn">{$eBiz.lang.Account_withdrawals}</a>
+									</div>
+								</li>
+								<li class="w-item">
+									<div class="wa-value">
+										<p class="t">{$eBiz.lang.Account_my_points}</p>
+										<p class="mt20"><span class="n">{$user.pay_points}</span></p>
+									</div>
+									<!-- <div class="wa-intr fr" style="text-align: right;">
+										<p><a href="javascript:;" class="color--b1191a">查看积分详情</a></p>
+										<div class="blank50"></div>
+										 <span>我的总积分：1200000</span>
+									</div>  -->
+								</li>
+								<li class="w-item">
+									<div class="wa-value">
+										<p class="t"><a href="{:U('User/coupon',['status'=>'usable'])}">{$eBiz.lang.Account_use_coupon}</a></p>
+										<p class="mt20"><span class="n">{$useable_coupon}<small>{$eBiz.lang.Account_coupon_unit}</small></span></p>
+									</div>
+									<div class="wa-intr fr" style="vertical-align: bottom;">
+										<p class="note-item"><a href="{:U('User/coupon',['status'=>'willout'])}"><span class="l">{$eBiz.lang.Account_willout_coupon}</span><em class="r">{$willout_coupon}</em></a></p>
+										<p class="note-item"><a href="{:U('User/coupon',['status'=>'timeout'])}"><span class="l">{$eBiz.lang.Account_timeout_coupon}</span><em class="r">{$timeout_coupon}</em></a></p>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<!-- 收支明细 -->
+				<div class="j-user-section user-section user-introduct plr20-section mt20">
+					<div class="user-tab-top">
+						<ul class="user-tab-box clearfix">
+							<li class="top-item on"><a href="javascript:;">{$eBiz.lang.Account_account_log}</a></li>
+							<!-- <li class="top-item"><a href="javascript:;">三个月前收支明细</a></li> -->
+						</ul>
+						<div class="fr"><a href="javascript:;">{$eBiz.lang.Account_recharge_log}</a></div>
+					</div>
+					<div class="user-content pb30" id="account_log">
+						<!-- ajax 获取用户的收支明细记录 -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+	
+</body>
+<script type="text/javascript">
+	$(function() {
+		ajaxDftAccountLog();
+	});
+	$('body').on('click','.user-pagination li:not(".disabled")',function(e) {
+		e.preventDefault();
+		console.log('fdsa')
+		var me = $(this);
+		var url = me.find('a').attr('href');
+		ajaxGetAccountLog(url)
+	})
+
+	function ajaxDftAccountLog() {
+		$.ajax({
+			url:"{:U('User/ajaxAccountLog')}",
+			success: function(data){									
+				$('#account_log').html(data);
+			}
+		});	
+	}
+	function ajaxGetAccountLog(url) {
+		$.ajax({
+			url:url,
+			success: function(data){									
+				$('#account_log').html(data);
+			}
+		});	
+	}
+</script>
+</html>

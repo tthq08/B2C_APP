@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{:tb_config('web_site_title',1)}-商品列表</title>
+
+	{tbcss module="shop" src="common.css,style.css,mall.css,list.css,lightSlider.css"}
+	{tbjs  module="shop" src="jquery.min.js"}
+
+	<style type="text/css">
+	.lSSlideOuter  {width: 100%;padding-top: 0px;}
+	.lSSlideWrapper { height: 230px; }
+	.lSSlideWrapper .imageGallery { height: 100%!important; }
+	.lSSlideWrapper .imageGallery li { height: 100%; }
+	.lSSlideWrapper .imageGallery li a {
+		display: block;
+		height: 100%;
+		text-align: center;
+	}
+	.lSSlideWrapper .imageGallery li img {
+		height: 100%;
+	}
+	.lSSlideOuter .lSPager.lSGallery {
+		height: 40px;
+	}
+	.lSSlideOuter .lSPager.lSGallery li {
+		border: 2px solid #999;
+	}
+	</style>
+</head>
+<body class="has-right">
+
+	<!-- top -->
+	{include file="common/top_header"}
+
+	<!-- header -->
+	{include file="common/header"}
+
+	<!-- nav -->
+	{include file="common/nav"}
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 当前位置、已筛选 -->
+			<div class="c-location-section">
+				<div class="container w1200 c-curmbAttr-box">
+					<ul class="">
+						<li class="location-item has"><a href="/">首页</a></li>
+
+						{volist name="selected_param" id="vo"}
+						<li class="curmbAttr">
+							<a href="{if condition='!empty($vo[3])'}{:removeFilterUrl($vo[2],$vo[3])}{else/}{:removeFilterUrl($vo[2])}{/if}" class="attr">
+								{$vo.0}：{$vo.1}<span class="close"></span>
+							</a>
+						</li>
+						{/volist}
+
+					</ul>
+					<div class="empty-selector">
+						<a href="javascript:;" class="empty-btn">清空筛选</a>
+					</div>
+				</div>
+			</div>
+			<!-- 显示商品block -->
+			<div class="c-show-block">
+				<div class="container w1200 box clear">
+					{notempty name="keyword"}
+					<div class="fl">
+						搜索：<span class="color--b1191a mr10" style="font-size: 15px;">{$keyword}</span>
+						<span>共{$goodsCount}个商品</span>
+					</div>
+					{/notempty}
+					<!-- <div class="fr">
+                        <div class="c-search">
+                            <input type="text" placeholder="在当前条件下搜索" />
+                            <a href="javascript:;" class="btn"><img src="{:tb_config('resource_path',1)}shop/picture/look.png" alt=""></a>
+                        </div>
+                    </div> -->
+				</div>
+			</div>
+			<!-- 分类 -->
+			<div class="c-selector mt20">
+				<div class="container w1200 box">
+					{volist name="attrList" id="vo"}
+					<div class="selector-wrap">
+						<div class="box clear">
+							<div class="sl-name">{$vo.attr_name}</div>
+							<div class="sl-value">
+								<div class="value-attr">
+									<!-- 正常选择、单选 -->
+									<div class="normal-show">
+										{volist name="$vo.attr_values" id="attr"}
+										<a class="s-item" href="{:filterUrl('screen',[$vo['id']=>$attr])}">{$attr}</a>
+										{/volist}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/volist}
+
+					{if condition="!empty($brandList)"}
+					<div class="selector-wrap">
+						<div class="box clear">
+							<div class="sl-name">品牌</div>
+							<div class="sl-value">
+								<div class="value-attr">
+									<!-- 正常选择、单选 -->
+									<div class="normal-show">
+										{volist name="brandList" id="vo"}
+										<a  href="{:filterUrl('brand',$vo['id'])}" class="s-item {if condition="!empty($param['brand']) && $param['brand'] == $vo['id']"}on{/if}">{$vo.name}</a>
+										{/volist}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					{/if}
+				</div>
+			</div>
+
+		<!-- 列表 -->
+		<div class="p-list-container mt10">
+			<div class="container w1200 clearfix">
+
+				<div class="cmall-product-ad fl">
+					<div class="ad-top">
+						<span>商品精选</span>
+					</div>
+					<div class="p-ad-bar">
+
+						{list table="shop_goods" condition="status = 1 AND trash = 0" order="sales_sum desc" limit="6" key="list_s" item="goods"}
+						<div class="ad-product-list">
+							<div class="pic">
+								<a href="javascript:;"><img src="{$goods.thumb}" alt="" /></a>
+							</div>
+							<div class="info">
+								<div class="price">
+									<span class="color--b1191a p">{:web_currency()}{$goods.shop_price}</span>
+									{if condition="!empty($goods.market_price)"}<del>{:web_currency()}{$goods.market_price}</del>{/if}
+								</div>
+								<div class="title"><a href="javascript:;">{$goods.name}</a></div>
+								<div class="msg">{$goods.title}</div>
+								<div class="comment">已有{:api('shop','Goods','goodsCommentNum',[$goods.id])}人评论</div>
+							</div>
+						</div>
+						{/list}
+
+					</div>
+				</div>
+
+				<div class="pl-wrap fr">
+					<!-- 筛选 -->
+					<div class="product-filter">
+						<div class="f-sort">
+							<a href="{:filterUrl('sort')}" class="item {if condition="empty($sort)"}on{/if}">综合</a>
+							<a href="{:filterUrl('sort',['sale'=>''])}" class="item {if condition="$sort == 'sale'"}on{/if}">销量</a>
+							<a href="{:filterUrl('sort',['comm'=>''])}" class="item {if condition="$sort == 'comm'"}on{/if}">推荐</a>
+							<a href="{:filterUrl('sort',['new'=>''])}" class="item {if condition="$sort == 'new'"}on{/if}">新品</a>
+							<!-- on-up为向上，on-down为向下 -->
+							<a href="{if condition="$sort_asc == 'down'"}{:filterUrl('sort',['price'=>'up'])}{else/}{:filterUrl('sort',['price'=>'down'])}{/if}" class="item price-i {if condition="$sort == 'price'"}on{if condition="$sort_asc == 'down'"}-down{else/}-up{/if}{/if} ">价格</a>
+						</div>
+						<div class="price-interval ml20">
+							<span class="input-box"><i>{:web_currency()}</i><input type="text" /></span>
+							<span>-</span>
+							<span class="input-box"><i>{:web_currency()}</i><input type="text" /></span>
+							<a href="javascript:;" class="btn">确认</a>
+						</div>
+						<div class="f-page">
+							<em class="mr20">共{$goodsCount}件商品</em>
+							<span class="mr10"><i class="color--eb1a16">{$currentPage}</i>/<i>{$lastPage}</i></span>
+							<span style="font-size: 0px;">
+								<a class="btn disabled" href="javascript:;"><img src="picture/a-l2.png" alt=""></a>
+								<a class="btn" href="javascript:;"><img src="picture/a-r2.png" alt=""></a>
+							</span>
+						</div>
+					</div>
+					<!-- 商品 -->
+					<div class="c-list-box pt20">
+						<div class="box clearfix">
+							{volist name="goodsList" id="goods"}
+							<div class="c-product-list">
+								<div class="pic">
+									<div class="imageGallery-box">
+										<ul class="imageGallery gallery list-unstyled">
+									    	<li data-thumb="{$goods.thumb}"> <a href="{$goods.url}"> <img src="{:common_thumb_img(getTableValue('shop_goods','id='.$goods['id'],'thumb'),220,280)}" /> </a> </li>
+										</ul>
+									</div>
+									<div class="right-top">
+										<a href="javascript:;" class="follow" title="关注">关注</a>
+									</div>
+								</div>
+								<div class="info">
+									<div class="price">
+										<span class="color--e4393c">{:web_currency()}{:priceFormat($goods['shop_price'])}</span>
+										{if condition="!$goods['market_price'] > 0"}
+										<small class="pl10">
+											<del>{:web_currency()}{:priceFormat($goods['market_price'])}{}</del>
+										</small>
+										{/if}
+									</div>
+									<div class="title">
+										{eq name="$goods.is_comm" value="1"}
+										<span class="product-tag product-tag-2">热卖</span>
+										{/eq}
+										{eq name="$goods.is_new" value="1"}
+										<span class="product-tag product-tag-1">新品</span>
+										{/eq}
+										<a href="javascript:;">{$goods.name}</a>
+									</div>
+									<div class="msg">{$goods.title}</div>
+									<div class="comment-other mb5">
+										已有<span class="c">{:api('shop','Goods','goodsCommentNum',[$goods.id])}</span>条评论
+									</div>
+								</div>
+							</div>
+							{/volist}
+
+						</div>
+					</div>
+
+					<!-- 分页 -->
+					<div class="c-pagination mt20">
+						<div class="box">
+							{$page}
+							<!--<a href="javascript:;" class="page-item on">1</a>-->
+							<!--<a href="javascript:;" class="page-item">2</a>-->
+							<!--<a href="javascript:;" class="page-item">3</a>-->
+							<!--<span class="txt-item">...</span>-->
+							<!--<a href="javascript:;" class="page-item">99</a>-->
+							<!--<a href="javascript:;" class="page-item">100</a>-->
+							<!--<span class="txt-item ml20 mr20">共23页</span>-->
+							<!--<span class="txt-item">到第<input type="text" />页</span>-->
+							<!--<a href="javascript:;" class="btn">确定</a>-->
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!-- 横条、活动 -->
+		<div class="block mt40"><a href="javascript:;"><img width="100%" src="picture/list_03.jpg" alt="" /></a></div>
+		<div class="block mt10"><a href="javascript:;"><img width="100%" src="picture/list_10.jpg" alt="" /></a></div>
+
+		</div>
+	</main>
+
+	{include file="common/footer"}
+
+	{tbjs module="shop" src="jquery.lightSlider.js"}
+	<script type="text/javascript">
+		$('.imageGallery').lightSlider({
+	        gallery:true,
+	        item:1,
+	        thumbItem:5,
+	        slideMargin: 0,
+	        speed: 700,
+	        pause: 3000,
+	        auto: false,
+	        loop: true
+	    })
+	</script>
+	<script type="text/javascript">
+		// 公用window对象
+		var win = $(window);
+		var winH = win.height();
+		var body = $('body');
+
+		// 显示更多
+		$('.selector-wrap .more-btn').click(function() {
+			var me = $(this);
+			me.toggleClass('on')
+			if(me.attr('on-turn') == 'on') {
+				me.text('收起');
+				me.attr('on-turn','off')
+			} else {
+				me.text('更多');
+				me.attr('on-turn','on')
+			}
+			me.parent().siblings('.value-attr').find('.normal-show').toggleClass('auto');
+		})
+		// 显示多选
+		$('.selector-wrap .multiselect-btn').click(function() {
+			var me = $(this);
+			me.addClass('on');
+			me.parent().siblings('.value-attr').find('.more-show').show();
+			me.parent().siblings('.value-attr').find('.normal-show').hide();
+		})
+		// 取消多选
+		$('.selector-wrap .more-show .cancel-multiselect').click(function() {
+			var me = $(this);
+			me.parent().parent().siblings('.normal-show').show();
+			me.parent().parent().hide();
+			me.parent().parent().parent().siblings('.value-control').find('.multiselect-btn').removeClass('on')
+		})
+		// 分类多选
+		$('.selector-wrap').on('click','.m-item',function() {
+			var me = $(this);
+			var input = me.find("input");
+			if(input.prop('checked')) {
+				input.prop('checked',false);
+			} else {
+				input.prop('checked',true);
+			}
+			me.toggleClass("on");
+			return false;
+		})
+	</script>
+	
+</body>
+</html>

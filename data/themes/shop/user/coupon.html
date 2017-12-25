@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Coupon_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong>{$eBiz.lang.Coupon_page_title}</strong>
+					<div class="fr">
+					<!-- 领取更多优惠券 -->
+						<a href="javascript:;" class="c-top-more"><img src="{:tb_config('resource_path',1)}shop/picture/c-mt-icon.png" alt="" /><span>{$eBiz.lang.Coupon_get_more}</span></a>
+					</div>
+				</div>
+				<!-- 收支明细 -->
+				<div class="j-user-section user-section plr20-section mt20">
+					<div class="user-tab-top">
+						<ul class="user-tab-box clearfix">
+							<!-- 全部优惠券 -->
+							<li class="top-item {empty name='status'}on{/empty}"><a href="{:U('User/coupon')}">{$eBiz.lang.Coupon_all_coupons}</a></li>
+							<!-- 可用优惠券 -->
+							<li class="top-item {eq name='status' value='usable'}on{/eq}"><a href="{:U('User/coupon',['status'=>'usable'])}">{$eBiz.lang.Coupon_useable_coupons}</a></li>
+							<!-- 即将到期 -->
+							<li class="top-item {eq name='status' value='willout'}on{/eq}"><a href="{:U('User/coupon',['status'=>'willout'])}">{$eBiz.lang.Coupon_willout_coupons}</a></li>
+							<!-- 过期优惠券 -->
+							<li class="top-item {eq name='status' value='timeout'}on{/eq}"><a href="{:U('User/coupon',['status'=>'timeout'])}">{$eBiz.lang.Coupon_timeout_coupons}</a></li>
+							<!-- 已使用 -->
+							<li class="top-item {eq name='status' value='used'}on{/eq}"><a href="{:U('User/coupon',['status'=>'used'])}">{$eBiz.lang.Coupon_used_coupons}</a></li>
+						</ul>
+						<!-- <div class="fr"><a href="help.html" class="color--005ea7">优惠券领取规则</a></div> -->
+						<div class="fr">
+							<div class="coupon-search">
+								<div class="input"><input type="text" id="code" /></div>
+								<a href="javascript:;" class="btn" onclick="dhCoupon();">兑换优惠券</a>
+							</div>
+						</div>
+					</div>
+					<script>
+						function dhCoupon() {
+							var code = $('#code').val();
+							if( code == '' || code == null || code == undefined ){
+								alert('请输入优惠码进行提取!');
+								return ;
+							}
+							$.ajax({
+								type:'post',
+								url:'{:U("shop/Coupon/ajaxcoupon")}',
+								data:{code:code},
+								success:function(data){
+									if( data.code == 0 ){
+										alert(data.msg);
+									}else{
+										layer.open({
+											type: 1,
+											title: false,
+											closeBtn: 0,
+											area: '390px',
+											skin: 'layui-layer-nobg', //没有背景色
+											shadeClose: true,
+											content: data,
+										});
+									}
+								}
+							});
+
+						}
+					</script>
+					<div class="user-content pb30 mt20">
+						<div class="coupon-item-box">
+						{volist name="coupon_list" id="vo"}
+						<?php 
+							if($vo['is_use'] == 0 && $vo['end_time'] >= time() )
+							{
+								$use = 0;
+							}else{
+								$use = 1;
+							}
+						?>
+							<div class="coupon-item {eq name='use' value='1'}coupon-user-item{/eq}">
+								<div class="del" onclick="del_coupon('{$vo.id}');" title="{:lang('Coupon_delete_coupons')}"><img src="{:tb_config('resource_path',1)}shop/picture/delete.png" alt=""></div>
+								<div class="c-type">
+									<div class="c-money">
+									{switch name="$vo.info.discount_type" }
+										{case value="1"}
+										<span>{$vo.info.quota/10}</span><small>{$eBiz.lang.Coupon_rebate_unit}</small>
+										{/case}
+										{case value="2"}
+										<small></small><span>{$vo.info.quota}</span>
+										{/case}
+										{case value="3"}
+										<small>{$eBiz.lang.Coupon_point_give}</small><span>{$vo.info.quota}</span><small>{$eBiz.lang.Coupon_point_unit}</small>
+										{/case}
+										{case value="4"}
+										<small>{$eBiz.lang.Coupon_reduce_postage}</small><span>{:web_currency()}{$vo.info.quota}</span>
+										{/case}
+									{default /}
+									{/switch}
+									</div>
+									<div class="c-limit">【{:lang('Coupon_coupon_condition',[$vo['info']['money']])}】</div>
+									<div class="c-time mt20">{:date('Y.m.d',$vo['info']['use_start_time'])} ~~ {:date('Y.m.d',$vo['info']['use_end_time'])}</div>
+								</div>
+								<div class="c-msg">
+									<div class="list">
+										<span class="l">券名称:</span>
+
+										<span class="r">{$vo.coupon_name}</span>
+									</div>
+									<div class="list">
+										<!-- 限购品类 -->
+										<span class="l">{$eBiz.lang.Coupon_allow_cates}：</span>
+									{php}$cate = $vo['info']['goods_category']==0?lang('Coupon_all_cates'):getTableValue('goods_category',['id'=>$vo['info']['goods_category']],'name');{/php}
+										<span class="r">{$cate}</span>
+									</div>
+									<div class="list">
+									<!-- 使用范围： -->
+									{php}$shop = $vo['info']['shop_id']==0?lang('Coupon_all_platform'):getTableValue('cust_shop',['id'=>$vo['info']['shop_id']],'shop_name');{/php}
+										<span class="l">{$eBiz.lang.Coupon_allow_shops}：</span>
+										<span class="r">{$shop}</span>
+									</div>
+									{eq name="vo.is_use" value="1"}
+									<div class="already-use center mt40">
+										<span class="use-txt-2"></span>
+									</div>
+									{else/}
+										
+										{if condition="$vo['info']['use_end_time'] < time()"}
+										<div class="already-use center mt40">
+											<span class="use-txt-1"></span>
+										</div>
+										{else/}
+										<div class="btn-box center mt40">
+											<a href="{:U('shop/Index/index')}" target="_blank" class="c-msg-btn">{$eBiz.lang.Coupon_go_use}</a>
+										</div>
+										{/if}
+									{/eq}
+									
+								</div>
+								<div class="radius l"></div>
+								<div class="radius r"></div>
+							</div>
+						{/volist}
+						</div>
+						{$page}
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+	
+</body>
+<script type="text/javascript">
+	function del_coupon(id) {
+		layer.confirm("{:lang('Coupon_delete_confirm')}",{btn:['Yes','No']},function () {
+			$.ajax({
+				url:"{:U('User/del_coupon')}",
+				data:{id:id},		
+				success: function(data){									
+					layer.msg(data.msg,{time:1000},function () {
+						if (data.code==1) {
+							location.reload();
+						}
+					})
+				}
+			});	
+		});
+	}
+</script>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    {include file="sys@Base:table_header" /}
+<body>
+<!-- 弹出新增收货地址 -->
+<div class="c-mask"></div>
+<div class="layer-content mt20">
+    <div class="editor-address-box">
+
+        <form class="layui-form" action="{:url('member/Address/save')}" id="addrForm" style="margin-top: 40px;">
+
+
+            <input type="hidden" name="id" value="{$address.id}">
+            <div style="width: 800px;">
+                <div style="width: 325px; float: left; display: inline; padding-left: 60px;">
+                    <p>名:</p>
+                    <input type="text" name="first_name" autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.first_name}">
+                </div>
+
+                <div style="width: 325px; float: right; display: inline; padding-right: 60px;">
+                    <p>姓:</p>
+                    <input type="text" name="last_name" autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.last_name}">
+                </div>
+            </div>
+
+
+            <div style="width: 800px;">
+                <div style="width: 325px; float: left; display: inline; padding-left: 60px; margin-top: 20px;">
+                    <p>邮箱:</p>
+                    <input type="email" name="email"  autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.email}">
+                </div>
+
+                <div style="width: 325px; float: right; display: inline; padding-right: 60px; margin-top: 20px;">
+                    <p>邮编:</p>
+                    <input type="text" name="zipcode" autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.zip}">
+                </div>
+            </div>
+
+
+            <div style="width: 800px;">
+                <div style="width: 325px; float: left; display: inline; padding-left: 60px; margin-top: 20px;">
+                    <p>公司名称:</p>
+                    <input type="text" name="company_name"  autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.company_name}">
+                </div>
+                <div style="width: 325px; float: right; display: inline; padding-right: 60px; margin-top: 20px;">
+                    <p>电话号码:</p>
+                    <div class="layui-input-inline" style="width: 90px;">
+                        <select name="area_code" id="area_code"  style="border-radius: 5px">
+                            {volist name="area_code" id="vo"}
+                            <option value="{$vo.code}" {if condition="$vo['code'] == $address['area_code']"}selected{/if}>+{$vo.code}</option>
+                            {/volist}
+                        </select>
+                    </div>
+                    <div class="layui-input-inline" style="width: 170px;">
+                        <input type="tel" name="mobile"  autocomplete="off" class="layui-input" style="border-radius: 5px"  value="{$address.mobile}">
+                    </div>
+                </div>
+            </div>
+
+            <div style="float: left; display: inline; padding-left: 60px; margin-top: 20px;">
+                <p>选择地址:</p>
+                <div class="layui-input-inline" style="width: 225px;">
+                    <select name="province" id="province"  lay-filter="province" style="border-radius: 5px">
+                        <option value="">选择大陆</option>
+                        {volist name="province" id="vo"}
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $address['province']"}selected{/if}>{$vo.name}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 225px;">
+                    <select name="city" id="city" lay-filter="city" style="border-radius: 5px">
+                        <option value="0">选择国家</option>
+                        {volist name="city" id="vo"}
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $address['city']"}selected{/if}>{$vo.name}</option>
+                        {/volist}
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 220px;" style="border-radius: 5px">
+                    <select name="district" id="district">
+                        <option value="0">选择省/洲</option>
+                        {volist name="district" id="vo"}
+                        <option value="{$vo.id}" {if condition="$vo['id'] == $address['district']"}selected{/if}>{$vo.name}</option>
+                        {/volist}
+                    </select>
+                </div>
+            </div>
+
+            <div style="float: left; display: inline; padding-left: 60px; width: 85%; margin-top: 20px;">
+                <p>详细地址:</p>
+                <input type="tel" name="address"  autocomplete="off" class="layui-input" style="border-radius: 5px" value="{$address.address}">
+            </div>
+
+            <div style="float: left; display: inline; padding:  0 30px 0 60px; width: 86%; margin-top: 20px;">
+                <button type="button" lay-submit class="layui-btn" lay-filter="*">保存</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+<script type="text/javascript">
+
+    var form;
+    layui.use('form', function(){
+        form = layui.form();
+
+        form.on('select(province)',function (data) {
+            var parent_id = data.value;
+            if(!parent_id > 0){
+                return;
+            }
+            $('#twon').empty().css('display','none');
+            $.ajax({
+                type : "GET",
+                url  : '{:url("sys/Comm/getAddressList")}',
+                data:{parent_id:parent_id},
+                error: function(request) {
+                    return;
+                },
+                success: function(data) {
+                    var v = '<option value="0">选择国家</option>'+ data.msg;
+                    $('#city').empty().html(v);
+                    form.render();
+                }
+            });
+        });
+
+        form.on('select(city)',function (data) {
+            var parent_id = data.value;
+            if (!parent_id > 0) {
+                return;
+            }
+            $.ajax({
+                type: "GET",
+                url: '{:url("sys/Comm/getAddressList")}',
+                data:{parent_id:parent_id},
+                error: function (request) {
+                    return;
+                },
+                success: function (data) {
+                    var v = '<option value="0">选择省/洲</option>'+ data.msg;
+                    $('#district').empty().html(v);
+                    form.render();
+                }
+            });
+        });
+
+        form.on('submit(*)',function (data) {
+            $.ajax({
+                type : "POST",
+                url:$('#addrForm').attr('action'),
+                data :data.field,
+                dataType : 'json',
+                success: function(data){
+                    parent.layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            parent.location.reload();
+                        }
+                    })
+                }
+            });
+        })
+    });
+
+</script>
+
+</body>
+</html>

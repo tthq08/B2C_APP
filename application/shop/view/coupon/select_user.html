@@ -1,0 +1,99 @@
+<table class="layui-table">
+    <colgroup>
+        <col width="20">
+        <col width="600">
+        <col>
+        <col>
+        <col>
+    </colgroup>
+    <thead>
+    <tr>
+        <th layui-form>
+            <input type="checkbox" class="user_checkbox" id="user_check">
+        </th>
+        <th>sysid</th>
+        <th>{$eBiz.lang.user_nickname}</th>
+        <th>{$eBiz.lang.mobile}</th>
+        <th>{$eBiz.lang.cate_list_title_7}</th>
+    </tr>
+    </thead>
+    <script>
+        $("#user_check").click(function(){
+            if(this.checked){
+                $(".user_checkbox").prop("checked", true);
+            }else{
+                $(".user_checkbox").prop("checked", false);
+            }
+        });
+    </script>
+    <tbody>
+    {volist name="user_list" id="vo"}
+    <tr id="user{$vo.id}">
+        <td>
+            <input type="checkbox" class="user_checkbox" name="user" value="{$vo.id}">
+        </td>
+        <td class="stock">{$vo.sysid}</td>
+        <td class="title">{$vo.nickname}</td>
+        <td class="price">{$vo.mobile}</td>
+        <td><botton onclick="delUser({$vo.id});" class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger">{$eBiz.lang.comm_btn_del}</botton></td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+<input type="hidden" id="cid" value="{$coupon.id}">
+{if condition="$user_list->total() == 0"}
+<div style="text-align: center">{:lang('no_goods')}</div>
+{/if}
+<div class="page">{$user_list->render()}</div>
+<div class="layui-form-item" style="float: right">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="send();" id="selected" lay-filter="formDemo">{$eBiz.lang.comm_btn_confirm}</button>
+    </div>
+</div>
+<script>
+    function send() {
+        // 获取选中的用户
+        var id_array=new Array();
+        $('input[name="user"]:checked').each(function(){
+            id_array.push($(this).val());//向数组中添加元素
+        });
+        var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+
+        var cid = $('#cid').val();
+        $.ajax({
+            type:"POST",
+            url:'{:U("Coupon/send")}',
+            data:{id:cid,user:idstr},
+            success:function (data) {
+                if( data.code == 1 ){
+                    alert(data.msg);
+                    closeIndex();
+                }else{
+                    alert(data.msg);
+                }
+            }
+        })
+    }
+    function sendAll() {
+
+        layer.confirm('您确定要发放给当前条件下的所有会员吗？', {
+            btn: ['确定','取消'] //按钮
+        }, function(){
+            var cid = $('#cid').val();
+            $.ajax({
+                type:"POST",
+                url:'{:U("Coupon/sendAll")}',
+                data:{id:cid},
+                success:function (data) {
+                    if( data.code == 1 ){
+                        alert(data.msg);
+                        closeIndex();
+                    }else{
+                        alert(data.msg);
+                    }
+                }
+            })
+        });
+
+    }
+</script>

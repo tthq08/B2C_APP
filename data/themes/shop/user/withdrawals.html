@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Withdrawals_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/list.css" />
+	<style type="text/css">
+	.user-info-tooltop .i-img { position: relative;overflow: hidden;line-height: 85px; }
+	.user-info-tooltop .i-img .mask {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.4);
+		color: #eee;
+		text-align: center;
+		display: none;
+		/*display: block;*/
+	}
+	/*.user-info-tooltop .i-img:hover .mask {
+		display: block;
+	}*/
+	/*.user-info-tooltop .i-img input {
+		position: absolute;
+		opacity: 0;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}*/
+	</style>
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/layer/layer.js"></script>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="j-user-section user-order plr20-section">
+					<div class="user-top">
+						<div class="user-title">
+							<span class="t">{$eBiz.lang.Withdrawals_page_title}<i class="t-note ml10"></i></span>
+						</div>
+					</div>
+					<form id="withdrowalsForm" method="post" action="">
+					<div class="user-content pb30 mt20">
+						<div class="block-tag">{$eBiz.lang.Withdrawals_page_tips}</div>
+						<div class="rech-box">
+							<div class="user-info-tooltop">
+								<div class="i-img"><div class="mask"><a href="javascript:;">{$eBiz.lang.Info_form_change_headpic}</a></div><img id="head_pic" src="{$user.head_pic}" alt="" /></div>
+								<div class="i-msg">
+									<div class="u-name">{$eBiz.lang.Info_form_username}：{$user.username}</div>
+									<div class="mt5"><span class="u-vip">{:getTableValue('user_level',['id'=>$user['level']],'level_name')}</span></div>
+									<div class="u-type mt10">{$eBiz.lang.Info_form_nickname}：{$user.nickname}</div>
+									<div class="u-type mt10">{$eBiz.lang.Withdrawals_account_mny}:{:web_currency()}{$user.user_money}</div>
+								</div>
+							</div>
+							<div class="rech-item w600">
+								<p class="mb10 rt">{$eBiz.lang.Withdrawals_recommond_mount}</p>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="10000" id="money-10000" name="money" type="radio" />
+									<label for="money-10000">10000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="20000" id="money-20000" name="money" type="radio" />
+									<label for="money-20000">20000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="50000" id="money-50000" name="money" type="radio" />
+									<label for="money-50000">50000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="100000" id="money-100000" name="money" type="radio" />
+									<label for="money-100000">100000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="200000" id="money-200000" name="money" type="radio" />
+									<label for="money-200000">200000元</label>
+								</span>
+							</div>
+							<div class="rech-item">
+								<span class="">{$eBiz.lang.Withdrawals_mount_DIY}：</span>
+								<input type="text" placeholder="{$eBiz.lang.Withdrawals_mount_DIY_place}" name="money" id="rech-input" class="input-200" />
+								<span>元</span>
+							</div>
+							<div class="rech-item">
+								<span class="">{$eBiz.lang.Withdrawals_bank_name}：</span>
+								<input type="text" placeholder="{$eBiz.lang.Withdrawals_bank_name_place}" name="bank_name" class="input-300" />
+							</div>
+							<div class="rech-item">
+								<span class="">{$eBiz.lang.Withdrawals_account_bank}：</span>
+								<input type="text" placeholder="{$eBiz.lang.Withdrawals_account_bank_place}" name="account_bank" class="input-300" />
+							</div>
+							<div class="rech-item">
+								<span class="">{$eBiz.lang.Withdrawals_account_name}：</span>
+								<input type="text" placeholder="{$eBiz.lang.Withdrawals_account_name_place}" name="account_name" class="input-300" />
+							</div>
+							
+							<div class="rech-item">
+								<button type="button" id="sub_btn" onclick="postForm();" class="cmall-btn-g ml0">{$eBiz.lang.Withdrawals_confrim_do}</button>
+								{$eBiz.lang.Withdrawals_need_money}：<strong class="rech-num color--b1191a"></strong>
+							</div>
+						</div>
+					</div>
+					</form>
+				</div>
+				<div class="j-user-section user-section user-introduct plr20-section" id="withdrawals_list" >
+					
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+
+	<script type="text/javascript">
+		function recom(obj) {
+			var me = $(obj);
+			$('#rech-input').val(me.attr('data-val'));
+			$('.rech-num').text(me.attr('data-val') + '元');
+		}
+		$("#rech-input").on('input propertychange',function() {
+			$('.rech-num').text($(this).val() + '元');
+		})
+
+		$(function() {
+			ajaxDftChargeLog();
+		});
+		$('body').on('click','.user-pagination li:not(".disabled")',function(e) {
+			e.preventDefault();
+			console.log('fdsa')
+			var me = $(this);
+			var url = me.find('a').attr('href');
+			ajaxGetChargeLog(url)
+		})
+
+		function ajaxDftChargeLog() {
+			$.ajax({
+				url:"{:U('User/ajaxWidthdrawLog')}",
+				success: function(data){									
+					$('#withdrawals_list').html(data);
+				}
+			});	
+		}
+		function ajaxGetChargeLog(url) {
+			$.ajax({
+				url:url,
+				success: function(data){									
+					$('#withdrawals_list').html(data);
+				}
+			});	
+		}
+		function postForm() {
+			var money = $('input[name="money"]').val();
+			var bank_name = $('input[name="bank_name"]').val();
+			var account_bank = $('input[name="account_bank"]').val();
+			var account_name = $('input[name="account_name"]').val();
+			var user_money = '{$user.user_money}';
+			if (money=='' || bank_name=='' || account_bank=='' || account_name=='') {
+				layer.msg('{$eBiz.lang.Withdrawals_form_not_full}');
+				return false;
+			}
+
+			if (parseFloat(money)>parseFloat(user_money)) {
+				layer.msg('{$eBiz.lang.Withdrawals_more_then_user}');
+				return false;
+			}
+
+			// $('#sub_btn').attr('disabled',true);
+			// var index = layer.load(0, {shade: false});
+			$.ajax({
+			    type : "POST",
+			    url:$('#withdrowalsForm').attr('action'),
+			    data : $('#withdrowalsForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function () {
+						if (data.code==1) {
+							location.reload();
+						}
+					})
+			    }
+			});
+		}
+	</script>
+	
+</body>
+</html>

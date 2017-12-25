@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+{tbcss module="Admin" src="../js/treeTable/default/jquery.treeTable.css"}
+{tbjs module="Admin" src="../common/layui/layui.js,jquery.min.js"}
+<style type="text/css">
+    .pagination {
+        margin: 0px;
+    }
+</style>
+<section class="layui-larry-box">
+    {notempty name="tabel_tips"}
+    <blockquote class="layui-elem-quote">{$tabel_tips}</blockquote>
+    {/notempty}
+    <div class="larry-personal">
+        <div class="layui-tab layui-tab-card">
+            {if condition="(empty($top_btn) eq false) OR (empty($filter) eq false)"}
+            <blockquote class="layui-elem-quote mylog-info-tit">
+                {notempty name="filter"}
+                {$filter}
+                {/notempty}
+                {notempty name="top_btn"}
+                <ul class="layui-tab-title">
+                    {volist name="top_btn" id="top"}
+                    {switch name="top.type"}
+                    {case value="frame"}{assign name="action" value="showFrame" /}{/case}
+                    {case value="confirm_form"}{assign name="action" value="showConfirm_form" /}{/case}
+                    {/switch}
+                    <li class="layui-btn {$top.class}" onclick="{$action}(this);" data-msg="{$top.msg}"
+                        data-href="{:url($top['url'],$top['pram'])}">
+                        <i class="{$top.icon}"></i>
+                        {$top.title}
+                    </li>
+                    {/volist}
+                    <li class="layui-btn layui-btn-small" data-msg="" data-href="" onclick="updateUrl();">
+                        <i class=""></i>
+                        更新选中的商品分类链接
+                    </li>
+
+                    <li class="layui-btn layui-btn-small" data-msg="" data-href="" onclick="updateAllUrl();">
+                        <i class=""></i>
+                        更新所有商品分类链接
+                    </li>
+                    <script>
+                        function updateUrl() {
+
+                            layer.confirm('您确定要更新选中的商品分类链接吗？', {
+                                btn: ['重要','取消'] //按钮
+                            }, function(){
+                                var cid = '';
+                                $('.cid').each(function(){
+                                    if( $(this).is(':checked') ){
+                                        cid += ','+$(this).val();
+                                    }
+                                });
+                                if ( cid == '' ){
+                                    layer.msg('请选择需要更新链接的商品分类',{icon:2});
+                                    return ;
+                                }
+                                var load = layer.load(0, {shade: false});
+                                $.ajax({
+                                    type:'POST',
+                                    url:'{:url("shop/Goods/updateCategoryUrl")}',
+                                    data:{ids:cid},
+                                    success:function (data) {
+                                        layer.close(load);
+                                        layer.msg(data.msg);
+                                    }
+                                })
+                            });
+
+                        }
+                        function updateAllUrl(){
+                            layer.confirm('您确定要更新全部的商品分类链接吗？', {
+                                btn: ['重要','取消'] //按钮
+                            }, function(){
+                                var load = layer.load(0, {shade: false});
+                                $.ajax({
+                                    type:'POST',
+                                    url:'{:url("shop/Goods/updateCategoryUrl")}',
+                                    success:function (data) {
+                                        layer.close(load);
+                                        layer.msg(data.msg);
+                                    }
+                                })
+                            });
+                        }
+                    </script>
+                </ul>
+                {/notempty}
+            </blockquote>
+            <div class="larry-separate"></div>
+            {/if}
+            {notempty name="nav_list"}
+            <ul class="layui-tab-title">
+                {volist name="nav_list" id="nav"}
+                <li {eq name="nav.sign" value="$tab_now" }class="layui-this" {/eq} onclick="location.href='{$nav.url}'">
+                    {$nav.title}
+                </li>
+                {/volist}
+            </ul>
+            {/notempty}
+            <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+                <div class="layui-tab-item layui-field-box layui-show">
+
+                    <form id="listFrom" method="post" action="">
+                        <table class="layui-table table-hover tree_table" lay-even="" lay-skin="nob">
+                            <thead>
+                            <tr>
+                                {eq name="show_check" value="1"}
+                                <th><input type="checkbox" id="checkall"></th>
+                                {/eq}
+                                {volist name="tb_title" id='vo'}
+                                <th {notempty name="vo.css" }style="{$vo.css}" {/notempty}>{$vo.title}</th>
+                                {/volist}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <script>
+                                function showVname(obj){
+                                    var v_name_class = '.v_name'+$(obj).attr('data-val');
+                                    var v_name_span_class = '.v_name_span'+$(obj).attr('data-val');
+                                    $(v_name_span_class).hide();
+                                    $(v_name_class).show();
+                                }
+                            </script>
+                            {volist name="data" id="v"}
+                            <tr id="cat_{$v.id}" data-pid="{$v.id}">
+                                <td><input type="checkbox" value="{$v.id}" name="id[{$v.id}]"></td>
+                                <td class="layui-form">{$v.id}</td>
+                                <td class="layui-form">
+                                    <input name="sort[{$v.id}]"
+                                           data-href="{:url('goods/cate_set_value',['id'=>$v['id']])}" data-field="sort"
+                                           value="{$v.sort}" style="width:40px;" onblur="ajaxInput(this);">
+                                </td>
+                                <td class="layui-form" style="text-align:left;">
+                                    {gt name='v.subs' value='0'}
+                                    <span class="prev_span"></span>
+                                    <span arrow="true" onclick="getSub(this);" data-id="{$v.id}"
+                                          class="default_active_node default_shut"></span>
+                                    {/gt}
+                                    <span class="v_span v_name_span{$v.id}" data-val="{$v.id}" onclick="showVname(this);">{$v.name}</span>
+                                    <input class="v_name v_name{$v.id}" name="name[{$v.id}]" data-href="{:url('goods/cate_set_value',['id'=>$v['id']])}" data-val="{$v.id}" data-field="name" value="{$v.name}" style="width:180px; display: none;" onblur="ajaxInput(this);">
+                                </td>
+                                <td class="layui-form">
+                                    <input type="checkbox" name="is_hot"
+                                           data-href="{:url('goods/cate_switch',['id'=>$v['id']])}" lay-skin="switch"
+                                           lay-filter="switch" value="{$v.is_hot}" {eq name="v.is_hot" value="1"
+                                           }checked{/eq}>
+                                </td>
+                                <td class="layui-form">
+                                    <input type="checkbox" name="is_show"
+                                           data-href="{:url('goods/cate_switch',['id'=>$v['id']])}" lay-skin="switch"
+                                           lay-filter="switch" value="{$v.is_show}" {eq name="v.is_show" value="1"
+                                           }checked{/eq}>
+                                </td>
+                                <td>
+                                    <div class="layui-btn-group">
+                                        <button type="button" onclick="showFrame(this);"
+                                                data-msg="{:lang('cate_btn_add_ad')}"
+                                                data-href="{:url('goods/cate_adv',['id'=>$v['id']])}"
+                                                class="layui-btn layui-btn-small layui-btn-success"
+                                                title="{:lang('cate_btn_add_ad')}"><i class="fa fa-fw fa-flag"></i>
+                                        </button>
+                                        <button type="button" onclick="showFrame(this);"
+                                                data-msg="{:lang('cate_btn_add_sub')}"
+                                                data-href="{:url('goods/cate_add',['id'=>$v['id']])}"
+                                                class="layui-btn layui-btn-small layui-btn-success"
+                                                title="{:lang('cate_btn_add_sub')}"><i class="fa fa-fw fa-plus"></i>
+                                        </button>
+                                        <button type="button" onclick="showFrame(this);"
+                                                data-msg="{:lang('comm_btn_edit')}"
+                                                data-href="{:url('goods/cate_edit',['id'=>$v['id']])}"
+                                                class="layui-btn layui-btn-small layui-btn-normal"
+                                                title="{:lang('comm_btn_edit')}"><i
+                                                class="fa fa-fw fa-pencil-square-o"></i></button>
+                                        <button type="button" onclick="showConfirm(this);"
+                                                data-msg="{:lang('comm_del_confirm_msg')}"
+                                                data-href="{:url('goods/cate_del',['id'=>$v['id']])}"
+                                                class="layui-btn layui-btn-small layui-btn-danger"
+                                                title="{:lang('comm_btn_del')}"><i class="fa fa-fw fa-trash-o"></i>
+                                        </button>
+                                        <!-- 绑定域名 -->
+                                        <button type="button" onclick="showFrame(this);" data-msg="绑定域名"
+                                                data-href="{:url('goods/cate_bind',['id'=>$v['id']])}"
+                                                class="layui-btn layui-btn-small layui-btn-success" title="绑定域名"><i
+                                                class="fa fa-fw fa-paperclip"></i></button>
+                                        <!-- 绑定域名 E-->
+                                    </div>
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="larry-table-page clearfix">
+                        {notempty name="page"}
+                        <div id="page" class="page">{$page}</div>
+                        {/notempty}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var form;
+    layui.use(['jquery', 'form', 'layer', 'element', 'laypage'], function () {
+        form = layui.form();
+        window.jQuery = window.$ = layui.jquery;
+        window.layer = layui.layer;
+        var element = layui.element(),
+                laypage = layui.laypage;
+        form.on('switch(switch)', function (data) {
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.elem.checked ? 1 : 0;
+            var old_val = val == 1 ? 0 : 1;
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    'field': field,
+                    'val': val
+                },
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.code == 0) {
+                            location.reload();
+                        }
+                        ;
+                    });
+                }
+            });
+        });
+        form.on('select(select)', function (data) {
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.value;
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: {
+                    'field': field,
+                    'val': val
+                },
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000});
+                }
+            });
+        });
+        form.render('select');
+    });
+    $('#checkall').click(function () {
+        $("input[name^='id']").prop("checked", $(this).prop("checked"));
+    });
+
+    function showFrame(obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade: [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+
+    function showConfirm(obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes', 'No'] //按钮
+        }, function () {
+            $.ajax({
+                url: $(obj).attr('data-href'),
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.code == 1) {
+                            // console.log(data);
+                            location.reload();
+                        }
+                    })
+                }
+            });
+        });
+    }
+    function callback() {
+        layer.closeAll();
+        location.reload();
+    }
+    function ajaxInput(obj) {
+        var url = $(obj).attr('data-href');
+        var field = $(obj).attr('data-field');
+        var value = $(obj).val();
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                'field_name': field,
+                'field': value
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == 1) {
+                    var v_span_class = '.v_name_span'+$(obj).attr('data-val');
+                    var v_name_class = '.v_name'+$(obj).attr('data-val');
+                    $(v_span_class).show().html(value);
+                    $(v_name_class).hide();
+                };
+                layer.msg(data.msg, {time: 1000}, function () {
+
+                });
+            }
+        });
+    }
+
+    function showConfirm_form(obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes', 'No'] //按钮
+        }, function () {
+            $.ajax({
+                type: "POST",
+                url: $(obj).attr('data-href'),
+                data: $('#listFrom').serialize(),
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.code == 1) {
+                            location.reload();
+                        }
+                        ;
+                    });
+                }
+            });
+        })
+    }
+
+    function getSub(obj) {
+        var id = $(obj).attr('data-id');
+        if (!$(obj).hasClass('active')) {
+            $.ajax({
+                url: "{:url('Goods/ajaxGetSubCate')}",
+                data: {val: id, web: 1},
+                success: function (data) {
+                    if (data != '') {
+                        $('#cat_' + id).after(data);
+                        form.render();
+                        $(obj).removeClass('default_shut');
+                        $(obj).addClass('default_open active');
+                    }
+                }
+            })
+
+        } else {
+            var _class = $(obj).parents('tr').attr('data-pid');
+            if ($(obj).hasClass('default_open')) {
+                $(obj).parents('table').find('.' + _class).css('display', 'none');
+                $(obj).addClass('default_shut').removeClass('default_open');
+            } else {
+                $(obj).parents('table').find('.' + _class).css('display', 'table-row');
+                $(obj).addClass('default_open').removeClass('default_shut');
+            }
+        }
+    }
+</script>
+</body>
+</html>

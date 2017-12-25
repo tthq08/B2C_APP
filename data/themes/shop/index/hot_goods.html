@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Newest_hot_page} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+</head>
+<body class="has-right">
+
+	<!-- 广告 -->
+	{include file="common/ad_top"}
+	<!-- top -->
+	{include file="common/top_header"}
+	<!-- header -->
+	{include file="common/header"}
+	<!-- nav -->
+	{include file="common/nav"}
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	{ad_list cid="29" item="v" limit=1}
+	<div class="seckill-banner">
+		<a href="{$v.ad_link}" {if condition="$v['target'] eq 1"}target="_blank"{/if}><img width="100%" src="{$v['ad_pic']}" alt="" /></a>
+	</div>
+	{/ad_list}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 全部产品 -->
+			<div class="mall-section mt20 all-product-section c-floor-section" data-floor="全部产品">
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>HOT PRODUCT DISPLAY</p>
+					</div>
+					<div class="section-content" id="all_goods_list">
+						
+					</div>
+					<div class="mall-block mt30" style="text-align: center;">
+					<button type="button" id="more_goods_btn" onclick="loadMoreGoods();" class="product-btn">{$eBiz.lang.Index_Text_show_more}<img src="{:tb_config('resource_path',1)}shop/images/down-red.png" width="10" alt=""></button>
+				</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+	<script type="text/javascript">
+		var goods_page = 0;
+		$(document).ready(function() {
+			$('.i-group-list .load').each(function() {
+				var me = $(this);
+				var bar = me.find('.progress-bar');
+				var bVal = bar.find('.progress-value');
+				var num = bar.attr('data-load');
+				bar.css({
+					'width': num
+				});
+				if(Number(num.substring(0,num.length-1)) < 20) {
+					bVal.css({
+						'left' : '0px'
+					})
+				} else {
+					bVal.css({
+						'right' : '0px',
+						'left': 'auto'
+					})
+				}
+				bVal.find('.num').text(num);
+			})
+			loadMoreGoods();
+		})
+
+		// 加载更多商品
+		function loadMoreGoods() {
+			$('#more_goods_btn').attr('disable',true);
+			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+			$.ajax({
+				url:"{:U('Index/ajaxHotGoods')}",
+				data:{
+					page:goods_page,
+					nums:15,
+					is_hot:1
+				},
+				success: function(data){									
+					$('#all_goods_list').append(data);
+					layer.close(index);
+					$('#more_goods_btn').attr('disable',false);
+					goods_page ++;
+				}
+			});	
+		}
+	</script>
+
+</body>
+</html>

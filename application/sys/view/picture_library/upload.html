@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Krajee JQuery Plugins - &copy; Kartik</title>
+    <link href="http://www.jq22.com/jquery/bootstrap-3.3.4.css" rel="stylesheet">
+
+    <script>
+        var max_size = '2048';/*最大上传大小:kb*/
+        var upload_action = '';/*上传地址:*/
+        var upload_type = [''];/*允许上传的类型*/
+    </script>
+
+    {tbcss module="Admin" src="../js/upload/css/fileinput.css"}
+    <script src="http://www.jq22.com/jquery/1.11.1/jquery.min.js"></script>
+    {tbjs module="Admin" src="upload/js/fileinput.js,upload/js/fileinput_locale_fr.js,upload/js/fileinput_locale_es.js"}
+    <script src="http://www.jq22.com/jquery/bootstrap-3.3.4.js" type="text/javascript"></script>
+
+    <style>
+        * { margin: 0; padding: 0; }
+        body { font-size: 14px; color: #333; font-family: "Microsoft Yahei"; }
+        ul, li { list-style-type: none; }
+
+        #treeView {
+            width: 20%;
+            margin: 120px 0 0 40px;
+            border: 1px solid #f2f2f2;
+            float: left;
+        }
+        .treeNode {
+            height: 32px;
+            border: 1px solid #fff;
+            border-width: 1px 0;
+            cursor: pointer;
+            font-size: 0;
+        }
+        .treeNode:hover {
+            background: #f4f9fd;
+            border-color: #e5f0fb;
+        }
+        .treeNode-cur,
+        .treeNode-cur:hover {
+            background: #e5f0fb;
+            border-color: #BBD4EF #fff;
+        }
+        .icon {
+            display: inline-block;
+            background: url({tbimg module="Admin" src="../js/tree/icon.png"}) no-repeat;
+            vertical-align: middle;
+        }
+        .icon-minus {
+            width: 15px;
+            height: 15px;
+            margin: 0 4px;
+            background-position: -30px -22px;
+        }
+        .icon-add {
+            width: 15px;
+            height: 15px;
+            margin: 0 4px;
+            background-position: -30px 0;
+        }
+        .icon-file {
+            width: 22px;
+            height: 18px;
+            margin-right: 5px;
+            background-position: 0 -22px;
+        }
+        .title {
+            position: relative;
+            top: 6px;
+            font-size: 14px;
+        }
+
+        .treeNode-empty .icon-minus {
+            background-position: -999px -999px;
+        }
+        .treeNode-empty .icon-add {
+            background-position: -999px -999px;
+        }
+
+        #treeView ul.none {
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+
+<div id="treeView"></div>
+<div class="container kv-main" style="width: 76%; float: right;">
+    <div class="page-header">
+        <h2>上传文件</h2>
+    </div>
+    <form enctype="multipart/form-data">
+        <div class="form-group">
+            <input id="file-1" type="file" multiple class="file" data-overwrite-initial="false" data-min-file-count="2">
+        </div>
+        <input type="hidden" id="uploadUrl" value="{:url('sys/PictureLibrary/doUpload')}">
+    </form>
+    <hr>
+    <br>
+</div>
+</body>
+<script>
+    var folder = 0;
+
+    $("#file-1").fileinput({
+        uploadUrl: '#', // you must set a valid URL here else you will get an error
+        allowedFileExtensions : ['jpg', 'png','gif','psd','jpeg'],
+        overwriteInitial: false,
+        maxFileSize: 1000,
+        maxFilesNum: 10,
+        //allowedFileTypes: ['image', 'video', 'flash'],
+        slugCallback: function(filename) {
+            return filename.replace('(', '_').replace(']', '_');
+        }
+    });
+
+    $(document).ready(function(){
+        $("#test-upload").fileinput({
+            'showPreview' : false,
+            'allowedFileExtensions' : upload_type,
+            'elErrorContainer': '#errorBlock'
+        });
+    });
+
+
+    var data = {
+        files: {$folderList}
+    };
+</script>
+
+{tbjs module="Admin" src="tree/js/tools.js,tree/js/handledata.js,tree/js/index.js"}
+<script>
+    $('.treeNode').on('click',function () {
+        folder = $(this).attr('data-file-id');
+        $('#uploadUrl').val('{:url("sys/PictureLibrary/doUpload")}?folder_id='+folder);
+    });
+</script>
+</html>

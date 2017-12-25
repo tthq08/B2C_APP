@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>注册</title>
+	{include file="public/static" /}
+</head>
+<body>
+
+	<header class="header login-header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">注册</h5>
+			</div>
+			<div class="header-right"></div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body">
+		<div class="sign-form-wrap">
+		   <div class="sign-email-confirm">
+				<h3  class="sign-email-confirm-tit">已完成邮箱激活<br>恭喜您注册成功</h3>
+				<div class="sign-email-confirm-msg">
+					<p class="confirm-msg-1">欢迎来到TBMALL，您的TBMALL登录账户为</p>
+					<p class="confirm-msg-2"><span class="email_address">{$email|hidemail}</span></p>
+					<p class="confirm-msg-3">登录后即可畅享登录 </p>
+				</div>
+				<div class="sign-email-btn">
+					<a class="email-btn-link" href="{:U('user/login')}">进入TBMALL购物</a>
+				</div>
+			</div>
+		</div>
+	</main>
+	
+	<script>
+		
+		$(function(){
+
+		})
+	
+	</script>
+
+</body>
+</html>

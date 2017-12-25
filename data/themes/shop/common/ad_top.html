@@ -1,0 +1,21 @@
+{banner position="top"}
+<div class="mall-ad" style="display: none">
+    <div class="container w1200">
+        <a href="{$banner.ad_link}">
+            <img src="{$banner.ad_pic}" alt="" title="{$banner.ad_name}"/>
+        </a>
+        <span class="close"><img src="{tbimg module='shop' src='../picture/i_04.png'}" alt=""></span>
+    </div>
+</div>
+{/banner}
+<script>
+    $(function () {
+        if( localStorage.showAdTop != 'close' ) {
+            $('.mall-ad').show();
+        }
+    });
+    $('.mall-ad .close').on('click',function () {
+        localStorage.showAdTop = 'close';
+        $(this).parents('.mall-ad').remove();
+    })
+</script>

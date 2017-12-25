@@ -1,0 +1,75 @@
+﻿{include file="../shop/public/top"}
+{tbcss module="shop" src="qikoo_user.css"}
+        <!--吸顶广告-->
+
+        {include file="../shop/public/header"}
+        {include file="../shop/public/navbox"}
+    </div>
+    <!--导航 end-->
+
+    <div class="user-body">
+        <div class="user-container">
+            <div class="user-container">
+                <div class="user-crumbs m-b-10"><a href="javascript:;">首页</a> &gt;</div>
+                <div class="clearfix_new">
+                    <div class="user-menu m-r-20">
+                        {include file="common/menu"}
+                    </div>
+                    <div class="user-main">
+                        <input id="basePath" type="hidden" value="">
+                        <div class="coupon-main">
+                            <div class="coupon-title">
+                                <h1>
+                                    我的优惠券
+                                    <small></small>
+                                </h1>
+                            </div>
+                            <ul id="coupon_nav" class="coupon_nav">
+                                <li class="cur" data-expire="unused"><a>可使用</a></li>
+                                <li data-expire="used"><a>已使用</a></li>
+                                <li data-expire="expired"><a>已过期</a></li>
+                            </ul>
+                            <div class="coupon-list">
+                                <ul id="coupon-list">
+                                    <li>
+                                        <div class="coupon-no-item">
+                                            <img src="images/usr_coupon_null.png" class="coupon-no-item-icon">
+                                            <span class="coupon-no-item-text">您目前没有可使用的优惠券</span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <ul id="page_index" class="pagelist" style="display: none;">
+                                <div>
+                                    <span class="pageBtnWrap">
+                                        <a href="javascript:void(0);" title="下一页" class="next_page">下一页</a>
+                                    </span>
+                                </div>
+                                <div style="clear:both;">
+                                </div>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="a-nomore"></div>
+    <!-- footer -->
+
+
+    <style>
+    /* 解决luyou.mall.360.com主样式表覆盖在线客服频道选择框的问题 */
+    #page_mall360footer {
+        overflow: visible;
+    }
+</style>
+
+<script>
+$(function(){
+    //初始化首页
+    indexPage.init();
+})
+</script>
+{include file="../shop/public/footer"}

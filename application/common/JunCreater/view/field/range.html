@@ -1,0 +1,13 @@
+<div class="layui-form-item">
+  <div class="layui-inline">
+    <label class="layui-form-label">{$title}</label>
+    <?php $valus = explode('-', $value);l?>
+    <div class="layui-input-inline" style="width: 100px;">
+      <input type="text" name="{$name}_min" placeholder="{$placeholder}" value="{$valus[0]}" autocomplete="off" class="layui-input">
+    </div>
+    <div class="layui-form-mid">-</div>
+    <div class="layui-input-inline" style="width: 100px;">
+      <input type="text" name="{$name}_max" placeholder="{$placeholder}" value="{$valus[1]}" autocomplete="off" class="layui-input">
+    </div>
+  </div>
+</div>

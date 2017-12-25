@@ -1,0 +1,16 @@
+<div class="box fcflw-message mscrollbox">
+	<div class="fcflw-itembox clearfix">
+	{volist name="goods_collect_list" id="list"}
+		<div class="fcflw-item">
+			<div class="pic">
+				<span class="del"></span>
+				<a href="{:U('shop/Goods/goodsInfo',array('id'=>$list['goods_id']))}"><img src="{$list.goods_id|goods_thum_images=200,200}" alt="" /></a>
+				<a class="flwadd-cart" href="{:U('shop/Goods/goodsInfo',array('id'=>$list['goods_id']))}">{$eBiz.lang.Right_collect_go_goods}</a>
+			</div>
+			<div class="info">
+				<a href="{:U('shop/Goods/goodsInfo',array('id'=>$list['goods_id']))}" class="color--c81623">{:web_currency()}{:getTableValue('shop_goods','id='.$list['goods_id'],'shop_price')}</a>
+			</div>
+		</div>
+	{/volist}
+		
+</div>

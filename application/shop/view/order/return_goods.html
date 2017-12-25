@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style>
+    .table-left{
+        text-align: right;
+        height: 48px;
+    }
+</style>
+<body>
+<section>
+    <form id="update_price" class="layui-form">
+        <input type="hidden" name="id" value="{$return_goods.id}">
+        <table class="layui-table table-hover" lay-even="">
+            <tbody>
+                <tr>
+                    <td width="15%" class="table-left">{$eBiz.lang.order_return_goods_lists_table_delivery}：</td>
+                    <td>{$return_goods.delivery_sn}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_order}：</td>
+                    <td>{$return_goods.order_id}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_order_goods}：</td>
+                    <td>{$return_goods.order_goods_id}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_order_goods_shop_price}：</td>
+                    <td>{:priceFormat($return_goods.order_goods_shop_price,1)} &nbsp;&nbsp;&nbsp;<a class="layui-btn layui-btn-small" data-href="{:url('shop/Order/return_money',['id'=>$return_goods.id])}" onclick="showFrame(this);">退款到用户余额</a></td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_user}：</td>
+                    <td>{$return_goods.user_id}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_reason}：</td>
+                    <td>{$return_goods.reason}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_status}：</td>
+                    <td>
+                        <div style="width: 200px;">
+                            <select name="status" >
+                                {foreach name="status_list" key="k" item="name"}
+                                <option value="{$k}" {if condition="$k eq $status"}selected{/if}>{$name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_add_time}：</td>
+                    <td>{$return_goods.add_time}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">{$eBiz.lang.order_return_goods_lists_table_ship_remark}：</td>
+                    <td><textarea name="remark" class="layui-textarea" id="" cols="60" rows="5">{$return_goods.remark}</textarea></td>
+                </tr>
+                <tr>
+                    <td class="table-left"></td>
+                    <td>
+                        <button class="layui-btn layui-btn-radius" lay-submit lay-filter="*">确定</button>
+                        <button class="layui-btn layui-btn-radius layui-btn-warm">取消</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</section>
+<script>
+    function showFrame (obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+    layui.use('form', function(){
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            var url = '{:url('shop/order/return_goods_save')}';
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    if (data.code==1) {
+                        layer.msg(data.msg);
+                        location.reload();
+                    }else{
+                        layer.msg(data.msg);
+                    };
+                }
+            });
+            return false; //阻止表单跳转。
+        });
+    });
+</script>
+</body>
+</html>

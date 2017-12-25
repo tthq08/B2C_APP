@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style>
+    .table-left{
+        text-align: right;
+        height: 48px;
+    }
+</style>
+<body>
+<section>
+    <form id="update_price" class="layui-form">
+        <input type="hidden" id="id" name="id" value="{$order.id}">
+        <table class="layui-table table-hover" lay-even="">
+            <tbody>
+                <tr>
+                    <td width="15%" class="table-left">商品总价</td>
+                    <td>{:priceFormat($order.total_price,1)}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">物流运费</td>
+                    <td><p style="float: left; line-height: 40px;">{:tb_config('web_currency',1,getLang())}</p><input style="width: 200px; float: left;" class="layui-input" type="text" id="postage" name="postage" placeholder="0.00" value="{$order.postage}"></td>
+                </tr>
+                <tr>
+                    <td class="table-left">订单价格微调</td>
+                    <td>
+                        <p style="float: left; line-height: 40px;">{:tb_config('web_currency',1,getLang())}</p><input style="width: 200px;" class="layui-input" type="text" id="change_mny" name="change_mny" placeholder="0.00" value="{$order.change_mny}">
+                        <p>默认为减少订单价格，可以使用负数表示添加订单价格</p>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td class="table-left">订单总金额</td>
+                    <td>{:priceFormat($order.payable_price,1)}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">使用余额</td>
+                    <td>{:priceFormat($order.balance_price,1)}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">使用积分</td>
+                    <td>{:priceFormat($order.points_price,1)}</td>
+                </tr>
+                <tr>
+                    <td class="table-left">应付金额</td>
+                    <td>{:priceFormat($order.money,1)}</td>
+                </tr>
+                <tr>
+                    <td class="table-left"></td>
+                    <td>
+                        <button class="layui-btn layui-btn-radius layui-btn-warm">取消</button>
+                        <button class="layui-btn layui-btn-radius" lay-submit lay-filter="*">保存</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</section>
+<script>
+    layui.use('form', function(){
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            var url = '{:url('shop/order/update_order_price_save')}';
+            var oid = $('#id').val();
+            var postage = $('#postage').val();
+            var change_mny = $('#change_mny').val();
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : {id:oid,postage:postage,change_mny:change_mny},
+                dataType : 'json',
+                success: function(data){
+                    if (data.code==1) {
+                        layer.msg(data.msg);
+                        location.reload();
+                        parent.location.reload();
+                    }else{
+                        layer.msg(data.msg);
+                    };
+                }
+            });
+            return false; //阻止表单跳转。
+        });
+    });
+</script>
+</body>
+</html>

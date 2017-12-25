@@ -1,0 +1,65 @@
+<div class="bus-left">
+	<div class="box">
+		<div class="bus-manage-block">
+			<h5 class="manage-title"><span class="icon"><img src="{:tb_config('resource_path',1)}shop/picture/bus_03.png" alt=""></span>{$eBiz.lang.Ucenter_menu_acount}</h5>
+			<a href="{:U('User/info')}" class="manage-item {if condition="$curr_act eq 'info' OR $curr_act eq 'info_ext'"}on{/if}">{$eBiz.lang.Ucenter_menu_usrinfo}</a>
+			<a href="{:U('User/address_list')}" class="manage-item {eq name='curr_act' value='address_list'}on{/eq}">{$eBiz.lang.Ucenter_menu_shipping_addr}</a>
+			<a href="{:U('User/safety_settings')}" class="manage-item {eq name='curr_act' value='safety_settings'}on{/eq}">{$eBiz.lang.Ucenter_menu_safe_config}</a>
+		</div>
+		<div class="bus-manage-block">
+			<h5 class="manage-title"><span class="icon"><img src="{:tb_config('resource_path',1)}shop/picture/bus_14.png" alt=""></span>{$eBiz.lang.Ucenter_menu_order_center}</h5>
+			<a href="{:U('User/order_list')}" class="manage-item {eq name='curr_act' value='order_list'}on{/eq}">{$eBiz.lang.Ucenter_menu_my_order}</a>
+			<a href="{:U('User/comment')}" class="manage-item {eq name='curr_act' value='comment'}on{/eq}">{$eBiz.lang.Ucenter_menu_my_comment}</a>
+			<a href="{:U('User/return_goods')}" class="manage-item {eq name='curr_act' value='return_goods'}on{/eq}">{$eBiz.lang.Ucenter_menu_sale_serv}</a>
+		</div>
+		<div class="bus-manage-block">
+			<h5 class="manage-title"><span class="icon"><img src="{:tb_config('resource_path',1)}shop/picture/bus_12.png" alt=""></span>{$eBiz.lang.Ucenter_menu_my_wallet}</h5>
+			<a href="{:U('User/account')}" class="manage-item {eq name='curr_act' value='account'}on{/eq}">{$eBiz.lang.Ucenter_menu_my_account}</a>
+			<a href="{:U('User/coupon')}" class="manage-item {eq name='curr_act' value='coupon'}on{/eq}">{$eBiz.lang.Ucenter_menu_my_coupon}</a>
+
+			<!-- 暂时隐藏，后期开放 -->
+			<!-- <a href="{:U('User/withdrawals')}" class="manage-item {eq name='curr_act' value='withdrawals'}on{/eq}">{$eBiz.lang.Ucenter_menu_withdrawals}</a>
+			<a href="{:U('User/recharge')}" class="manage-item {eq name='curr_act' value='recharge'}on{/eq}">{$eBiz.lang.Ucenter_menu_recharge}</a> -->
+		</div>
+		<div class="bus-manage-block">
+			<h5 class="manage-title"><span class="icon"><img src="{:tb_config('resource_path',1)}shop/picture/bus_10.png" alt=""></span>{$eBiz.lang.Ucenter_menu_focus}</h5>
+			<a href="{:U('User/goods_collect')}" class="manage-item {eq name='curr_act' value='goods_collect'}on{/eq}">{$eBiz.lang.Ucenter_menu_collect_goods}</a>
+		</div>
+		<!-- <div class="bus-manage-block">
+			<h5 class="manage-title"><span class="icon"><img src="{:tb_config('resource_path',1)}shop/picture/bus_16.png" alt=""></span>客户服务</h5>
+			<a href="user_after_sales.html" class="manage-item">售后服务</a>
+			<a href="user_complain.html" class="manage-item">投诉举报</a>
+			<a href="user_online_service.html" class="manage-item">在线客服</a>
+			<a href="user_answer.html" class="manage-item">我的回答</a>
+		</div> -->
+	</div>
+</div>
+<script type="text/javascript">
+	function go_info() {
+		var url = "{:U('User/info')}";
+		{php}
+			$pwd_is_verify = cookie('info_pwd_verify');
+		{/php}
+		{eq name="pwd_is_verify" value='yes'}
+			location.href = url;
+		{else/}
+		layer.prompt({title: '为保护个人信息安全，请输入用户密码确认：', formType: 1}, function(pass, index){
+			$.ajax({
+			    type : "POST",
+			    url:"{:U('ajaxCheckPwd')}",
+			    data : {
+			    	pass:pass
+			    },
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function () {
+						if (data.code==1) {
+							location.href = url;							
+						}
+					});
+			    }
+			});
+		});
+		{/eq}
+	}
+</script>

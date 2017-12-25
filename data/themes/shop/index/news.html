@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$info.title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/question.css" />
+</head>
+<body class="has-right">
+
+<!-- top -->
+{include file="common/top_header"}
+<!-- header -->
+
+{include file="common/header"}
+
+<!-- nav -->
+{include file="common/nav"}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 当前位置、已筛选 -->
+			<div class="c-location-section">
+				<ul class="">
+					<li class="location-item has"><a href="/">首页</a></li>
+					<li class="location-item has"><a href="javascript:;">公告资讯</a></li>
+					<li class="location-item"><span>{$info.title}</span></li>
+				</ul>
+			</div>
+
+			<div class="news-section">
+				<div class="clearfix">
+					<div class="left-800 fl">
+						<div class="news-editor-box">
+							<div class="news-editor">
+								<div class="msg-title">{$info.title}</div>
+								<div class="content">
+									<div class="m-time">时间:{$info.create_time}</div>
+									{$info.content|htmlspecialchars_decode|htmlspecialchars_decode}
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="right fr">
+						<div class="mb20">
+							<a href="javascript:;"><img src="{:tb_config('resource_path',1)}shop/picture/a1.jpg" alt="" /></a>
+						</div>
+						<div class="">
+							<a href="javascript:;"><img src="{:tb_config('resource_path',1)}shop/picture/a2.jpg" alt="" /></a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 横条、活动 -->
+			<div class="block mt40"><a href="javascript:;"><img width="100%" src="{:tb_config('resource_path',1)}shop/picture/index_64.png" alt="" /></a></div>
+
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+
+
+</body>
+</html>

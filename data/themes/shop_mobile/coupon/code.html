@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Coupon_code_page_title}</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f0f2f5;">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Coupon_page_title}</h5>
+			</div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<div class="favourCode">
+			<div class="favourCode-box">
+				<input class="favourCode-text" id="code" type="text" placeholder="填写优惠码"/>
+				<a class="favourCode-btn" href="javascript:;" onclick="getCoupon();">提取</a>
+			</div>
+			<div class="favourCode-list">
+
+			</div>
+		</div>
+		<div style="height: 1.5rem;"></div>
+		<div class="other-coupon clearfix" style="border: 1px solid #EEEEEE;">
+			<a class="other-coupon-btn" href="{:U('shop/Coupon/index')}" >选择领取</a>
+			<a class="other-coupon-btn" href="javascript:;" >优惠码领取</a>
+		</div>
+	</main>
+
+	{tbjs module="mshop" src="swiper.min.js"}
+	<script type="text/javascript">
+	$(document).ready(function() {
+		var w = 0;
+		var wW = $(window).width()*0.94;
+		$('.tooltop-select .item').each(function() {
+			w += Number($(this).outerWidth(true));
+		})
+		if(w>wW) {
+			var tooltopSelect = new Swiper('.tooltop-select-container', {
+		        slidesPerView: 'auto',
+		        paginationClickable: true,
+		        spaceBetween: 0
+		    });
+		}
+	})
+		function getCoupon()
+		{
+			// 获取码
+			var code = $('#code').val();
+			if( code == '' || code == null || code == undefined ){
+				alert('请输入优惠码进行提取!');
+				return ;
+			}
+			$.ajax({
+				type:'post',
+				url:'{:U("shop/Coupon/ajaxcoupon")}',
+				data:{code:code},
+				success:function(data){
+					if( data.code == 0 ){
+						alert(data.msg);
+					}else{
+						$('.favourCode-list').html(data);
+					}
+				}
+			});
+		}
+	</script>
+
+</body>
+</html>

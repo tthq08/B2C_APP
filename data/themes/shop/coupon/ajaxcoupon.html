@@ -1,0 +1,60 @@
+<div style="margin: 0 auto; width: 390px; background-color: #ffffff; height: 170px;">
+    <div id="coupon-{$vo.id}" class="quan-item quan-d-item quan-item-acoupon {if condition="$vo.num == $vo.send_num || $vo['is_receive'] == true"}quan-gray-item{/if}">
+    <div class="q-type">
+        <div class="q-price">
+            <em> {$vo.discount_type_id} </em>
+            <strong class="num">{$vo.quota}</strong>
+            <div class="txt">
+                <div class="typ-txt">{$vo.coupon_level_name}</div>
+                <div class="limit">
+                    <span class="ftx-06">满{:web_currency()}{$vo.money}可用</span>
+                </div>
+            </div>
+        </div>
+        <div class="q-range">
+            <div class="range-item">
+                <p title="">{$vo.title}</p>
+            </div>
+            <div class="range-item">
+                {$vo.tisp}
+            </div>
+            <div class="range-item" coupon-time="33601200">{:date('Y.m.d H:i',$vo['send_start_time'])} - {:date('Y.m.d H:i',$vo['send_end_time'])}</div>
+        </div>
+    </div>
+    <div class="q-opbtns" style="margin-top: -0px; height: 133px;">
+        <a href="javascript:void(0);" onclick="codeReceive('{$vo.code}',{$vo.id});">
+            <b class="semi-circle"></b>
+            <span id="coupon-{$vo.id}-str">{$vo.message}</span>
+        </a>
+    </div>
+    <div class="q-state">
+        {if condition="$vo.num == $vo.send_num"}<div class="btn-state btn-getend">已抢完</div>{/if}
+    </div>
+</div>
+<script>
+    function codeReceive(code,coupon_id)
+    {
+        if( code == null || code == undefined){
+            alert('请选择您需要领取的优惠券');
+        }
+        $.ajax({
+            type:'post',
+            url:"{:U('shop/coupon/code_receive')}",
+            data:{code:code},
+            success:function (data) {
+                if( data.code == 0 ){
+                    alert(data.msg);
+                }else{
+                    alert(data.msg);
+                    var cid = '#coupon-'+coupon_id;
+                    var cidStr = '#coupon-'+coupon_id+'-str';
+                    $(cid).addClass('quan-gray-item');
+                    $(cidStr).html('已领取');
+                }
+            }
+        });
+
+    }
+</script>
+
+</div>

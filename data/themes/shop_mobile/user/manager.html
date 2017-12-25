@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>账户管理</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('user/index')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">账户管理</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<a href="{:U('user/info')}" class="user-block bdrt hasarrow">
+			<div class="bl">个人资料</div>
+			<div class="bf"></div>
+		</a>
+		<a href="{:U('user/address_list')}" class="user-block bdrt hasarrow">
+			<div class="bl">收货地址</div>
+			<div class="bf"></div>
+		</a>
+		<a href="{:U('user/user_pass')}" class="user-block bdrt hasarrow">
+			<div class="bl">修改登录密码</div>
+			<div class="bf"></div>
+		</a>
+		<a href="{:U('user/edit_phone')}" class="user-block bdrt hasarrow">
+			<div class="bl">更换绑定手机</div>
+			<div class="bf"></div>
+		</a>
+		{eq name="user.email_validated" value="1"}
+		<a href="{:U('user/change_email')}" class="user-block hasarrow">
+			<div class="bl">更换绑定邮箱</div>
+			<div class="bf"></div>
+		</a>
+		{else/}
+		<a href="{:U('user/validate_email')}" class="user-block hasarrow">
+			<div class="bl">邮箱认证</div>
+			<div class="bf"></div>
+		</a>
+		{/eq}
+	</main>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1.0,user-scalable=no,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <title>Title</title>
+    <link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/common.css" />
+    <script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/fontsize.js"></script>
+    <script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.js"></script>
+
+    <style type="text/css">
+    .wuliuchaxun {
+        padding: 0 3%;
+    }
+    .block {
+        line-height: 2rem;
+    }
+    .chaxun-item {
+        position: relative;
+        padding-left: 1rem;
+    }
+    .chaxun-item:before {
+        content: '';
+        display: block;
+        width: .5rem;
+        height: .5rem;
+        border-radius: 50%;
+        background: #f1f1f1;
+        position: absolute;
+        left: 0px;
+        top: 50%;
+        margin-top: -.25rem;
+    }
+    .chaxun-item .content {
+        padding: .5rem 0;
+        color: #333;
+        border-bottom: 1px solid #eee;
+    }
+    .chaxun-item .con {
+        font-size: .6rem;
+        line-height: .8rem;
+    }
+    .chaxun-item .note {
+        line-height: .7rem;
+        font-size: .5rem;
+        line-height: 1rem;
+    }
+    .chaxun-item .time {
+        font-size: .5rem;
+        line-height: .7rem;
+        margin-top: .3rem;
+        color: #999;
+    }
+    .xun-top {
+        border-bottom: 1px solid #eee;
+    }
+    .xun-tab {
+        float: left;
+        padding: 0 30px;
+        cursor: pointer;
+    }
+    .xun-tab.on {
+        color: red;
+    }
+    </style>
+</head>
+<body>
+    <div class="wuliuchaxun">
+        <div class="clearfix xun-top">
+            <div class="block xun-tab on" data-tab="1" style="font-size: 22px;">中国足迹</div>
+        </div>
+        <div class="chaxun-content xun-tablist" data-tab="1" id="cn">
+            {notempty name="error_cn"}
+                <div class="block xun-tab on" data-tab="1" style="font-size: 18px;">{$error_cn}</div>
+            {else/}
+            {if condition="!empty($shippingInfo)"}
+            {volist name="kdTrail_cn.Traces" id="vo"}
+            <div class="chaxun-item">
+                <div class="content">
+                    <p class="con">{$vo.AcceptStation}</p>
+                    <p class="time">{$vo.AcceptTime}</p>
+                </div>
+            </div>
+            {/volist}
+            {else/}
+            {/if}
+            {/notempty}
+        </div>
+    </div>
+<script type="text/javascript">
+    $('.wuliuchaxun').on('click','.xun-tab',function() {
+        var me = $(this);
+        var num = me.attr('data-tab');
+        me.addClass('on').siblings('.xun-tab').removeClass("on");
+        me.parent().siblings('.xun-tablist[data-tab="' + num + '"]').show().siblings('.xun-tablist').hide();
+    })
+</script>
+</body>
+</html

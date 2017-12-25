@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <!-- 顶部提示,筛选栏 -->
+        <div class="layui-tab layui-tab-card" id="top_filter" style="padding: 10px;">
+            <fieldset class="layui-elem-field">
+                <legend>功能</legend>
+                <div class="layui-field-box">
+                    <form class="layui-form" action="">
+                        <div class="layui-form-item">
+                            <div style="display: inline-block; float: left; margin-bottom: 10px;">
+                                <button type="button" class="layui-btn layui-btn-small" onclick="addNav();">
+                                    <i class="layui-icon">&#xe654;</i>新增导航
+                                </button>
+                                <button type="button" onclick="deleteNavs();" class="layui-btn layui-btn-small layui-btn-danger">
+                                    <i class="layui-icon">&#xe640;</i>批量删除
+                                </button>
+                            </div>
+                        </div>
+
+                        <script>
+                            function addNav() {
+                                layer.open({
+                                    type: 2,
+                                    title: '添加导航',
+                                    shadeClose: true,
+                                    shade: 0.8,
+                                    area: ['100%', '100%'],
+                                    content: '{:url("sys/nav/add_nav",["pid"=>$parent.id])}' //iframe的url
+                                });
+                            }
+                            function deleteNavs(){
+                                // 批量删除
+                                var ids = [];
+                                var ch= $('.list-check');
+                                for(var i=0;i<ch.length;i++) {
+                                    if(ch[i].checked==true){
+                                        ids[i] = ch[i].value;
+                                    }
+                                }
+                                if( ids.length > 0 ){
+                                    layer.confirm('您确定要删除这些导航吗', {
+                                        btn: ['确定','取消'] //按钮
+                                    }, function(){
+                                        $.ajax({
+                                            type:'POST',
+                                            url:'{:url("sys/Nav/del_nav")}',
+                                            data:{id:ids},
+                                            success:function (data) {
+                                                if( data.code == 1 ){
+                                                    layer.msg(data.msg, {icon: 1});
+                                                    location.reload();
+                                                }else{
+                                                    layer.msg(data.msg, {icon: 2});
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+
+                            }
+                        </script>
+                    </form>
+                </div>
+            </fieldset>
+        </div>
+        <!-- 导航位列表 -->
+        <div class="layui-tab layui-tab-card" id="position_list" style="width: 100%; float: left; background-color: #ffffff">
+            <table class="layui-table" lay-size="sm" lay-even lay-skin="nob">
+                <colgroup>
+                    <col width="10">
+                    <col width="10">
+                    <col width="150">
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                    <col>
+                    <col width="150">
+                    <col width="70">
+                    <col width="100">
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" name="position_id[0]" onclick="selectAll(this);">
+                    </th>
+                    <th>ID</th>
+                    <th>导航名称</th>
+                    <th>上级导航</th>
+                    <th>导航位</th>
+                    <th>缩略图</th>
+                    <th>链接</th>
+                    <th>描述</th>
+                    <th>排序</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                <script>
+                    function selectAll(obj){
+                        var ch= $('.list-check');
+                        if( $(obj).is(':checked') ) {
+                            for(var i=0;i<ch.length;i++) {
+                                ch[i].checked=true;
+                            }
+                        }else{
+                            for(var i=0;i<ch.length;i++) {
+                                ch[i].checked=false;
+                            }
+                        }
+                    }
+                </script>
+                </thead>
+                <tbody>
+                {volist name="lists" id="vo"}
+                <tr class="nav-{$vo.id}">
+                    <td><input type="checkbox" class="list-check" name="nav[{$vo.id}]" value="{$vo.id}"></td>
+                    <td>{$vo.id}</td>
+                    <td>
+                        {if condition="!empty($Request.param.showType)"}
+                        <a href="javascript:;" style="color: #0A3E87" data-href="{:url('lists',['showType'=>1,'pid'=>$vo.id])}" data-msg="下级导航-{$vo.name}" onclick="showFrame(this);">{$vo.name}</a>
+                        {else/}
+                        {$vo.name}
+                        {/if}
+                    </td>
+                    <td>
+                        {if condition="!empty($Request.param.showType)"}
+                        <a href="javascript:;" style="color: #0A3E87" data-href="{:url('lists',['showType'=>1,'pid'=>$vo.parentInfo.id])}" data-msg="下级导航-{$vo.name}" onclick="showFrame(this);">{$vo.parentInfo.id}:{$vo.parentInfo.name}</a>
+                        {else/}
+                        {$vo.parentInfo.id}:{$vo.parentInfo.name}
+                        {/if}
+                    </td>
+                    <td>
+                        {if condition="strpos($vo['position'],',')"}
+                        <a>在多个导航位中</a>
+                        {else}
+                        <a href="{:url('sys/nav/index',['id'=>$vo.positionInfo.id])}">{$vo.positionInfo.name}</a>
+                        {notempty name="$vo.positionInfo.description"}
+                        <a href="javascript:;" class="layui-icon" onclick="layer.alert('{$vo.positionInfo.description}', {
+    skin: 'layui-layer-lan'
+    ,closeBtn: 0
+    ,anim: 4 //动画类型
+    ,title: '{$vo.positionInfo.name}'
+  });">&#xe615;</a>
+                        {/notempty}
+                        <br/>
+                        {<span title="双击选中 Ctrl+C 复制">{$vo.positionInfo.position}</span>}
+                        {/if}
+                    </td>
+                    <td><img src="{$vo.icon}" alt="" style="max-width: 200px; max-height: 60px;"></td>
+                    <td><a target="_blank" href="{$vo.link}">{$vo.link}</a></td>
+
+                    <td>{$vo.description}</td>
+
+                    <td><input type="text" style="width: 60px;" onblur="editSort(this,{$vo.id});" value="{$vo.sort}"></td>
+                    <td class="layui-form"><input type="checkbox" name="switch" lay-filter="status" lay-skin="switch" value="{$vo.id}" {eq name="$vo.status" value="1"}checked{/eq}></td>
+                    <td>
+                        <button type="button" class="layui-btn layui-btn-small layui-btn-warm" style="margin: 0;" data-href="{:url('sys/nav/add_nav',['pid'=>$vo['id']])}" data-msg="新增导航-{$vo.name}" onclick="showFrame(this);">新增</button>
+
+                        <button type="button" class="layui-btn layui-btn-small" style="margin: 0;" data-href="{:url('sys/nav/edit_nav',['id'=>$vo['id']])}" data-msg="编辑-{$vo.name}" onclick="showFrame(this);">编辑</button>
+                        <button type="button" class="layui-btn layui-btn-small layui-btn-danger" style="margin: 0;" onclick="deleteNav({$vo.id});">删除</button>
+                    </td>
+                </tr>
+                {/volist}
+
+                </tbody>
+            </table>
+            <script>
+                function deleteNav(nid){
+                    layer.confirm('您确定要删除该导航吗', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(){
+                        $.ajax({
+                            type:'POST',
+                            url:'{:url("sys/Nav/del_nav")}',
+                            data:{id:nid},
+                            success:function (data) {
+                                if( data.code == 1 ){
+                                    layer.msg(data.msg, {icon: 1});
+                                    var nav_class = '.nav-'+nid;
+                                    $(nav_class).remove();
+                                }else{
+                                    layer.msg(data.msg, {icon: 2});
+                                }
+                            }
+                        });
+                    });
+                }
+                function showFrame (obj) {
+                    var index = layer.open({
+                        type: 2,
+                        title: $(obj).attr('data-msg'),
+                        shadeClose: false,
+                        shade:  [0.8, '#393D49'],
+                        maxmin: true, //开启最大化最小化按钮
+                        area: ['90%', '90%'],
+                        content: $(obj).attr('data-href')
+                    });
+                    layer.full(index);
+                }
+                function editSort(obj,nid){
+                    var value = $(obj).val();
+                    $.ajax({
+                        type:'POST',
+                        url:'{:url("sys/Nav/set_nav_value")}',
+                        data:{id:nid,field:'sort',value:value},
+                        success:function (data) {
+                            if( data.code == 1 ){
+                                layer.msg(data.msg);
+                            }else{
+                                layer.msg(data.msg, {icon: 2});
+                            }
+                        }
+                    });
+                }
+            </script>
+            <style>
+                .page .pagination{
+                    float: left;
+                }
+                .page .jump-page{
+                    margin-top: 20px;
+                }
+            </style>
+            <div class="page">
+                {$page}
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script>
+    var form = '';
+    layui.use('form', function(){
+        form = layui.form();
+        form.on('select(top_position)', function(data){
+            location.href="{:url('sys/nav/index')}?id="+data.value;
+        });
+        form.on('switch(status)', function(data) {
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type:'POST',
+                url:'{:url("sys/Nav/set_nav_value")}',
+                data:{id:data.value,field:'status',value:status},
+                success:function (data) {
+                    if( data.code == 1 ){
+                        layer.msg(data.msg,{time:400});
+                    }else{
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        })
+    });
+</script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}treeTable/jquery.treeTable.js" type="text/javascript"></script>
+</body>
+</html>

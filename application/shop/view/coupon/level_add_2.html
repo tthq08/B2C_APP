@@ -1,0 +1,147 @@
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <blockquote class="layui-elem-quote  layui-quote-nm" style="color: #666;font-size: 12px;">{$levelInfo.explain}</blockquote>
+    </div>
+</div>
+
+<hr>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券发放类型</label>
+    <div class="layui-input-block">
+        {foreach name="payment_type" item="v"}
+        <input type="radio" name="send_type" lay-filter="send_type"  value="{$v.id}" title="{$v.name}">
+        {/foreach}
+        <br> <br>
+        {foreach name="payment_type" item="v"}
+        <blockquote id="explain-{$v.id}" class="layui-elem-quote layui-quote-nm send-type-explain" style="font-size: 12px; display: none;">{$v.explain}</blockquote>
+        {/foreach}
+    </div>
+</div>
+
+<div class="layui-form-item" id="send_money" style="display: none;">
+    <label class="layui-form-label">购物多少金额发放</label>
+    <div class="layui-input-block">
+        <span style="float: left; width: 20px; line-height: 30px;">₩</span>
+        <input type="number" name="send_money" style="width: 80px; float: left" placeholder="0" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<div id="code_select" style="display: none;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">优惠码类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="code_type" class="layui-input" value="1" title="一券一码" checked>
+            <input type="radio" name="code_type" class="layui-input" value="2" title="通用码">
+        </div>
+    </div>
+</div>
+
+<div class="layui-form-item" id="send_user_level" style="display: none;">
+    <label class="layui-form-label">到达等级后发放</label>
+    <div class="layui-input-block">
+        {volist name="user_level" id="level"}
+        <input type="checkbox" name="send_user_level[{$level.id}]" value="{$level.id}" title="{$level.level_name}" checked>
+        {/volist}
+    </div>
+</div>
+
+<hr>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券类型</label>
+    <div class="layui-input-block">
+        {foreach name="coupon_type" item="v"}
+        <input type="radio" name="discount_type" lay-filter="discount_type" value="{$v.id}" title="{$v.name}">
+        {/foreach}
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">满足多少金额使用</label>
+    <div class="layui-input-block">
+        <span style="float: left; width: 20px; line-height: 30px;">₩</span>
+        <input type="number" name="money" style="width: 80px; float: left" placeholder="0" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<div id="hierarchy">
+
+</div>
+
+<div id="quota">
+    <div id="quota_ed">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">额度</label>
+
+            <div class="money_quota" style="display: none;">
+                <div class="layui-input-inline" style="width: 50px;">
+                    <select name="quota_type" id="quota_type" lay-filter="quota_type" style="width: 50px; float: left;">
+                        <option value="1">¥</option>
+                        <option value="2">₩</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-input-inline" style="width: 50px;">
+                <input type="number" name="cn_quota" style="width: 80px; float: left;" placeholder="0" autocomplete="off" class="layui-input">
+            </div>
+
+            <div class="layui-input-inline" id="quota_type_tip" style="width: 300px;  display: none;">
+                <span style="margin-left: 50px;">(将会按照当前的汇率设置为韩元。)</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="quota_zq" style="display: none;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">折扣力度</label>
+            <div class="layui-input-inline" >
+                <input type="number"  name="quota"   style="width: 80px; float: left;" placeholder="0" autocomplete="off" class="layui-input">
+                <span style="line-height: 30px; margin-left: 5px;">%</span>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">最大减免</label>
+            <div class="layui-input-inline" >
+                <input type="number"  name="max_quota" style="width: 80px; float: left;" placeholder="0" autocomplete="off" class="layui-input">
+                <span style="line-height: 30px; margin-left: 5px;">₩</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">总发放数量</label>
+    <div class="layui-input-block">
+        <input type="number" name="num" style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">单张使用次数</label>
+    <div class="layui-input-block">
+        <input type="number" name="one_use_num"   style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input" value="1">
+    </div>
+</div>
+
+<hr>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">限制条件</label>
+    <div class="layui-input-block">
+        <input type="radio" name="bind_type" lay-filter="bind_type" value="1" title="商品">
+        <input type="radio" name="bind_type" lay-filter="bind_type" value="2" title="商品分类">
+    </div>
+</div>
+
+<div id="bind-type">
+
+</div>
+

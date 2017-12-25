@@ -1,0 +1,46 @@
+{volist name="orderList" id="list"}
+	<div class="order-item">
+		<div class="mt clearfix">
+			<div class="ofl">
+				<img class="icon" src="{:tb_config('resource_path',1)}mshop/images/cart_06.png" alt="" />
+				{eq name="list.shop_id" value="0"}{assign name="shop_name" value=":lang('Order_shop_name_self')" /}{else/}{assign name="shop_name" value=":getTableValue('cust_shop',['id'=>$list['shop_id']],'shop_name')" /}{/eq}
+				<span class="os-name">{$shop_name}</span>
+			</div>
+			<div class="ofr">
+				<span class="state">{:getOrderStatusName($list['status'])}</span>
+			</div>
+		</div>
+		<div class="mc">
+		{volist name="list.goods_list" id="good" key="k" offset='0' lenght='1'}
+			<a href="{:U('shop/User/order_detail',['id'=>$list['id']])}" class="mitem clearfix">
+				<div class="pic"><img src="{$good.goods_id|goods_thum_images=200,200}" alt="{$good.goods_name}" /></div>
+				<div class="info">
+					<div class="tit">{$good.goods_name}</div>
+					<!-- <div class="price"><span>{:web_currency()}{$list['payable_price']}</span></div> -->
+				</div>
+			</a>
+		{/volist}
+		</div>
+		<div class="mn tright">
+			<span>共{:count($list.goods_list)}件商品</span>
+			<span>实付款：{$list.payable_price}元</span>
+		</div>
+		<div class="mb">
+		{neq name="list.status" value="0"}
+		{eq name="list.is_pay" value="0"}
+			<a href="{:U('Cart/cart4',['order_id'=>$list['id']])}" class="btn buy-btn mr10">付款</a>
+			<a href="{:U('User/cancel_order',['id'=>$list['id']])}" class="btn cmt-btn mr10">取消</a>
+		{/eq}
+		{eq name="list.status" value="4"}
+			<a href="javascript:;" onclick="if(confirm('{$eBiz.lang.Order_receive_msg}?')) location.href='{:U('shop/User/order_confirm',['id'=>$list['id']])}'" class="btn buy-btn mr10">确认收货</a>
+		{/eq}
+		{else/}
+			<a data-href="{:U('User/del_order',['id'=>$list['id']])}" data-msg="{$eBiz.lang.Order_delete}" href="javascript:;" onclick="actOrd(this);" class="btn del-btn">删除</a>
+		{/neq}
+		{egt name="list.status" value="5"}
+			<a href="{:U('shop/User/comment',['id'=>$list['id']])}" class="btn cmt-btn mr10">评价</a>
+			<a href="{:U('Home/User/return_goods',['order_id'=>$list['id'],'order_sn'=>$list['order_sn'],'goods_id'=>$good['goods_id']])}" class="btn cmt-btn mr10">申请售后</a>
+		{/egt}
+		</div>
+	</div>
+{/volist}

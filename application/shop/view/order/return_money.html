@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style>
+    .table-left{
+        text-align: right;
+        height: 48px;
+    }
+</style>
+<body>
+<section>
+    <form id="update_price" class="layui-form">
+        <input type="hidden" name="id" value="{$return_goods.id}">
+        <table class="layui-table table-hover" lay-even="">
+            <tbody>
+                <tr>
+                    <td width="15%" class="table-left">退款金额</td>
+                    <td><input type="text" name="money" value="{$return_goods.money}"></td>
+                </tr>
+                <tr>
+                    <td width="15%" class="table-left">积分修改</td>
+                    <td><input type="text" name="points" placeholder="0"></td>
+                </tr>
+                <tr>
+                    <td class="table-left">操作备注</td>
+                    <td><textarea name="remark" cols="30" rows="5"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="table-left"></td>
+                    <td>
+                        <button class="layui-btn layui-btn-radius layui-btn-warm">取消</button>
+                        <button class="layui-btn layui-btn-radius" lay-submit lay-filter="*">保存</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</section>
+<script>
+    layui.use('form', function(){
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            var url = '{:url('shop/order/return_money_save')}';
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    if (data.code==1) {
+                        layer.msg(data.msg);
+                        location.reload();
+                    }else{
+                        layer.msg(data.msg);
+                    };
+                }
+            });
+            return false; //阻止表单跳转。
+        });
+    });
+</script>
+</body>
+</html>

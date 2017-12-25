@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0" />
+<title>支付-</title>
+<meta http-equiv="keywords" content="" />
+<meta name="description" content="" />
+<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.js"></script>
+<style type="text/css">
+*{ margin:0; padding:0;box-sizing: border-box;}
+.wihe-ee{width:94%; height:420px; background:#FFF; padding:25px; color:#666; font-family:song,arial; font-size:14px; box-sizing:border-box; border-radius:6px; margin:0 auto; margin-top:10%}
+.wihe-ee p{text-align:center}
+.co999{color:#999}
+.fo-si-18{font-size:18px}
+.fail-fasu{float:left; width:50%; height:180px; background:url({:tb_config('resource_path',1)}mshop/images/icon-pay.png) 50px 0 no-repeat; text-align:center}
+.fail-fasu .icon, .success-fasu .icon {
+    height: 100px;
+    width: 100%;
+    background-color: #fdfdfd;
+    background-repeat: no-repeat;
+    background-image: url({:tb_config('resource_path',1)}mshop/images/icon-pay.png);
+}
+.fail-fasu .icon { background-position: 30px 0; }
+.success-fasu .icon {
+    background-position: -220px 0;
+}
+.success-fasu{float:right; width:50%; height:180px; background:url({:tb_config('resource_path',1)}mshop/images/icon-pay.png) -220px 0 no-repeat; text-align:center}
+.fail-fasu a:hover{ background-color:#ee9775}
+.fail-fasu a{padding:8px 24px; background-color:#f8a584; display:table; margin:0 auto; color:#fff; text-decoration:none; margin-top:10px}
+.re-qtzfgg a,.success-fasu a{padding:8px 24px; background-color:#eee; display:table; margin:0 auto; color:#999; text-decoration:none; margin-top:10px}
+.re-qtzfgg a{padding:15px 10px;width: 100%;text-align: center;}
+.re-qtzfgg a:hover,.success-fasu a:hover{background-color:#ddd;}
+.fail-success{overflow:hidden; height:185px}
+</style>
+</head>
+<body style="background-color:#666;margin-top: 30%;">
+	<div class="tac-sd">
+    	<div class="wihe-ee">
+        	<p>
+            	<p class="fo-si-18">请您在新打开的页面上完成付款!</p>
+                <p class="co999" style="margin-top: 10px;">付款完成前请不要关闭此窗口。完成付款后请根据您的情况点击下面的按钮。</p>
+            </p>
+            <br>
+            <br>
+            <div class="fail-success">
+            	<div class="fail-fasu">
+                    <div class="icon"></div>
+                	<p>支付完成</p>
+                    <a onclick="javascript:window.history.back(-1);">支付成功</a>
+                </div>
+                <div class="fail-I-success" style="float:left">
+                    {$code_str}
+                </div>
+            	<div class="success-fasu">
+                    <div class="icon"></div>
+                	<p>支付遇到问题</p>
+                    <a onclick="javascript:window.history.back(-1);">支付失败</a>
+                </div>
+            </div>
+            <div class="re-qtzfgg">
+            	<a onclick="javascript:window.history.back(-1);">返回选择其他支付方式</a>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    /**
+     * 检查订单状态
+     */
+    function ajax_check_pay_status(){
+        $.ajax({
+            type: "post",
+            url: "{:U('shop/Index/check_order_pay_status')}",
+            data:{serial_id:"{$serial_id}"},
+            dataType: 'json',
+            success: function (data) {
+                if (data.code == 1) {
+                    clearInterval(interval);
+                    location.href = "{:U('shop/Cart/cart4',array('serial_id'=>$serial_id))}";
+                }
+            }
+        });
+    }
+   var interval = setInterval(ajax_check_pay_status,5000);
+
+</script>
+</html>

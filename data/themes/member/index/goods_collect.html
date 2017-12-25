@@ -1,0 +1,305 @@
+﻿{include file="../shop/public/top"}
+{tbcss module="shop" src="qikoo_user.css"}
+        <!--吸顶广告-->
+
+        {include file="../shop/public/header"}
+        {include file="../shop/public/navbox"}
+
+    </div>
+    <!--导航 end-->
+    
+    <div class="user-body">
+        <div class="user-container">
+            <div class="user-container">
+                <div class="user-crumbs m-b-10"><a href="/">首页</a> &gt;</div>
+                <div class="clearfix_new">
+                    <div class="user-menu m-r-20">
+                        <div class="menu-title">个人中心</div>
+                        <div class="menu-list">
+                            <a class="menu-item" href="myorder.html" data-monitor="user_myorder_myorder">我的订单</a>
+                            <a class="menu-item coupon_menu" href="mycoupon.html" data-monitor="user_mycoupon_mycoupon">我的优惠券</a>
+                            <a class="menu-item favorite_menu item-active" href="myfavorite.html" data-monitor="user_myfavorite_myfavorite">我的喜欢</a>
+                            <a class="menu-item user_address_address" href="userAddress.html" data-monitor="user_address_address">收货地址</a>
+                        </div>
+                        <div class="menu-title">售后服务</div>
+                        <div class="menu-list">
+                            <a class="menu-item afterSale_menu" href="applyList.html" data-monitor="user_returnlist_returnlist">我的退换货</a>
+                        </div>
+                    </div>                    
+                    <style>
+                        .favorite_item{position:relative;}
+                        .qx_box{position:absolute; left:0; top:0; background:#000; width:100%; height:100%;filter:alpha(opacity=60);opacity:0.6;}
+                        .qx_sm{position:absolute; left:0; top:0;}
+                        .qx_sm p{ color:#fff; width:206px; margin-top: 70px; padding-left:20px; margin-left: 25px;;}
+                        .qx_btn{position:absolute; left:0;bottom:0; height:30px; line-height: 30px; background:#FF8200; width:100%;font-size: 0; }
+                        .qx_btn a{ width:50%;color:#fff; display:inline-block; text-align: center;font-size: 14px;}
+                        .qxsc_btn{ background:#A7A7A7;}
+                        #sc_box{ display:none;}
+                    </style>
+                    <div class="user-main">
+
+                        <input type="hidden" id="basePath" value="">
+                        <div class="favorite_container clearfix_new">
+                            <h1 class="favorite_title"> 我的喜欢</h1>
+
+                            <!-- 若没有喜欢的则是注释的这一部分模板 -->
+                            <!-- <div class="no_like" style="display: block;"> <img src="images/usr_coupon_null.png">
+                                <p class="no_like_txt">您暂未收藏任何商品</p>
+                            </div> -->
+                            
+                            <ul class="favorite_list clearfix_new" id="favoriteItemList">
+                                <li class="favorite_item" itemid="4740280">
+                                    <div class="favorite_item_img">
+                                        <a href="javascript:;" target="_blank">
+                                            <img id="img4740280" src="upload/54b8ae03N63a25d6c.jpg" width="121" height="121" alt="360随身WiFi3 300M 无线网卡 迷你路由器 黑色" title="360随身WiFi3 300M 无线网卡 迷你路由器 黑色"></a>
+                                    </div>
+                                    <p class="favorite_item_name">
+                                        <a href="javascript:;" title="360随身WiFi3 300M 无线网卡 迷你路由器 黑色" target="_blank">360随身WiFi3 300M 无线网卡 迷你路由器 黑色</a>
+                                    </p>
+                                    <p class="favorite_itme_price" id="price4740280">{:web_currency()}24.90</p>
+                                    <div class="favorite_item_btn_box" style="visibility: hidden;">
+                                        <span class="favorite_cancelbtn">取消</span>
+                                        <span class="favorite_addbtn" id="stock4740280">加入购物车</span>
+                                    </div>
+                                    <div id="sc_box">
+                                        <div class="qx_box"></div>
+                                        <div class="qx_sm">
+                                            <p>主人确认要抛弃我么~</p>
+                                        </div>
+                                        <div class="qx_btn">
+                                            <a href="javascript:void(0)" class="cancel_confirm">确认</a>
+                                            <a href="javascript:void(0)" class="qxsc_btn">取消</a>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="favorite_item" itemid="4016555">
+                                    <div class="favorite_item_img">
+                                        <a href="javascript:;" target="_blank">
+                                            <img id="img4016555" src="upload/575779ddN0a18ded6.jpg" width="121" height="121" alt="360智能摄像机大众版 D600 小水滴 高清 大广角 WIFI摄像头 双向通话 远程监控 哑白" title="360智能摄像机大众版 D600 小水滴 高清 大广角 WIFI摄像头 双向通话 远程监控 哑白"></a>
+                                    </div>
+                                    <p class="favorite_item_name">
+                                        <a href="javascript:;" title="360智能摄像机大众版 D600 小水滴 高清 大广角 WIFI摄像头 双向通话 远程监控 哑白" target="_blank">360智能摄像机大众版 D600 小水滴 高清 大广角 WIFI摄像头 双向通话 远程监控 哑白</a>
+                                    </p>
+                                    <p class="favorite_itme_price" id="price4016555">{:web_currency()}129.00</p>
+                                    <div class="favorite_item_btn_box" style="visibility: hidden;">
+                                        <span class="favorite_cancelbtn">取消</span>
+                                        <span class="favorite_addbtn" id="stock4016555">加入购物车</span>
+                                    </div>
+                                    <div id="sc_box">
+                                        <div class="qx_box"></div>
+                                        <div class="qx_sm">
+                                            <p>主人确认要抛弃我么~</p>
+                                        </div>
+                                        <div class="qx_btn">
+                                            <a href="javascript:void(0)" class="cancel_confirm">确认</a>
+                                            <a href="javascript:void(0)" class="qxsc_btn">取消</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                            <div class="loading" style="display: none;"></div>
+                            <ul class="pagination" id="page_wrap">
+                                <input type="hidden" name="total_page" value="1">                            
+                                <input type="hidden" name="current_page" value="1">                            
+                                <li>
+                                    <a class="disabled page-prev" href="#1">上一页</a>
+                                </li>
+                                <li>
+                                    <a name="pageForSerch" class="on" href="#1">1</a>
+                                </li>
+                                <li>
+                                    <a class="page-next disabled" href="#1">下一页</a>
+                                </li>
+                            </ul>
+                            <div id="countdown_tip" class="dialog_wrap">
+                                <div class="dialog_content">
+                                    <p style="width:300px"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <script type="text/javascript" src="js/favoriteItem.js"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="a-nomore"></div>
+    <!-- footer -->
+    <div class="mod-footer">
+        <div class="foot-bannerw">
+            <div class="foot-banner clearfix">
+                <div class="banner-item">
+                    <i class="icon1">7</i>
+                    7天无理由退货
+                </div>
+                <div class="banner-item">
+                    <i class="icon2">15</i>
+                    15天免费换货
+                </div>
+                <div class="banner-item">
+                    <i class="icon3">包</i>
+                    满99元包邮
+                </div>
+                <div class="banner-item">
+                    <i class="icon4">服</i>
+                    手机特色服务
+                </div>
+            </div>
+        </div>
+        <div class="foot-containerw">
+            <div class="foot-container clearfix">
+                <dl class="foot-con">
+                    <dt data-monitor='home_foot_freshman'>帮助中心</dt>
+
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">用户登录与密码找回</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">购买指南</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">支付方式</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">配送与说明</a>
+                    </dd>
+                </dl>
+                <dl class="foot-con">
+                    <dt data-monitor='home_foot_help'>售后服务</dt>
+                    <dd data-monitor='home_help_help'>
+                        <a target="_blank" href="javascript:;"
+                       rel="nofollow">7日无理由退货</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">质量问题15日内换货</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">保修条款</a>
+                    </dd>
+                    <dd>
+                        <a target="_blank"
+                       href="javascript:;"
+                       rel="nofollow">售后服务运费规则</a>
+                    </dd>
+
+                </dl>
+
+                <dl class="foot-con contactus">
+                    <dt>联系我们</dt>
+                    <dd>
+                        <span class="call-number">400-xxxx-xxx</span>
+                    </dd>
+                    <dd>
+                        <span class="call-number">
+                            400-xxxx-xxx
+                            <span class="beizhu">（手机类产品）</span>
+                        </span>
+                    </dd>
+                    <dd class="call-time">
+                        周一至周日 9:00-18:00
+                        <br>（仅收市话费）
+                    </dd>
+                </dl>
+                <dl class="foot-con foot-con-2">
+                    <dd class="servicebox">
+                        <p>
+                            <a class="weixin">
+                                <img src="picture/weixin_icon.png">
+                                <span class="wxtips">
+                                    <img src="picture/t01d06b994b8798623c.jpg" height="80" width="80">
+                                </span>
+                            </a>
+                        </p>
+                        <p>
+                            <a class="weibo" data-monitor="home_foot_weibo" href="javascript:;" target="_blank">
+                                <img src="picture/weibo_icon.png">
+                                <span class="wxtips">
+                                    <img src="picture/wbewm.jpg" height="80" width="80">
+                                </span>
+                            </a>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>
+                shop商城©2000-2017 XX公司版权所有 
+            </p>
+            <p>
+                公司名：XXX互联网络科技（深圳）有限公司 | 联系电话：0755-xxxx xxxx | 联系地址：深圳市龙华新区民治街道深圳北大厦10000号
+            </p>
+        </div>
+    </div>
+    <div class="slidebar" id="slidebar">
+        <ul>
+            <li class="rfeedback" style="visibility: hidden;">
+                <a target="_blank" href="javascript:;" data-monitor="right_fankui_click">用户体验</a>
+            </li>
+
+            <li class="rtips rWeChat">
+                <a>微信关注</a>
+                <div class="rtipscont rWeChattips">
+                    <span class="arrowr-bg"></span>
+                    <span class="arrowr"></span>
+                    <img src="picture/t01d06b994b8798623c.jpg">
+                    <p class="tiptext">
+                        扫码关注官方微信
+                        <br>先人一步知晓促销活动
+                    </p>
+                </div>
+            </li>
+            <li class="rtips rstore">
+                <a>手机商城</a>
+                <div class="rtipscont rstoretips">
+                    <span class="arrowr-bg"></span>
+                    <span class="arrowr"></span>
+                    <img src="picture/qcode_app.jpg">
+                </div>
+            </li>
+            <li class="topback" style="visibility: hidden;">
+                <a data-monitor="right_top_click" href="javascript:;" class="gotop">返回顶部</a>
+            </li>
+        </ul>
+    </div>
+    <div id="serviceSelectorMask"></div>
+    <div class="fixed dialog" id="serviceSelector">
+        <span class="icon close" onclick="hideServiceSelector();"></span>
+        <p class="title">产品咨询</p>
+        <p class="description">
+            咨询时间 <em>8:00-22:00</em>
+        </p>
+        <ul class="flex">
+            <li class="phone" onclick="openNtalker(true);">360手机&amp;配件</li>
+            <li class="watch" onclick="openNtalker();">360儿童手表</li>
+            <li class="recorder" onclick="openNtalker();">360行车记录仪</li>
+            <li class="camera" onclick="openNtalker();">360智能摄像头</li>
+            <li class="more" onclick="openNtalker();">其他产品</li>
+        </ul>
+        <div class="bg-shadow"></div>
+    </div>
+    <!--footer end-->
+
+    <style>
+    /* 解决luyou.mall.360.com主样式表覆盖在线客服频道选择框的问题 */
+    #page_mall360footer {
+        overflow: visible;
+    }
+</style>
+
+</body>
+</html>
+

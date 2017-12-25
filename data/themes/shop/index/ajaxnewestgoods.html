@@ -1,0 +1,25 @@
+<div class="box clearfix">
+{volist name="goods_list" id="vo"}
+	<div class="shop-list-p">
+		<div class="pic">
+			<a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}"><img src="{$vo.id|goods_thum_images=220,220}" alt=""></a>
+		</div>
+		<div class="info">
+			<div class="tag">
+			{eq name="vo.is_new" value="1"}
+				<span class="item">{$eBiz.lang.Index_Text_notes_new}</span>
+			{/eq}
+			{eq name="vo.is_comm" value="1"}
+				<span class="item item-a">{$eBiz.lang.Index_Text_notes_comm}</span>
+			{/eq}
+				<!-- <span class="item item-a">最热</span> -->
+			</div>
+			<p class="title"><a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}">{$vo.title|mb_substr=0,30,'utf-8'}</a></p>
+			<p class="price">
+				<del>{:web_currency()}{$vo.market_price}</del>
+				<span class="color--9b1b33">{:web_currency()}{$vo.shop_price}</span>
+			</p>
+		</div>
+	</div>
+{/volist}
+</div>

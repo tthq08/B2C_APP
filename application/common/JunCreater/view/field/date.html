@@ -1,0 +1,23 @@
+<?php 
+if(!isset($line)){
+?>
+<div class="layui-form-item">
+  <label class="layui-form-label">{$title}</label>
+  <div class="layui-input-block">
+    <input type="text" name="{$name}" id="{$name}" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})" value="{$value}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+  </div>
+</div>
+<?php 
+}else{
+?>
+	<div class="layui-input-inline">
+    <input type="text" name="{$name}" id="{$name}" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this})" value="{$value}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+  </div>
+<?php 
+}
+?>
+<script>
+layui.use('laydate', function(){
+  var laydate = layui.laydate;
+})
+</script>

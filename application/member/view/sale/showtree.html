@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="cn">
+	{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<link rel="stylesheet" href="{:tb_config('sys_plugin_src',1,$lang_id)}css/metroStyle/metroStyle.css" type="text/css">
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.ztree.core.js"></script>
+<section class="layui-larry-box">
+	<blockquote class="layui-elem-quote mylog-info-tit">
+		<form class='layui-form' id='user_filter' method='get' action=''>
+		<div class='layui-form-item'>	
+			<div class="layui-input-inline">
+				<input type="text" name="key" placeholder="{$eBiz.lang.tree_filter_parent_place}" autocomplete="off" class="layui-input" value="" >
+			</div>
+
+			<button type='submit' class='layui-btn layui-btn' title='{$eBiz.lang.comm_btn_filter}'>{$eBiz.lang.comm_btn_filter}</button></div></form>
+	</blockquote>
+	<div class="larry-personal">
+		<div class='tree_box zTreeDemoBackground' style="display: inline-block; width: 100%; min-height: 300px; padding: 10px; border: 1px solid #ddd; overflow: auto;">
+		  <ul id="tree" class=" ztree"></ul>
+		</div>
+	</div>
+</section>
+</body>
+<script type="text/javascript">
+	<!--
+		var setting = {
+			async: {
+				enable: true,
+				url:"{:url('Sale/ajaxGetSubTree',['id'=>$id])}",
+				autoParam:["id"]
+			},
+		};
+
+		$(document).ready(function(){
+			$.fn.zTree.init($("#tree"), setting);		
+		});
+</script>
+</html>

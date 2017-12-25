@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style>
+    .table-left{
+        text-align: right;
+        height: 48px;
+    }
+</style>
+<body>
+<section>
+    <form id="update_price" class="layui-form">
+        <input type="hidden" name="id" value="{$order.id}">
+        <table class="layui-table table-hover" lay-even="">
+            <tbody>
+                <tr>
+                    <td width="25%" class="table-left">费用信息</td>
+                    <td>订单应付金额：{:priceFormat($order.money,1)} = 订单总额：{:priceFormat($order.payable_price,1)} + 邮费：{:priceFormat($order.postage,1)} - 微调金额：{:priceFormat($order.change_mny,1)} </td>
+                </tr>
+                <tr>
+                    <td class="table-left">收货人</td>
+                    <td>
+                        {if condition="$order.is_send eq 0"}
+                        <input style="width: 200px; float: left;" class="layui-input" type="text" name="consignee" value="{$order.consignee}">
+                        {else/}
+                        {$order.consignee}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">手机号码</td>
+                    <td>
+                        {if condition="$order.is_send eq 0"}
+                        <input style="width: 200px;" class="layui-input" type="text" name="phone" value="{$order.phone}">
+                        {else/}
+                        {$order.phone}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">地址</td>
+                    <td>
+                        {if condition="$order.is_send eq 0"}
+                        <div class="layui-input-inline">
+                            <select name="province" id="province" lay-filter="province" onChange="get_city(this)">
+                                <option value="">请选择</option>
+                                {volist name="province" id="p"}
+                                <option {if condition="$order['province'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="city" id="city" lay-filter="city" onChange="get_area(this)">
+                                <option value="">请选择</option>
+                                {volist name="city" id="p"}
+                                <option {if condition="$order['city'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <div class="layui-input-inline">
+                            <select name="district" id="district" lay-filter="district">
+                                <option  value="0">请选择</option>
+                                {volist name="district" id="p"}
+                                <option {if condition="$order['district'] eq $p['id']"}selected{/if}  value="{$p.id}">{$p.name}</option>
+                                {/volist}
+                            </select>
+                        </div>
+                        <input type="text" name="address" class="layui-input" style="width: 527px; margin-top: 10px;" value="{$order.address}">
+                        {else/}
+                        {:getAddressName($order.province)}{:getAddressName($order.city)}{:getAddressName($order.district)}{$order.address}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">发票抬头</td>
+                    <td>
+                        {if condition="$order.is_send eq 0"}
+                        <input type="text" class="layui-input" name="invoice_title" value="{$order.invoice_title}">
+                        {else/}
+                        {$order.invoice_title}
+                        {/if}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">商品列表</td>
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <td>商品名称</td>
+                                    <td>规格</td>
+                                    <td>价格</td>
+                                    <td>数量</td>
+                                    <td>操作</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {volist name="goods_list" id="goods"}
+                                <tr>
+                                    <td title="{$goods.goods_name}">{:mb_substr($goods.goods_name,0,30)}..</td>
+                                    <td>{$goods.spec_title}</td>
+                                    <td>{:priceFormat($goods.shop_price,1)}</td>
+                                    <td>
+                                        {if condition="$order.is_pay eq 0"}
+                                        <input type="text" name="goods_num[{$goods.id}]" value="{$goods.goods_num}" class="layui-input" style="width:100px;">
+                                        {else/}
+                                        {$goods.goods_num}
+                                        {/if}
+                                    </td>
+                                    <td>删除</td>
+                                </tr>
+                                {/volist}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="table-left">管理员备注</td>
+                    <td><textarea name="remark" class="layui-textarea" id="" cols="60" rows="5"></textarea></td>
+                </tr>
+                <tr>
+                    <td class="table-left"></td>
+                    <td>
+                        <button class="layui-btn layui-btn-radius layui-btn-warm">取消</button>
+                        <button class="layui-btn layui-btn-radius" lay-submit lay-filter="*">保存</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</section>
+<script>
+    layui.use('form', function(){
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            var url = '{:url('shop/order/update_order_save')}';
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    if (data.code==1) {
+                        layer.msg(data.msg);
+                        location.reload();
+                    }else{
+                        layer.msg(data.msg);
+                    };
+                }
+            });
+            return false; //阻止表单跳转。
+        });
+        form.on('select(province)', function(data){
+            $.ajax({
+                url:"{:url('shop/Order/getAddressList')}",
+                data:{
+                    parent_id : data.value
+                },
+                success: function(data){
+                    $('#city').html('');
+                    $('#district').html('');
+                    var options = data.data;
+                    var Html = '<option value="0">{:lang("comm_form_select_default")}</option>';
+                    Html += data.msg;
+                    $('#city').html(Html);
+                    form.render('select');
+                }
+            });
+        });
+        form.on('select(city)', function(data){
+            $.ajax({
+                url:"{:url('shop/Order/getAddressList')}",
+                data:{
+                    parent_id : data.value
+                },
+                success: function(data){
+                    $('#').html('');
+                    var Html = '<option value="0">{:lang("comm_form_select_default")}</option>';
+                    Html += data.msg;
+                    $('#district').html(Html);
+                    form.render('select');
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

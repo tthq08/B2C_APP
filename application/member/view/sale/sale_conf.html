@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<link rel="stylesheet" href="{:tb_config('sys_plugin_src',1,$lang_id)}css/metroStyle/metroStyle.css" type="text/css">
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.ztree.core.js"></script>
+<section style="background-color: #ffffff;">
+    <div style="padding: 20px;">
+        <blockquote class="layui-elem-quote  layui-quote-nm" style="color: #666;font-size: 12px;">系统平台全局设置,包括基础设置、购物、短信、邮件、水印和分销等相关模块。</blockquote>
+        <form action="{:U('member/Sale/sale_conf_save')}" class="layui-form" style="margin-top: 30px;">
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否开启分销</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="open" value="1" title="开启" {if condition="isset($config.open) && $config.open eq 1"}checked{/if}{if condition="empty($config.open)"}checked{/if}>
+                    <input type="radio" name="open" value="0" title="关闭" {if condition="isset($config.open) && $config.open eq 0"}checked{/if}>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分销名称</label>
+                <div class="layui-input-block">
+                    <input type="text" name="name" placeholder="请输入分销名称" style="width: 300px;" autocomplete="off" class="layui-input" value="{if condition="isset($config.name)"}{$config.name}{/if}">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">成为分销商条件</label>
+                <div class="layui-input-block" >
+                    <input type="radio" name="condition" value="1" lay-filter="condition" title="直接成为分销商" {if condition="isset($config.condition) && $config.condition eq 1"}checked{/if}>
+                    <input type="radio" name="condition" value="2" lay-filter="condition" title="消费多少额度后成为分销商" {if condition="isset($config.condition) && $config.condition eq 2"}checked{/if}>
+                    <input type="radio" name="condition" value="3" lay-filter="condition" title="需购买商品后成为分销商" {if condition="isset($config.condition) && $config.condition eq 3"}checked{/if}>
+                    <input type="radio" name="condition" value="4" lay-filter="condition" title="提交申请审核后成为分销商（待开发）" disabled>
+                </div>
+            </div>
+            <div class="layui-form-item" id="money" style="display: {if condition="isset($config.condition) && $config.condition eq 2"}block{else}none{/if};">
+                <label class="layui-form-label">消费多少金额</label>
+                <div class="layui-input-block">
+                    <input type="text" name="money" placeholder="消费多少金额" style="width: 300px;" autocomplete="off" class="layui-input" value="{if condition="isset($config.money)"}{$config.money}{/if}">
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分销模式</label>
+                <div class="layui-input-block" style="width: 300px;">
+                    <select name="pattern" lay-filter="aihao">
+                        <option value="1" {if condition="isset($config.pattern) && $config.pattern eq 1"}selected{/if}>按订单设置的分成金额</option>
+                        <option value="2" {if condition="isset($config.pattern) && $config.pattern eq 2"}selected{/if}>按商品设置的分成金额</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">分销级别</label>
+                <div class="layui-input-block">
+                    <div style="float: left; margin-right: 10px;">
+                    <input type="text" name="level" id="level" placeholder="" style="width: 70px;" autocomplete="off" class="layui-input" value="{if condition="isset($config.level)"}{$config.level}{else/}3{/if}" onkeyup="value=value.replace(/[^\d]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))">
+                    </div>
+                    <button type="button" class="layui-btn layui-btn-small layui-btn-warm" style="margin-top: 4px;" onclick="get_level();">确定</button>
+                </div>
+            </div>
+            <div id="level_form">
+                {if condition="isset($config.level_proportion)"}
+                    {foreach name="$config.level_proportion" item="vo" key="k"}
+                        <div class="layui-form-item" id="level_{$k}">
+                            <label class="layui-form-label">第{$k+1}级：</label>
+                            <div class="layui-input-block"><div style="float: left;">
+                                <span style="float: left; line-height: 40px;">分成比例：</span>
+                                <input type="text" name="level_proportion[{$k}]" id="level_proportion_{$k}" placeholder="0" style="width: 50px;float: left;" autocomplete="off" class="layui-input level_proportion" value="{$vo}">
+                                <span style="float: left; line-height: 40px; font-size: 14px;">%</span>
+                            </div>
+                            </div>
+                        </div>
+                    {/foreach}
+                {/if}
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+</body>
+<script type="text/javascript">
+    layui.use(['form','upload','element','laydate'],function() {
+        var form = layui.form();
+
+        form.on('radio(condition)', function(data){
+            if(data.value == 2){
+                //加入
+                $("#money").css('display','block');
+            }else{
+                $("#money").css('display','none');
+            }
+        });
+
+        form.on('submit(*)', function(data){
+            var url = $(data.form).attr('action');
+            $.ajax({
+                type : "POST",
+                url: url,
+                data :data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            var Home_tip = parent.$('#subwinaaa').text();
+                            var target = '{$target|default=''}';
+                            if(Home_tip=='home' && target!='parent'){
+                                location.reload();
+                            }else{
+                                parent.callback();
+                            }
+                        };
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+    //循环输出等级输入
+    function get_level() {
+        //获取
+        var level = $("#level").val();
+        var  html = ''
+        for (var i=0;i < level;i++){
+            //检测ID是否存在
+            var level_id = '#level_'+i;
+            if($(level_id).length==0){
+//            <div style="float: left"><span style="float: left; line-height: 40px;">名称：</span><input type="text" name="level_name_'+i+'" id="level_name_'+i+'" placeholder="请输入名称" style="width: 150px;float: left;" autocomplete="off" class="layui-input" value=""></div>
+                  html += '<div class="layui-form-item" id="level_' + i + '"><label class="layui-form-label">第'+Number(i+1)+'级：</label><div class="layui-input-block"><div style="float: left;"><span style="float: left; line-height: 40px;">分成比例：</span><input type="text" name="level_proportion['+i+']" id="level_proportion_'+i+'" placeholder="0" style="width: 50px;float: left;" autocomplete="off" class="layui-input level_proportion" value=""><span style="float: left; line-height: 40px; font-size: 14px;">%</span></div></div></div>';
+            }else{
+                var level_proportion_id = '#level_proportion_'+i;
+                var level_proportion_id_value = $(level_proportion_id).val();
+                html += '<div class="layui-form-item" id="level_' + i + '"><label class="layui-form-label">第'+Number(i+1)+'级：</label><div class="layui-input-block"><div style="float: left;"><span style="float: left; line-height: 40px;">分成比例：</span><input type="text" name="level_proportion['+i+']" id="level_proportion_'+i+'" placeholder="0" style="width: 50px;float: left;" autocomplete="off" class="layui-input level_proportion" value="'+level_proportion_id_value+'"><span style="float: left; line-height: 40px; font-size: 14px;">%</span></div></div></div>';
+            }
+        }
+        $("#level_form").html(html);
+    }
+</script>
+</html>

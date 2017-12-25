@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>关注的店铺</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+
+	<style type="text/css">
+	.btn-box .cmall-btn {
+		display: inline-block;
+		float: left;
+		width: 45%;
+		margin: 0 2%;
+		line-height: 1.2rem;
+		text-align: center;
+		background: #f1f1f1;
+	}
+	.btn-box .gobtn { background: #f23030;color: #fff; }
+	</style>
+</head>
+<body style="background: #fff;">
+
+	{assign name="active_page" value="Focus" /}
+	{include file="public/u_header" /}
+	<!-- body -->
+<main class="cmall-body fixed-footer-body">
+
+	<!--关注中心导航-->
+	<div class="m-follow">
+		<div class="m-follow-nav">
+			<ul class="m-follow-navlist  clearfix">
+				<li>
+					<a href="{:U('user/user_collect')}">关注产品<span class="follow-nums">（{$nums_goods}）</span></a>
+				</li>
+
+				<li class="on">
+					<a href="javascript:;">关注店铺<span class="follow-nums">（{$nums_focus}）</span></a>
+				</li>
+
+				<li>
+					<a href="{:U('user/goods_history')}">浏览记录<span class="follow-nums">（{$nums_his}）</span></a>
+				</li>
+			</ul>
+		</div>
+		<div class="f-goods-list pb5" id="collect_list">
+			{volist name="shop_list" id="vo"}
+			<div class="mfshop-item">
+				<div class="mfshop-name">
+					<span class="mfshop-name-title">
+						<img src="{:tb_config('resource_path',1)}mshop/images/u_plat.png" alt=""/>
+						<b>{$vo.shop.shop_name}</b>
+					</span>
+					<span class="mfshop-identity">
+						<i class="m-icon-qiye"></i>
+						<i class="m-icon-hao"></i>
+					</span>
+					<span class="mfshop-description">[
+						<b class="mfshop-des-ms">描述{$vo.shop.score_goods}</b>
+						<b class="mfshop-des-fw">服务{$vo.shop.score_service}</b>
+						<b class="mfshop-des-wl">物流{$vo.shop.score_shipping}</b>
+					]</span>
+				</div>
+				<div class="mfshop-content">
+					<div class="mfshop-thumb">
+						<img src="{$vo.shop.shop_logo}" alt=""/>
+					</div>
+					<div class="mfshop-info">
+						<div class="mfshop-category">
+							主营产品：<span>{$vo.class_show}</span>
+						</div>
+						<p class="mfshop-introduce">
+							店铺介绍：{$vo.shop.shop_info}
+						</p>
+						<div class="mfshop-handle-btns">
+							<a class="mf-btn mf-btn-go" href="{:U('shop/Store/index',['id'=>$vo['shop_id']])}">进入店铺</a>
+							<a class="mf-btn" href="javascript:;" onclick="cancelFocus('{$vo.id}');" >取消关注</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			{/volist}			
+		</div>
+		<div class="itembox pb20" style="text-align: center;">
+			<button type="button" id="more_goods_btn" style="border: 0px;" onclick="loadMoreGoods();">查看更多></button>
+		</div>
+</main>
+
+
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+	<script type="text/javascript">
+		var uflws = new Swiper('.uflws-container', {
+	        slidesPerView: 'auto',
+	        paginationClickable: true,
+	        spaceBetween: 0
+	    });
+	    var goods_page = 2;
+    	// 加载更多商品
+    	function loadMoreGoods() {
+    		$('#more_goods_btn').attr('disable',true);
+    		if (goods_page>0) {
+    			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2				
+    		}
+    		$.ajax({
+    			url:"{:U('user/shop_collect')}",
+    			data:{
+    				page:goods_page
+    			},
+    			success: function(data){
+    				$('#collect_list').append(data);
+    				layer.close(index);
+    				$('#more_goods_btn').attr('disable',false);
+    				if (data!='') {
+    					goods_page ++;    					
+    				}
+    			}
+    		});	
+    	}
+
+    	function cancelFocus(id) {
+			$.ajax({
+				url:"{:U('User/cancelShopFocus')}",
+				data:{
+					id:id
+				},			
+				success: function(data){									
+					layer.msg(data.msg,{time:1000},function () {
+						location.reload();
+					});
+				}
+			});	
+		}
+	</script>
+
+</body>
+</html>

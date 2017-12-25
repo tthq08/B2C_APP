@@ -1,0 +1,25 @@
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<label style="display: inline;border: 1px solid #e5e5e5;padding: 2px;padding-bottom: 8px;background: #e5e5e5;border-radius: 3px;font-size:20px;"><i id='{$name}_show' onclick="showIcons();" class="{$value|default='fa fa-fw fa-plus-circle'}"></i></label>
+		<input type="text" name="{$name}" onclick="showIcons();" placeholder="{$placeholder}" class="layui-input" style="display: inline;width: 200px;" value="{$value}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+	</div>
+</div>
+<script type="text/javascript">
+	function showIcons () {
+	    layer.open({
+	      type: 2,
+	      title: false,
+	      shadeClose: false,
+	      shade:  [0.8, '#393D49'],
+	      maxmin: false, //开启最大化最小化按钮
+	      area: ['800px', '90%'],
+	      content: '{:url("Sys/Menu/showicons")}'
+	    });
+	}
+	function icon_callback(icon) {
+		$('input[name="{$name}"]').val(icon);
+		$('#{$name}_show').attr('class',icon);
+		layer.closeAll();
+	}
+</script>

@@ -1,0 +1,9 @@
+.idea/
+data/runtime/cache/*
+data/runtime/log/*
+data/runtime/temp/*
+public/uploads/images/thumb/*
+public/uploads/goods/*
+public/uploads/goods/thumb/*
+public/ueditor/*
+public/uploads/image/*

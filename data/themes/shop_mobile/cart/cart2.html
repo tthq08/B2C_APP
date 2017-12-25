@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="telephone=no,email=no,adress=no" name="format-detection"/>
+    <title>确认订单</title>
+
+    {include file="public/static" /}
+    {tbcss module="mshop" src="mall.css"}
+
+    <script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/bizPay.js"></script>
+    <script>
+        // 价格组
+        var priceGroup = {:json_encode($shopOrder)};
+        // 优惠券组
+        var couponList = {:json_encode($couponList)};
+
+        var pee = new bizPay();
+        pee.SetPrice(priceGroup,{$discount_price},{$payable_price});
+        pee.SetCouponList(couponList);
+    </script>
+
+    <!-- 优惠券 -->
+    <style>
+        /*计算页面、优惠券选择*/
+        .couponWrap {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            background: #fff;
+            display: none;
+        }
+
+        .coupBox {
+            position: absolute;
+            padding: 10px;
+            padding-bottom: 2rem;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .coupon_title {
+            font-size: 0.8rem;
+            line-height: 1.6rem;
+        }
+
+        .coupon_confim {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 20px;
+            z-index: 101;
+            text-align: center;
+            height: 1.8rem;
+            line-height: 1.8rem;
+            color: #fff;
+            background: #f40;
+        }
+
+        .coupon_confim a {
+            display: block;
+            font-size: 0.8rem;
+        }
+
+        .coupon-block {
+            border: 1px solid #ddd;
+        }
+
+        .coupon-block .c-tab {
+            background: #f4f4f4;
+            font-size: 0px;
+            height: 34px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .coupon-block .c-tab * {
+            font-size: 12px;
+        }
+
+        .coupon-block .c-tab .list {
+            display: inline-block;
+            width: 4rem;
+            height: 34px;
+            line-height: 34px;
+            font-size: 12px;
+            text-align: center;
+            padding: 0 5px;
+        }
+
+        .coupon-block .c-tab .list.on {
+            background: #fff;
+        }
+
+        .coupon-block .tab-list {
+            display: none;
+        }
+
+        .coupon-block .tab-list.on {
+            display: block;
+        }
+
+        .coupon-block .content {
+            padding: 20px;
+            padding-bottom: 5px;
+        }
+
+        .odrcpn-item {
+            display: block;
+            width: 100%;
+            float: left;
+            margin-bottom: 15px;
+            padding: 1px;
+            position: relative;
+        }
+
+        .odrcpn-item .c-detail {
+            position: relative;
+            display: block;
+        }
+
+        .odrcpn-item input {
+            position: absolute;
+        }
+
+        .odrcpn-item input:checked + .c-detail {
+            border: 2px solid #e43a3d;
+            background-image: url({tbimg module= "mshp" src= "coupon-selected.png" });
+            background-repeat: no-repeat;
+            background-position: right bottom;
+        }
+
+        .odrcpn-item input:checked + .c-detail .c-type-dong {
+            border: 0px;
+        }
+
+        .odrcpn-item input:checked + .c-detail .c-dong .c-top-dong {
+            height: 0;
+        }
+
+        .odrcpn-item .c-detail .c-top-dong {
+            height: 3px;
+            width: 100%;
+            background: #fff url({tbimg module= "mshp" src= "icon_coupon_a.png" }) 0 0 repeat;
+        }
+
+        .odrcpn-item .c-detail .c-dong {
+            border-left: 1px solid #74d2d4;
+            border-right: 1px solid #74d2d4;
+            background-color: #74d2d4;
+        }
+
+        .odrcpn-item .c-detail .c-dong2 {
+            border-left: 0 solid #D9A56F;
+            border-right: 0 solid #D9A56F;
+            background-color: #D9A56F;
+        }
+
+        .odrcpn-item .c-detail .c-msg {
+            cursor: pointer;
+            width: 100%;
+            position: relative;
+        }
+
+        .odrcpn-item .c-detail .c-msg .c-price {
+            color: #fff;
+            font: 24px Arial, Verdana, 'Microsoft YaHei', SimSun;
+            display: inline;
+            position: relative;
+            top: 8px;
+            margin-left: 20px;
+        }
+
+        .odrcpn-item .c-detail .c-msg .c-limit,
+        .odrcpn-item .c-detail .c-msg .c-over {
+            color: #f5f5f5;
+            font-size: 12px;
+            display: inline;
+            position: relative;
+            top: 7px;
+        }
+
+        .odrcpn-item .c-detail .c-msg .c-time {
+            padding-left: 20px;
+            padding-bottom: 5px;
+            margin-top: 10px;
+        }
+
+        .odrcpn-item .c-detail .c-msg .c-time-dong {
+            color: #cef0f1;
+        }
+
+        .odrcpn-item .c-detail .c-type, .odrcpn-item .c-detail-disable .c-type {
+            height: 1.5rem;
+            line-height: 1.5rem;
+            width: 100%;
+        }
+
+        .odrcpn-item .c-detail .c-type-dong {
+            color: #74d2d4;
+            border: 1px solid #cef0f1;
+        }
+
+        .odrcpn-item .c-detail .c-type-dong2 {
+            color: #D9A56F;
+            border: 1px solid #D9A56F;
+        }
+
+        .odrcpn-item .c-detail .c-type span.c-type-l, .odrcpn-item .c-detail-disable .c-type span.c-type-l {
+            margin: 0 20px;
+        }
+
+        /*不可用*/
+        .odrcpn-item .c-detail-disable .c-top {
+            height: 3px;
+            width: 100%;
+            background: #fff url({tbimg module= "mshp" src= "icon_coupon_b.png" }) 0 0 repeat;
+        }
+
+        .odrcpn-item .c-detail-disable .c-msg {
+            cursor: not-allowed;
+            width: 100%;
+            border-left: 1px solid #d1d1d1;
+            border-right: 1px solid #d1d1d1;
+            background-color: #d1d1d1;
+        }
+
+        .odrcpn-item .c-detail-disable .c-msg .c-price {
+            color: #fff;
+            font: 24px Arial, Verdana, 'Microsoft YaHei', SimSun;
+            width: 60px;
+            height: 19px;
+            margin-left: 20px;
+            display: inline;
+            position: relative;
+            top: 8px;
+        }
+
+        .odrcpn-item .c-detail-disable .c-msg .c-limit,
+        .odrcpn-item .c-detail-disable .c-msg .c-over {
+            color: #f5f5f5;
+            font-size: 12px;
+            display: inline;
+            position: relative;
+            top: 7px;
+        }
+
+        .odrcpn-item .c-detail-disable .c-msg .c-time {
+            padding-left: 20px;
+            padding-bottom: 10px;
+            margin-top: 10px;
+            color: #b0afaf;
+        }
+
+        .odrcpn-item .c-detail-disable .c-type {
+            color: #d1d1d1;
+            border: 1px solid #e8e8e8;
+        }
+
+        .odrcpn-item .c-info {
+            padding-top: 5px;;
+            height: 1rem;
+            line-height: 1rem;
+            color: #999
+        }
+
+        .odrcpn-item .c-info .c-info-qmark {
+            display: inline-block;
+            float: left;
+            height: 0.8rem;
+            width: 0.8rem;
+            margin-top: 3px;
+            margin-right: 3px;
+            vertical-align: middle;
+            background: url({tbimg module= "mshp" src= "qmark03.png" }) center center no-repeat;
+            background-size: 90% 90%;
+        }
+
+        .odrcpn-item .c-info .virtual-desc {
+            width: 180px;
+            float: left;
+            display: block;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+    </style>
+</head>
+<body style="background: #f0f2f5">
+
+<header class="header">
+    <div class="box clearfix">
+        <div class="header-left">
+            <a href="javascript:history.go(-1)" class="top-back">
+                <img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt=""/>
+            </a>
+        </div>
+        <div class="header-middle">
+            <h5 class="header-title">确认订单 </h5>
+        </div>
+        <!-- <div class="header-right">
+            <div class="filter-top">
+                <img src="images/filter.png" width="24" alt="" />
+            </div>
+        </div> -->
+    </div>
+</header>
+<!-- body -->
+<form name="cart2_form" id="cart2_form" method="post">
+    <main class="cmall-body fixed-body fixed-footer-body">
+        <div class="order-address" onclick="choose_addr('{$addr.id|default=0}');" id='ajax_address'>
+            <input type="hidden" name="address_id" value="{$addr.id|default=''}">
+            <p class="mb10 tit"><span>{$addr.consignee|default=''}</span><span
+                    class="fr">{$addr.mobile|default=''}</span></p>
+            <p class="amsg">收货地址: {$addr.address|default=''}</p>
+            <div class="line"></div>
+        </div>
+
+        <div class="stlment-block mt10">
+            <div class="stl-shop">
+                <span>TB MALL</span>
+                <a class="showCoupon" href="javascript:;" style="float: right;">优惠券</a>
+                <div class="couponWrap couponWrap" style="display: none;">
+                    <div class="coupBox clearfix">
+                        <h3 class="coupon_title">选择优惠券</h3>
+                        {volist name="couponList" id="coupon"}
+                        <div class="odrcpn-item coupon{$coupon.id}_top">
+                            <input id="coupon_{$coupon.id}" type="{eq name='$coupon["type"]' value='1'}radio{else/}checkbox{/eq}" name="coupon[{$coupon.type}][]"  onchange="pee.GetPrice({$coupon.id});" value="{$coupon['id']}">
+                            <label for="coupon_{$coupon.id}" class="c-detail">
+                                <div class="c-msg c-dong{eq name='$coupon.coupon_level' value='1'}2{/eq}" style="height: 55px;">
+                                    <div class="c-top-dong"></div>
+                                    <div class="item-selected-cancel hide">取消勾选</div>
+                                    <div class="c-price">
+                                        <em>{$coupon['quota_text']}</em>
+                                    </div>
+                                    <div class="c-limit">
+                                        <span>{$coupon.coupon_name}</span>
+                                    </div>
+                                </div>
+                                <div class="c-type c-type-dong{eq name='$coupon.coupon_level' value='1'}2{/eq}">
+                                    <span>有效期至{:date('Y-m-d',$coupon.end_time)}</span>
+                                </div>
+                            </label>
+                        </div>
+                        {/volist}
+
+                    </div>
+                    <div class="coupon_confim">
+                        <a href="javascript:;">确认</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {volist name="cartList" id="vo"}
+        <div class="stl-prd-item clearfix">
+            <div class="pic"><img
+                    src="{:common_thumb_img(getTableValue('shop_goods','id='.$vo['goods_id'],'thumb'),100,100)}"
+                    alt=""/></div>
+            <div class="info">
+                <div class="name">{$vo.goods_name}</div>
+                <div class="titme">{$vo.spec_title}</div>
+                <div class="summary">
+                    {assign name="true_price" value=":compute()->promGoodsPrice($vo['goods_id'],$vo['spec_key'])" /}
+                    <p>
+                        <strong class="price mr10">{$true_price}</strong>
+                        <small>元</small>
+                        <span> x {$vo.goods_num}</span>
+                    </p>
+                </div>
+                <div class="spec">
+                    {$vo.shipping_txt|default=''}
+                </div>
+            </div>
+        </div>
+        {/volist}
+        <div class="otherstl-content">
+
+            <div class="cmall-item">
+                <div class="left">留言：</div>
+                <div class="right"><input type="text" style="width:300px;" name="user_remark"
+                                          placeholder="选填,对交易的附加留言"/>
+                </div>
+            </div>
+            <div class="cmall-item">
+                <div class="right">
+                    <div class="subtotal">
+                        <!-- <span class="mr10">共1件商品</span> -->
+                        <span>物流资费：<strong class="price">{$postage}<small>元</small></strong></span>
+                    </div>
+                </div>
+            </div>
+            <div class="cmall-item">
+                <div class="right">
+                    <div class="subtotal">
+                        <!-- <span class="mr10">共1件商品</span> -->
+                        <span>小计：<strong class="price shop_total_price"><span>{$shopOrder['payable_price']}</span><small>元</small></strong></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="stlment-block mt10">
+            <div class="otherstl-content">
+                <div class="cmall-item">
+                    <div class="left">发票抬头：</div>
+                    <div class="right"><input type="text" style="width:300px;" name="invoice_title" placeholder="请填写抬头，无需可留空" /></div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- 提交订单 -->
+        <div class="cart-statements">
+            <div class="fr s-right">
+                <span><!-- 共<i class="color--f23030">2</i>件商品， -->总金额：<i class="color--f23030 fs18 total_price">{$payable_price}<small>元</small></i></span>
+                <button type="button" onclick="submit_order();" class="sett-btn">立即下单</button>
+            </div>
+        </div>
+    </main>
+</form>
+</body>
+<script type="text/javascript">
+
+    //优惠券展开收起
+    $('.showCoupon').click(function () {
+        var couponWrap = '.couponWrap';
+        $(couponWrap).fadeIn();
+    });
+    $('.coupon_confim').find('a').click(function () {
+        $('.couponWrap').hide();
+    });
+
+    // 优惠信息选择
+    $('.c-tab').on('click', '.list', function () {
+        var me = $(this);
+        var the = me.attr('cpn-for');
+        me.addClass('on').siblings('.list').removeClass('on');
+        me.parent().siblings('.content').find('.tab-list[cpn-for="' + the + '"]').addClass("on").siblings('.tab-list').removeClass('on');
+    })
+
+
+    // 提交订单
+    ajax_return_status = 1; // 标识ajax 请求是否已经回来 可以进行下一次请求
+
+    function submit_order() {
+        ajax_return_status = 0;
+
+        $.ajax({
+            type: "POST",
+            url: "{:U('shop/Cart/cart3')}",//+tab,
+            data: $('#cart2_form').serialize() + "&act=submit_order",// 你的formid
+            dataType: "json",
+            success: function (data) {
+                ajax_return_status = 1; // 上一次ajax 已经返回, 可以进行下一次 ajax请求
+                if (data.code != '1') {
+                    layer.alert(data.msg, {icon: 2});
+
+                    // 登录超时
+                    if (data.status == -100) {
+                        location.href = "{:U('shop/User/login')}";
+                    }
+                    return false;
+                }
+
+                layer.msg('订单提交成功，跳转支付页面!', {
+                    icon: 1,   // 成功图标
+                    time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                }, function () { // 关闭后执行的函数
+                    location.href = "{:U('shop/Cart/cart4')}?serial_id=" + data.msg.order_id; // 跳转到结算页
+                });
+
+            }
+        });
+    }
+
+
+    // 获取订单价格
+    function ajax_order_price() {
+
+        $.ajax({
+            type: "POST",
+            url: "{:U('shop/Cart/cart3')}",//+tab,
+            data: $('#cart2_form').serialize() + "&act=order_price",// 你的formid
+            dataType: "json",
+            success: function (data) {
+                if (data.code != 1) {
+                    layer.alert(data.msg, {icon: 2});
+                    // 登录超时
+                    if (data.code == -100)
+                        location.href = "{:U('Home/User/login')}";
+
+                    return false;
+                }
+                // console.log(data);
+                $("#postFee").text(data.msg.postFee); // 物流费
+                $("#couponFee").text(data.msg.coupon_price);// 优惠券
+                $("#payables").text(data.msg.payable_price);// 应付
+                $("#balance").text(data.msg.balance_payment);//使用余额
+                $("#user_money").val(data.msg.use_balance);//使用余额
+                $("#order_prom_amount").text(data.msg.discount_price);// 订单 优惠活动
+                
+            }
+        });
+    }
+
+    // 更多优惠方式
+    function selectCoupon(obj) {
+        var me = $(obj);
+        me.toggleClass('on');
+        me.siblings('.o-more-discount').slideToggle(300);
+    }
+
+    function checkedCoupon(obj) {
+        var me = $(obj);
+        var val_name = me.attr('data-dis');
+        var val = me.attr('data-value');
+        me.parent().slideUp();
+        me.parent().siblings('.a').removeClass('on');
+        me.parent().siblings('input').val(val);
+        me.parent().siblings('.m').text(val_name);
+    }
+
+
+    /**
+     * 选择收货地址
+     */
+    function choose_addr(id) {
+        var url = "{:U('cart/choose_addr')}?id=" + id;	// 新增地址
+        layer.open({
+            type: 2,
+            title: '选择收货地址',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['99%', '99%'],
+            content: url,
+        });
+    }
+
+    function address_callback(data) {
+        $("#ajax_address").html('');
+        $("#ajax_address").append(data);
+        layer.closeAll();
+    }
+</script>
+</html>

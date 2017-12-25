@@ -1,0 +1,35 @@
+<div class="user-tab-top">
+	<ul class="user-tab-box clearfix">
+		<li class="top-item {eq name='status' value='all'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxChargeLog')}');">{$eBiz.lang.Recharge_all_records}</a></li>
+		<li class="top-item {eq name='status' value='1'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxChargeLog',['status'=>'1'])}');">{$eBiz.lang.Recharge_payed_list}</a></li>
+		<li class="top-item {eq name='status' value='0'}on{/eq}"><a href="javascript:;" onclick="ajaxGetChargeLog('{:U('User/ajaxChargeLog',['status'=>'0'])}');">{$eBiz.lang.Recharge_unpay_list}</a></li>
+	</ul>
+</div>
+<div class="user-content pb30 mt20">
+	<div class="user-re-tb">
+		<table>
+			<tr>
+				<th width="20%">{$eBiz.lang.Recharge_ctime}</th>
+				<th width="20%">{$eBiz.lang.Recharge_order_sn}</th>
+				<th width="20%">{$eBiz.lang.Recharge_order_money}</th>
+				<th width="20%">{$eBiz.lang.Recharge_pay_status}</th>
+				<th width="20%">{$eBiz.lang.Recharge_pay_remark}</th>
+			</tr>
+		{volist name="list" id="vo"}
+			<tr>
+				<td align="center"><span>{$vo.ctime}</span></td>
+				<td align="center">{$vo.order_sn}</td>
+				<td align="center">{$vo.account}</td>
+				<td align="center">{$vo.pay_status?lang('Recharge_payed'):lang('Recharge_unpay')}</td>
+				<td align="center">{$vo.pay_name}</td>
+			</tr>
+		{/volist}			
+		</table>
+	</div>
+	<!-- <div class="block mt20 pl20 pb20">
+		<span class="b-note">为了保证您账户余额的安全，如需提现，请致电TB MALL客服进行申请和审核：000000000</span>
+	</div> -->
+	<div class="user-pagination">
+		{$page}
+	</div>
+</div>

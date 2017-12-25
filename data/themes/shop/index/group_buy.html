@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Group_page_title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+	<style type="text/css">
+	.i-group-list .pic .mask span{
+		margin-left: 0px;
+	}
+	</style>
+</head>
+<body class="has-right">
+
+	<!-- 广告 -->
+	{include file="common/ad_top"}
+	<!-- top -->
+	{include file="common/top_header"}
+	<!-- header -->
+	{include file="common/header"}
+	<!-- nav -->
+	{include file="common/nav"}
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	{ad_list cid="27" item="v" limit=1}
+	<div class="seckill-banner">
+		<a href="{$v.ad_link}" {if condition="$v['target'] eq 1"}target="_blank"{/if}><img width="100%" src="{$v['ad_pic']}" alt="" /></a>
+	</div>
+	{/ad_list}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 团购 -->
+			<div class="mall-section mt20 index-group-section c-floor-section" >
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>TBMALL GROUP BUY</p>
+					</div>
+					<div class="section-content">
+						<!-- 列表 -->
+						<div class="box">
+							<?php
+							$nowTime =date('Y-m-d H:i:s');
+							$groups = db('shop_promotion_group','',false) ->where('start_time','<= time',$nowTime) ->where('is_end',0)->limit(4)->select();
+							?>
+							<ul class="clearfix">
+								{volist name="groups" id="vo"}
+								<li class="i-group-list">
+									{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+									<div class="info">
+										<p class="title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}">{$vo.title}</a></p>
+										<p class="m">{$goods.title}</p>
+										<div class="clearfix p">
+											<p style="text-align: right;"><del>{:web_currency()}{$goods.shop_price}</del></p>
+											<div class="fl left color--b1191a">
+												<?php
+												$left = ($goods['shop_price']-$vo['price'])/100*$goods['shop_price'];
+												$left = sprintf("%.2f", $left);
+											?>
+												<small>{$eBiz.lang.Index_Text_reduce_mny}</small>{$left}%
+											</div>
+											<div class="fr right">{:web_currency()}{$vo.price}</div>
+										</div>
+
+										<div class="load">
+											<div class="progress">
+												{php}$percent = ($vo['virtual_buy_num']+$vo['buy_num'])/$vo['group_num']*100;{/php}
+												<div class="progress-bar progress-bar-danger active" data-load="{$percent}%">
+													<div class="progress-value">
+														<p>{$eBiz.lang.Index_Text_proup_nums}</p>
+														<p class="num">{$percent}%</p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="pic">
+										<a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}"><img src="{$goods.id|goods_thum_images=248,248}" alt="" /></a>
+										<div class="mask">
+											{$eBiz.lang.Index_Text_group_end_time}
+											<span data-time="{$vo.end_time}" class="time">
+												<span class="days">04</span>
+												<span>天</span>
+												<span class="hours">04</span>
+												<span>:</span>
+												<span class="minutes">23</span>
+												<span>:</span>
+												<span class="seconds">13</span>
+											</span>
+										</div>
+									</div>
+								</li>
+								{/volist}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 下期团购 -->
+			<div class="mall-section mt20 index-group-section c-floor-section" data-floor="团购">
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>下期团购产品</p>
+					</div>
+					<div class="section-content">
+						<!-- 列表 -->
+						<div class="box">
+							<?php
+							$nowTime = date("Y-m-d",strtotime("+1 day"));
+							$endTime = date("Y-m-d",strtotime("+2 day"));
+							$groups_next = db('shop_promotion_group','',false) ->where('start_time','>= time',$nowTime) ->where('end_time','< time',$endTime) ->where('is_end',0)->limit(6)->select();
+							?>
+							<ul class="clearfix">
+								{volist name="groups_next" id="vo"}
+								<li class="i-group-list">
+									{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+									<div class="info">
+										<p class="title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}">{$vo.title}</a></p>
+										<p class="m">{$goods.title}</p>
+										<div class="clearfix p">
+											<p style="text-align: right;"><del>{:web_currency()}{$goods.shop_price}</del></p>
+											<div class="fl left color--b1191a">
+												<?php
+												$left = ($goods['shop_price']-$vo['price'])/$goods['shop_price']*100;
+												$left = sprintf("%.2f", $left);
+											?>
+												<small>{$eBiz.lang.Index_Text_reduce_mny}</small>{$left}%
+											</div>
+											<div class="fr right">{:web_currency()}{$vo.price}</div>
+										</div>
+										<div class="load">
+											<div class="progress">
+												{php}$percent = $vo['virtual_buy_num']/$vo['group_num']*100;{/php}
+												<div class="progress-bar progress-bar-danger active" data-load="{$percent}%">
+													<div class="progress-value">
+														<p>{$eBiz.lang.Index_Text_proup_nums}</p>
+														<p class="num">{$percent}%</p>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="pic">
+										<a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}"><img src="{$goods.id|goods_thum_images=248,248}" alt="" /></a>
+										<div class="mask">{$eBiz.lang.Index_Text_group_end_time}<span>{$vo.end_time}</span></div>
+									</div>
+								</li>
+								{/volist}
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 全部产品 -->
+			<!-- 全部产品 -->
+			<div class="mall-section mt20 all-product-section c-floor-section" data-floor="全部产品">
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>ALL PRODUCT DISPLAY</p>
+					</div>
+					<div class="section-content" id="all_goods_list">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+	<script src="{:tb_config('resource_path',1)}shop/js/jquery.downCount.js"></script>
+	<script type="text/javascript">
+		var goods_page = 0;
+		$(document).ready(function() {
+			$('.i-group-list .load').each(function() {
+				var me = $(this);
+				var bar = me.find('.progress-bar');
+				var bVal = bar.find('.progress-value');
+				var num = bar.attr('data-load');
+				bar.css({
+					'width': num
+				});
+				if(Number(num.substring(0,num.length-1)) < 20) {
+					bVal.css({
+						'left' : '0px'
+					})
+				} else {
+					bVal.css({
+						'right' : '0px',
+						'left': 'auto'
+					})
+				}
+				bVal.find('.num').text(num);
+			})
+			$('.i-group-list .time').each(function() {
+				var me = $(this);
+				var time = me.attr('data-time');
+				me.downCount({
+		            date: time,
+		            offset: +8
+		        }, function () {
+		        	console.log('fdafds')
+		        });
+			})
+			
+			loadMoreGoods();
+		})
+
+		// 加载更多商品
+		function loadMoreGoods() {
+			$('#more_goods_btn').attr('disable',true);
+			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+			$.ajax({
+				url:"{:U('Index/ajaxNewestGoods')}",
+				data:{
+					page:goods_page,
+					nums:10
+				},
+				success: function(data){									
+					$('#all_goods_list').append(data);
+					layer.close(index);
+					$('#more_goods_btn').attr('disable',false);
+					goods_page ++;
+				}
+			});	
+		}
+	</script>
+
+</body>
+</html>

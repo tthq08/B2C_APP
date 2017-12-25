@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <form class="layui-form col-lg-12" action="{:U('shop/Goods/cate_bind_save')}" method="post">
+            <blockquote class="layui-elem-quote">
+                您正在为商品分类:"<span style="color: #00A2D4">{$cate.name}</span>",设置专属域名链接。
+            </blockquote>
+            <hr>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">输入您要跳转的域名</label>
+                <div class="layui-input-block">
+                    <input type="text" name="domain" required  lay-verify="required" placeholder="例如: domain.junnn.com" autocomplete="off" class="layui-input" value="{notempty name="$bindInfo['domain']"}{$bindInfo['domain']}{/notempty}">
+                    <input type="hidden" name="cate_id" value="{$cate_id}">
+                    <input type="hidden" name="id" value="{notempty name="$bindInfo['id']"}{$bindInfo['id']}{/notempty}">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开启专属域名时间段</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="time" value="1" title="是" lay-filter="time" {notempty name="$bindInfo['start_time']"}checked{/notempty}>
+                    <input type="radio" name="time" value="2" title="否" lay-filter="time" {empty name="$bindInfo['end_time']"}{empty name="$bindInfo['start_time']"}checked{/empty}{/empty}>
+                </div>
+            </div>
+
+            <div class="layui-form-item" id="time" {empty name="$bindInfo['end_time']"}{empty name="$bindInfo['start_time']"}style="display: none;"{/empty}{/empty}>
+                <label class="layui-form-label">启用时间段</label>
+                <div class="layui-input-inline">
+                    <input class="layui-input" name="start_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{notempty name="$bindInfo['start_time']"}{:date('Y-m-d H:i:s',$bindInfo['start_time'])}{/notempty}">
+                </div>
+                <div class="layui-input-inline">
+                    <input class="layui-input" name="end_time" placeholder="{:lang('end_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{notempty name="$bindInfo['end_time']"}{:date('Y-m-d H:i:s',$bindInfo['end_time'])}{/notempty}">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">自定义地址</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="custom" lay-filter="custom" value="1" title="是" {if condition="!empty($bindInfo) && $bindInfo['custom'] == 1"}checked{/if}>
+                    <input type="radio" name="custom" lay-filter="custom" value="0" title="否" {if condition="!empty($bindInfo) && $bindInfo['custom'] == 0"}checked{/if}>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item" id="address" {if condition="!empty($bindInfo) && $bindInfo['custom'] == 0"}style="display:none;"{/if}>
+                <label class="layui-form-label">选择地址</label>
+
+                <!-- 控制器 -->
+                <div class="layui-input-inline">
+                    <select name="controller" lay-filter="controller">
+                        <option value="">选择控制器</option>
+                        {volist name="controller" id="vo"}
+                        <option value="{$vo}" {if condition="!empty($bindInfo) && $bindInfo['controller'] == $vo"}selected{/if}>{$vo}</option>
+                        {/volist}
+                    </select>
+                </div>
+
+                <!-- 方法 -->
+                <div class="layui-input-inline">
+                    <select name="action" id="action" lay-filter="action" lay-search>
+                        <option value="">选择方法</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">其他参数</label>
+                <div class="layui-input-block">
+                    <input type="text" name="param" placeholder="请根据你当前设置的url模式进行填写。例如: ?key=value&..." autocomplete="off" class="layui-input">
+                </div>
+                <span style="color: red;"></span>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">开启</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="status" value="1" title="是" {if condition="!empty($bindInfo) && $bindInfo['status'] == 1"}checked{/if}>
+                    <input type="radio" name="status" value="0" title="否" {if condition="!empty($bindInfo) && $bindInfo['status'] == 0"}checked{/if}>
+                </div>
+            </div>
+
+
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" type="button" lay-submit="" lay-filter="formDemo">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+</section>
+
+<script>
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+
+        var form = layui.form();
+
+        form.on('select(controller)', function(data){
+            $.ajax({
+                url:"{:url('sys/Comm/getAction')}",
+                data:{
+                    'module':'shop',
+                    'controller':data.value
+                },
+                success: function(data){
+                    if (data.code==1) {
+                        layer.msg(data.msg);
+                        var Html = '<option value="">选择方法</option>';
+                        var actData = data.action;
+                        for (var i = 0; i < actData.length; i++) {
+                            var row = actData[i];
+                            Html += "<option value='"+row+"'>"+row+"</option>";
+                        }
+                        $('#action').html(Html);
+                        form.render('select'); //刷新select选择框渲染
+                    }
+                }
+            });
+        });
+
+        form.on('radio(time)', function(data){
+            if( data.value == 1 ){
+                $('#time').show();
+            }else{
+                $('#time').hide();
+            }
+        });
+
+        form.on('radio(custom)', function(data){
+            if( data.value == 1 ){
+                $('#address').show();
+            }else{
+                $('#address').hide();
+            }
+        });
+
+        form.on('submit(formDemo)', function(data){
+            var url = $(data.form).attr('action');
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+
+                    if ( data.code==1 ) {
+                        layer.alert(data.msg,function () {
+                            parent.callback(data.url);
+                        });
+                    }else{
+                        layer.alert(data.msg);
+                    }
+                }
+            });
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+</html>

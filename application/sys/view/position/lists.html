@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <!-- 推荐位列表 -->
+        <div class="layui-tab layui-tab-card" id="position_list" style="width: 100%; float: left; background-color: #ffffff">
+            <div style="display: inline-block; float: left; margin: 10px;">
+                <button type="button" onclick="deletePositions();" class="layui-btn layui-btn-small layui-btn-danger">
+                    <i class="layui-icon">&#xe640;</i>批量删除
+                </button>
+            </div>
+            <script>
+                function deletePositions(){
+                    // 批量删除
+                    var ids = [];
+                    var ch= $('.list-check');
+                    for(var i=0;i<ch.length;i++) {
+                        if(ch[i].checked==true){
+                            ids[i] = ch[i].value;
+                        }
+                    }
+                    if( ids.length > 0 ){
+                        layer.confirm('您确定要删除这些绑定内容吗', {
+                            btn: ['确定','取消'] //按钮
+                        }, function(){
+                            $.ajax({
+                                type:'POST',
+                                url:'{:url("sys/Position/deletesBind")}',
+                                data:{id:ids},
+                                success:function (data) {
+                                    if( data.code == 1 ){
+                                        layer.msg(data.msg, {icon: 1});
+                                        location.reload();
+                                    }else{
+                                        layer.msg(data.msg, {icon: 2});
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                }
+            </script>
+
+
+            <table class="layui-table" lay-size="sm" lay-even lay-skin="nob">
+                <colgroup>
+                    <col width="10">
+                    <col width="10">
+                    <col width="150">
+                    <col width="100">
+                    <col width="200">
+                    <col width="100">
+                    <col width="70">
+                    <col width="150">
+                    <col width="150">
+                    <col width="100">
+                    <col width="160">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" name="position_id[0]" onclick="selectAll(this);">
+                    </th>
+                    <th>ID</th>
+                    <th>标题</th>
+                    <th>推荐类型</th>
+                    <th>推荐内容</th>
+                    <th>推荐图片</th>
+                    <th>排序</th>
+                    <th>限制商品分类</th>
+                    <th>限制内容栏目</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                <script>
+                    function selectAll(obj){
+                        var ch= $('.list-check');
+                        if( $(obj).is(':checked') ) {
+                            for(var i=0;i<ch.length;i++) {
+                                ch[i].checked=true;
+                            }
+                        }else{
+                            for(var i=0;i<ch.length;i++) {
+                                ch[i].checked=false;
+                            }
+                        }
+                    }
+                </script>
+                </thead>
+                <tbody>
+
+                {volist name="data" id="vo"}
+                <tr class="nav-{$vo.id}">
+                    <td><input type="checkbox" class="list-check" name="position[{$vo.id}]" value="{$vo.id}"></td>
+                    <td>{$vo.id}</td>
+                    <td>{$vo.title}</td>
+                    <td>{$vo.type_name}</td>
+                    <td>{$vo.t_id}</td>
+                    <td><img src="{$vo.icon}" alt="" style="max-width: 200px; max-height: 60px;"></td>
+                    <td >
+                        <input type="text" style="width: 60px;" onblur="editSort(this,{$vo.id});" value="{$vo.sort}">
+                    </td>
+
+                    <td>{$vo.start_time}</td>
+
+                    <td>{$vo.end_time}</td>
+
+                    <td class="layui-form">
+                        <input type="checkbox" name="switch" lay-filter="status" lay-skin="switch" value="{$vo.id}" {eq name="$vo.status" value="1"}checked{/eq}>
+                    </td>
+                    <td>
+                        <button type="button" class="layui-btn layui-btn-small" style="margin: 0;" data-href="{:url('sys/Position/edit',['id'=>$vo['id']])}" data-msg="" onclick="edit(this);">编辑</button>
+                        <button type="button" class="layui-btn layui-btn-small layui-btn-danger" style="margin: 0;" onclick="deletePosition({$vo.id});">删除</button>
+                    </td>
+                </tr>
+                {/volist}
+
+                </tbody>
+            </table>
+            <script>
+                function deletePosition(nid){
+                    layer.confirm('您确定要删除该绑定内容吗', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(){
+                        $.ajax({
+                            type:'POST',
+                            url:'{:url("sys/Position/deleteBind")}',
+                            data:{id:nid},
+                            success:function (data) {
+                                if( data.code == 1 ){
+                                    layer.msg(data.msg, {icon: 1});
+                                    var nav_class = '.nav-'+nid;
+                                    $(nav_class).remove();
+                                }else{
+                                    layer.msg(data.msg, {icon: 2});
+                                }
+                            }
+                        });
+                    });
+                }
+                function editSort(obj,nid){
+                    var value = $(obj).val();
+                    $.ajax({
+                        type:'POST',
+                        url:'{:url("sys/Position/setBindVal")}',
+                        data:{id:nid,field:'sort',val:value},
+                        success:function (data) {
+                            if( data.code == 1 ){
+
+                            }else{
+                                layer.msg(data.msg, {icon: 2});
+                            }
+                        }
+                    });
+                }
+            </script>
+            <style>
+                .page .pagination{
+                    float: left;
+                }
+                .page .jump-page{
+                    margin-top: 20px;
+                }
+            </style>
+            <div class="page">
+                {$page}
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script>
+    function edit (obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['720px', '675px'],
+            content: $(obj).attr('data-href')
+        });
+    }
+    var form = '';
+    layui.use('form', function(){
+        form = layui.form();
+        form.on('switch(status)', function(data) {
+            var status = data.elem.checked ? 1 : 0;
+            $.ajax({
+                type:'POST',
+                url:'{:url("sys/Position/setBindVal")}',
+                data:{id:data.value,field:'status',val:status},
+                success:function (data) {
+                    if( data.code == 1 ){
+                        layer.msg(data.msg,{time:400});
+                    }else{
+                        layer.msg(data.msg, {icon: 2});
+                    }
+                }
+            });
+        });
+    });
+</script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}treeTable/jquery.treeTable.js" type="text/javascript"></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        {notempty name="web_title"}
+        <header class="larry-personal-tit">
+            <span>{$web_title}</span>
+        </header>
+        {/notempty}
+        <div class="larry-personal-body clearfix">
+            {notempty name="form_tpis"}
+            <blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+            {/notempty}
+            {notempty name="nav_list"}
+            <ul class="layui-tab-title" style="bottom:10px;">
+                {volist name="nav_list" id="nav"}
+                <li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+                {/volist}
+            </ul>
+            {/notempty}
+            <form class="layui-form" action="{$action}" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="name" style="width: 400px; display: inline" placeholder="请输入优惠券名称" autocomplete="off" class="layui-input" value="{if condition="!empty($coupon.name)"} {$coupon.name} {/if}" ><span >(券中文名,供商家看)</span>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" style="width: 600px; display: inline" placeholder="请输入优惠券标题" autocomplete="off" class="layui-input" value="{if condition="!empty($coupon.title)"} {$coupon.title} {/if}" ><span  >(券韩文名,供消费者看)</span>
+                    </div>
+                </div>
+
+                <style type="text/css">
+                    .site-demo-upload,
+                    .site-demo-upload img{width: 60px; height: 60px;}
+                    .site-demo-upload{position: relative; background: #e2e2e2;}
+                </style>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券图标</label>
+                    <div class="layui-input-block">
+                        <img class="site-demo-upload" id="icon_src" src="{empty name='$coupon['icon']'}{tbimg module="Admin" src="upload.png"}{else/}{$coupon.icon}{/empty}">
+                        <input type="file" data-val="icon" name="fileList" class="layui-upload-file">
+                        <input type="hidden" name="icon" value="" id="icon" lay-verify="coupon_icon">
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">优惠券等级</label>
+                    <div class="layui-input-block">
+                        {foreach name="coupon_level" item="v"}
+                        <input type="radio" id="coupon_level" lay-filter="coupon_level" name="coupon_level" value="{$v.id}" title="{$v.name}" {if condition="!empty($coupon.coupon_level)"}{if condition="$coupon.coupon_level == $v.id"} checked="checked" {/if} disabled {/if}>
+                        {/foreach}
+                    </div>
+                </div>
+
+                <div id="level_content" style="min-height: 260px;">
+                    {if condition="$coupon.coupon_level == 1"}
+                    {include file="coupon/level_add_1"}
+                    {/if}
+                    {if condition="$coupon.coupon_level == 2"}
+                    {include file="coupon/level_add_2"}
+                    {/if}
+                    {if condition="$coupon.coupon_level == 3"}
+                    {include file="coupon/level_add_3"}
+                    {/if}
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否开启</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="status" value="1" title="是" checked>
+                        <input type="radio" name="status" value="0" title="否">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">首页显示</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="index_show" value="1" title="是">
+                        <input type="radio" name="index_show" value="0" title="否" checked>
+                        <span>(优惠券中心首页的展示)</span>
+                    </div>
+                </div>
+
+
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">优惠券简述</label>
+                    <div class="layui-input-block">
+                        <textarea name="sketch" placeholder="请输入内容" class="layui-textarea">{if condition="!empty($coupon.title)"} {$coupon.title}{/if}</textarea>
+                    </div>
+                </div>
+
+                <!--       描述          -->
+                <script type="text/javascript" charset="utf-8" src="{:tb_config('sys_plugin_src',1,$lang_id)}ueditor/ueditor.config.js"></script>
+                <script type="text/javascript" charset="utf-8" src="{:tb_config('sys_plugin_src',1,$lang_id)}ueditor/ueditor.all.min.js"> </script>
+                <script type="text/javascript" charset="utf-8" src="{:tb_config('sys_plugin_src',1,$lang_id)}ueditor/lang/{$lang}/{$lang}.js"></script>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">描述</label>
+                    <div class="layui-input-block">
+                        <script id="description" type="text/plain" name="description" style="width:100%;height:300px;">{if condition="!empty($coupon.title)"} {$coupon.title}{/if}</script>
+                    </div>
+                </div>
+                <!-- 实例化编辑器 -->
+                <script type="text/javascript">
+                    var ue = UE.getEditor('description', {
+                        toolbars: [
+                            ['fullscreen', 'source', '|', 'undo', 'redo', '|',
+                                'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+                                'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+                                'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+                                'directionalityltr', 'directionalityrtl', 'indent', '|',
+                                'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+                                'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+                                'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'attachment', 'map', 'insertframe', 'insertcode', 'pagebreak', 'template', 'background', '|',
+                                'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+                                'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+                                'preview', 'searchreplace', 'drafts']
+                        ],
+                    });
+                    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+                    UE.Editor.prototype.getActionUrl = function (action) {
+                        if (action == 'uploadimage' || action == 'uploadscrawl' || action == 'uploadimage') {
+                            return "{:url('Sys/Upload/upload')}";
+                        } else if (action == 'uploadfile') {
+                            return "{:url('Sys/Upload/upload_file')}";
+                        }else{
+                            return this._bkGetActionUrl.call(this,action);
+                        }
+                    }
+                </script>
+                <!--       描述end          -->
+
+                {:token()}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" lay-submit="" lay-filter="*">{$Ebiz.lang.comm_form_btn_submit}</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">{$Ebiz.lang.comm_form_btn_reset}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var form;
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+
+        form = layui.form();
+
+        form.on('radio(coupon_level)', function(data){
+            $.ajax({
+                type:"POST",
+                url:'{:U("shop/Coupon/levelTemp")}',
+                data:{id:data.value},
+                success:function (data) {
+                    $('#level_content').html(data.msg);
+                    form.render();
+                }
+            })
+        });
+
+        form.on('radio(use_goods)', function(data){
+            if( data.value == 1 ){
+                $('#findGoods').css('display','block');
+            }else{
+                $('#findGoods').css('display','none');
+            }
+        });
+
+        form.on('radio(goods_category)', function(data){
+            if( data.value == 1 ){
+                $('.goods_category_select').css('display','block');
+                selectCategory();
+            }else{
+                $('.goods_category_select').css('display','none');
+                $('.category_select').remove();
+            }
+
+        });
+
+
+        form.on('submit(*)', function(data){
+            var url = $(data.form).attr('action');
+            //验证传输的值是否为空
+            var user_group = '';
+            $('input[name="user_group"]:checked').each(function(){
+                user_group += $(this).val()+',';
+            });
+            if( user_group.length > 0 ){
+                var user_groupLen = user_group.length;
+                user_group = user_group.slice(0,user_groupLen-1);
+            }
+            data.field.user_group = user_group;
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            location.reload();
+                        }
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        /**
+         * 图标上传
+         */
+        layui.upload({
+            url: "{:url('Sys/Upload/upload')}",
+            type: 'image',
+            ext: 'jpg|png|gif|bmp',
+            before: function () {
+                lay_index = layer.load(3, {
+                    shade: [0.1, '#fff'], //0.1透明度的白色背景
+                });
+            },
+            success: function (data, input) {
+                // console.log(data);
+                var img_input = $(input).attr('data-val');
+                var img_src = $(input).attr('data-val') + '_src';
+                // console.log();
+                if (data.error === 0) {
+                    $('#' + img_input).val(data.url);
+                    $('#' + img_src).attr('src', data.url);
+                    layer.msg('上传完成', {time: 1000});
+                    layer.close(lay_index);
+                } else {
+                    layer.msg(data.message);
+                    layer.close(lay_index);
+                }
+            }
+        });
+    });
+
+    //获取商品详情
+    function fillGoods(goods_id,title,price,stock) {
+        var id = '#goods'+goods_id;
+        if($(id).length>0){
+            return ;
+        }else{
+            if( price.length > 0 ){
+                var price_len = price.length;
+                var shop_price = price.slice(1,price_len);
+            }
+            var goodspechtml = '<tr id="goods'+goods_id+'"><td style="font-size: 12px;" title="'+title+'">'+title.slice(0,20)+'..</td><td style="font-size: 12px;">'+price+'</td><td style="font-size: 12px;">'+stock+'</td><td><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal" onclick="selectGoodsSpec('+goods_id+');">选择规格</botton><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger" onclick="delGoods('+goods_id+');">删除</botton></td><input type="hidden" name="goods" class="goods" value="'+goods_id+'"><input type="hidden" class="goodsspec" name="spec" value=""></tr>';
+            $('#goodspec').append(goodspechtml);
+        }
+    }
+
+    function selectGoods()
+    {
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/select_goods')}',
+        });
+    }
+    //进入选择商品规格页面
+    function selectGoodsSpec(goods_id)
+    {
+        var goods_spec_id = '#goods'+goods_id+' .goodsspec';
+        var spec_json = $(goods_spec_id).val();
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: true, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/getGoodsSpec')}?goods_id='+goods_id+'&spec_json='+encodeURIComponent(spec_json),
+    });
+    }
+    /**
+     * 删除商品
+     * @param id
+     */
+    function delGoods(id){
+        var g_id = '#goods'+id;
+        $(g_id).remove();
+    }
+
+    /**
+     * 选择商品分类
+     */
+    function selectCategory(){
+
+        var pid = $('.layui-anim-upbit:last .layui-this').attr('lay-value');
+        if( $('.category_select').length > 0 ){
+            if( pid == '' || pid == undefined || pid == 0 ){
+                alert('请选择规格!');
+                return ;
+            }
+        }
+        $.ajax({
+            type:"POST",
+            url:'{:U("shop/Common/goodsCategory")}',
+            data:{pid:pid},
+            success:function (data) {
+                if( data.code == 1 ){
+                    var htm = '<div class="layui-input-inline category_select">'+
+                        '<select name="goods_category" >';
+                    htm += data.msg;
+                    htm += '</select>'+
+                        '</div>';
+                    $('#select_next').before(htm);
+                    form.render();
+                }else{
+                    layer.msg(data.msg);
+                }
+            }
+        })
+    }
+
+    /**
+     * 清空商品选择
+     */
+    function clearCategory() {
+        $('.category_select').remove();
+        selectCategory();
+    }
+</script>
+</body>
+</html>

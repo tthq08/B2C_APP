@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        {notempty name="web_title"}
+        <header class="larry-personal-tit">
+            <span>{$web_title}</span>
+        </header>
+        {/notempty}
+        <div class="larry-personal-body clearfix">
+            {notempty name="form_tpis"}
+            <blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+            {/notempty}
+
+            <form class="layui-form" action="{:url('Sys/Position/saveBind')}" method="post">
+                <input type="hidden" name="type" value="{$type}">
+                <input type="hidden" name="t_id" value="{$t_id}">
+
+                <style type="text/css">
+                    .site-demo-upload,
+                    .site-demo-upload img{width: 60px; height: 60px;}
+                    .site-demo-upload{position: relative; background: #e2e2e2;}
+                </style>
+
+                {if condition="empty($bindData)"}
+                <div style="border: 1px solid #dddddd; padding-top: 20px;">
+                    <div class="cate cate_1" data-val="1">
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">推荐图片</label>
+                            <div class="layui-input-block">
+                                <img class="site-demo-upload" id="bind_1_img_src" src="{tbimg module="Admin" src="upload.png"}">
+                                <input type="file" data-val="bind_1_img" name="fileList" class="layui-upload-file">
+                                <input type="hidden" name="bind[1][img]" value="" id="bind_1_img" lay-verify="coupon_icon">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" style="margin-bottom: 0">
+                            <label class="layui-form-label">选择推荐位</label>
+                            <div>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="searchPosition_1" placeholder="搜索关键字(ID,名称,位置)">
+                                </div>
+                                <div class="layui-input-inline" style="width: 70px;">
+                                    <button class="layui-btn layui-btn-small" onclick="getPosition(1);" type="button">
+                                        搜索
+                                    </button>
+                                </div>
+                                <div class="layui-input-inline" style="width: 170px;">
+                                    <select name="bind[1][position]" id="position_1" lay-filter="position">
+                                        <option value="">请选择</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" name="bind[1][start_time]" placeholder="开始推荐时间"
+                                           onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" name="bind[1][end_time]" placeholder="结束推荐时间"
+                                           onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="float: left; width: 244px;">
+                        <label class="layui-form-label">排序</label>
+                        <div class="layui-input-inline" style="width: 70px;">
+                            <input type="number" name="bind[1][sort]" style="width: 70px; display: inline" autocomplete="off" class="layui-input" value="100">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style=" width: 400px; display: inline;">
+                        <label class="layui-form-label" style="width: 70px;">状态</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" name="bind[1][status]" value="1" title="开启" checked>
+                        </div>
+                    </div>
+                    <div style="clear: both"></div>
+                </div>
+                {else/}
+
+                {volist name="bindData" id="vo"}
+                <div id="position_id_{$i}" style="border: 1px solid #dddddd; padding-top: 20px; padding-bottom: -40px;">
+                    <div class="cate cate_{$i}" data-val="{$i}">
+                        <input type="hidden" name="bind[{$i}][id]" value="{$vo.id}">
+                        <div class="layui-form-item" style="margin-bottom: 0">
+                            <label class="layui-form-label">推荐标题</label>
+                            <div class="layui-input-inline" style="width: 400px;">
+                                <input type="text" name="bind[{$i}][title]" class="layui-input" placeholder="" value="{$vo.title}">
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item" style="margin-bottom: 0">
+                            <label class="layui-form-label">选择推荐位</label>
+                            <div>
+                                <div class="layui-input-inline">
+                                    <input type="text" class="layui-input" id="searchPosition_{$i}" placeholder="搜索关键字(ID,名称,位置)">
+                                </div>
+                                <div class="layui-input-inline" style="width: 70px;">
+                                    <button class="layui-btn layui-btn-small" onclick="getPosition({$i});" type="button">
+                                        搜索
+                                    </button>
+                                </div>
+                                <div class="layui-input-inline" style="width: 170px;">
+                                    <select name="bind[{$i}][position]" id="position_{$i}" lay-filter="position">
+                                        <option value="{$vo.position}" selected>{$vo.position_name}</option>
+                                    </select>
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" name="bind[{$i}][start_time]" placeholder="开始推荐时间"
+                                           onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$vo.start_time}">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input class="layui-input" name="bind[{$i}][end_time]" placeholder="结束推荐时间"
+                                           onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{$vo.end_time}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style="float: left; width: 244px;">
+                        <label class="layui-form-label">排序</label>
+                        <div class="layui-input-inline" style="width: 70px;">
+                            <input type="number" name="bind[{$i}][sort]" style="width: 70px; display: inline" autocomplete="off" class="layui-input" value="{$vo.sort}">
+                        </div>
+                    </div>
+                    <div class="layui-form-item" style=" width: 400px; display: inline;">
+                        <label class="layui-form-label" style="width: 70px;">状态</label>
+                        <div class="layui-input-inline">
+                            <input type="checkbox" name="bind[{$i}][status]" value="1" title="开启" {eq name="$vo.status" value="1"}checked{/eq}>
+                        </div>
+                    </div>
+                    <div style="position: relative; width: 40px; height: 40px; right: -97%;top: -150px; ;">
+                        <a href="javascript:;" onclick="deletePosition({$i});">
+                            <i class="layui-icon" style="font-size: 30px; color: #aa2400">&#xe640;</i>
+                        </a>
+                    </div>
+                    <div style="clear: both"></div>
+                </div>
+                {/volist}
+                <script>
+                    $(function () {
+                        setCateSum({:count($bindData)});
+                    });
+                    function deletePosition(id) {
+                        var position_id = '#position_id_'+id;
+                        $(position_id).remove();
+                    }
+                </script>
+
+                {/if}
+
+
+                <div class="move" style="margin-bottom: 20px"></div>
+
+
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    <label class="layui-form-label"></label>
+                    <div>
+                        <button type="button" class="layui-btn layui-btn-small" onclick="addCategory();">
+                            <i class="layui-icon">&#xe654;</i>
+                        </button>
+                    </div>
+
+                </div>
+
+                {:token()}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" lay-submit="" lay-filter="*">
+                            {$eBiz.lang.comm_form_btn_submit}
+                        </button>
+                        <button type="reset" class="layui-btn layui-btn-primary">{$eBiz.lang.comm_form_btn_reset}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="categoryBak" style="display: none">
+        {category_list item="cate"}
+        <option value="{$cate.id}">{$cate.name}</option>
+        {/category_list}
+    </div>
+</section>
+
+<script type="text/javascript">
+    var form;
+    var upload;
+    layui.use(['form', 'upload', 'element', 'layedit', 'laydate'], function () {
+
+        form = layui.form();
+        upload = layui.upload();
+        form.on('submit(*)', function (data) {
+            var url = $(data.form).attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data.field,
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.code == 1) {
+                            parent.location.reload();
+                        }
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        /**
+         * 图标上传
+         */
+        layui.upload({
+            url: "{:url('Sys/Upload/upload')}",
+            type: 'image',
+            ext: 'jpg|png|gif|bmp',
+            before: function () {
+                var lay_index = layer.load(3, {
+                    shade: [0.1, '#fff'], //0.1透明度的白色背景
+                });
+                layer.close(lay_index);
+            },
+            success: function (data, input) {
+                // console.log(data);
+                var img_input = $(input).attr('data-val');
+                var img_src = $(input).attr('data-val') + '_src';
+                // console.log();
+                if (data.error === 0) {
+                    $('#' + img_input).val(data.url);
+                    $('#' + img_src).attr('src', data.url);
+                    layer.msg('上传完成', {time: 1000});
+                    layer.close(lay_index);
+                } else {
+                    layer.msg(data.message);
+                    layer.close(lay_index);
+                }
+            }
+        });
+
+    });
+    var cate_sum = 1;
+    function addCategory() {
+        cate_sum++;
+        var html = '<div id="position_id_'+cate_sum+'" style="border: 1px solid #dddddd; padding-top: 20px;"> ' +
+                '<div class="cate cate_'+cate_sum+'" data-val="'+cate_sum+'"> ' +
+                '<div class="layui-form-item" style="margin-bottom: 0"> ' +
+                '<label class="layui-form-label">推荐标题</label> ' +
+                '<div class="layui-input-inline" style="width: 400px;"> ' +
+                '<input type="text" name="bind['+cate_sum+'][title]" class="layui-input" placeholder=""> ' +
+                '</div> ' +
+                '</div>' +
+                '<div class="layui-form-item" style="margin-bottom: 0"> ' +
+                '<label class="layui-form-label">选择推荐位</label> ' +
+                '<div> ' +
+                '<div class="layui-input-inline"> ' +
+                '<input type="text" class="layui-input" id="searchPosition_'+cate_sum+'" placeholder="搜索关键字(ID,名称,位置)"> ' +
+                '</div> ' +
+                '<div class="layui-input-inline" style="width: 70px;"> ' +
+                '<button class="layui-btn layui-btn-small" onclick="getPosition('+cate_sum+');" type="button">' +
+                '搜索 ' +
+                '</button> ' +
+                '</div> ' +
+                '<div class="layui-input-inline" style="width: 170px;"> ' +
+                '<select name="bind['+cate_sum+'][position]" id="position_'+cate_sum+'" lay-filter="position"> ' +
+                '<option value="">请选择</option> ' +
+                '</select> ' +
+                '</div> ' +
+                '<div class="layui-input-inline"> ' +
+                '<input class="layui-input" name="bind['+cate_sum+'][start_time]" placeholder="开始推荐时间"' +
+                'onclick="layui.laydate({elem: this, istime: true, format: \'YYYY-MM-DD hh:mm:ss\'})"> ' +
+                '</div> ' +
+                '<div class="layui-input-inline"> ' +
+                '<input class="layui-input" name="bind['+cate_sum+'][end_time]" placeholder="结束推荐时间"' +
+                'onclick="layui.laydate({elem: this, istime: true, format: \'YYYY-MM-DD hh:mm:ss\'})"> ' +
+                '</div> ' +
+                '</div> ' +
+                '</div> ' +
+                '</div> ' +
+                '<div class="layui-form-item" style="float: left; width: 244px;"> ' +
+                '<label class="layui-form-label">排序</label> ' +
+                '<div class="layui-input-inline" style="width: 70px;"> ' +
+                '<input type="number" name="bind['+cate_sum+'][sort]" style="width: 70px; display: inline" autocomplete="off" class="layui-input" value="100"> ' +
+                '</div> ' +
+                '</div> ' +
+                '<div class="layui-form-item" style=" width: 400px; display: inline;"> ' +
+                '<label class="layui-form-label" style="width: 70px;">状态</label> ' +
+                '<div class="layui-input-inline"> ' +
+                '<input type="checkbox" name="bind['+cate_sum+'][status]" value="1" title="开启" checked> ' +
+                '</div> ' +
+                '</div> ' +
+                '<div style="position: relative; width: 40px; height: 40px; right: -97%;top: -150px; ;"> ' +
+                '<a href="javascript:;" onclick="deletePosition('+cate_sum+');"> ' +
+                '<i class="layui-icon" style="font-size: 30px; color: #aa2400">&#xe640;</i> ' +
+                '</a> ' +
+                '</div> ' +
+                '<div style="clear: both"></div> ' +
+                '</div>';
+        $('.move').append(html);
+        form.render();
+        upload.render();
+    }
+    function setCateSum(sum){
+        cate_sum = sum;
+    }
+    function getPosition(id) {
+        var searchId = '#searchPosition_' + id;
+        var search = $(searchId).val();
+        $.ajax({
+            type: "POST",
+            url: "{:url('sys/Position/ajaxSearchPosition')}",
+            data: {search: search},
+            success: function (data) {
+                if (data.code == 1) {
+                    var position_id = '#position_' + id;
+                    var html = '';
+                    for (x in data.msg) {
+                        html += '<option value="' + data.msg[x]['id'] + '">' + data.msg[x]['name'] + '</option>'
+                    }
+                    $(position_id).html(html);
+                    form.render();
+                } else {
+                    layer.msg(data.msg);
+                }
+            },
+            error: function () {
+
+            }
+        });
+    }
+</script>
+</body>
+</html>

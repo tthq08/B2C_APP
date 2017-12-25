@@ -1,0 +1,30 @@
+<?php 
+$value = $value==''?-1:$value;
+if(!isset($line)){
+?>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-inline">
+		<select name="{$name}" lay-filter="{$name}" lay-search>
+			<option value="0"></option>
+			{volist name="option" id="vo"}
+			<option value="{$key}" {eq name="key" value="$value"}selected="selected"{/eq}>{$vo}</option>
+			{/volist}
+		</select>
+	</div>
+
+</div>
+<?php 
+}else{
+?>
+	<div class="layui-input-inline">
+		<select name="{$name}" lay-filter="{$name}" lay-search>
+			<option value="0">请选择</option>
+			{volist name="option" id="vo"}
+			<option value="{$key}" {eq name="key" value="$value"}selected="selected"{/eq}>{$vo}</option>
+			{/volist}
+		</select><i>{$tips}</i>
+	</div>
+<?php 
+}
+?>

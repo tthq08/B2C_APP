@@ -1,0 +1,175 @@
+<?php
+// +----------------------------------------------------------------------
+// | 功能: 中文语言包
+// | ThinkBiz System
+// +----------------------------------------------------------------------
+// | 版权所有 2013~2017 深圳市俊网网络有限公司 [ http://www.junnet.net ]
+// +----------------------------------------------------------------------
+// | 官方网站：http://www.junnet.net
+// +----------------------------------------------------------------------
+// | 作者: 余剑华 <528526198@qq.com>
+// +----------------------------------------------------------------------
+
+// 核心中文语言包
+return [
+	 //后台框架页
+    'index_left_home' => '门户首页',
+
+    // 模型列表页
+    'model_top_btn_sys_field' => '系统字段管理',
+    'model_list_title_0' => '模型标题',
+    'model_list_title_1' => '模型标识',
+    'model_list_title_2' => '绑定数据表',
+    'model_list_title_3' => '类型',
+    'model_list_title_4' => '创建时间',
+    'model_list_title_5' => '排序',
+    'model_list_title_6' => '状态',
+    'model_list_title_7' => '操作',
+    'model_list_btn_field' => '字段管理',
+    'model_del_sys_error' => '系统模型禁止删除',
+    'model_del_content_error' => '删除主表文档失败',
+    'model_del_menu_error' => '删除菜单节点失败',
+    'model_del_field_error' => '删除内容模型字段失败',
+
+
+    //模型表单页
+    'model_form_add_title' => '创建内容模型',
+    'model_form_edit_title' => '编辑内容模型',
+    'model_type_option_sys' => '系统模型',
+    'model_type_option_sys_ab' => '系统',
+    'model_type_option_usual' => '普通模型',
+    'model_type_option_usual_ab' => '普通',
+    'model_type_option_single' => '独立模型(不使用模型主表)',
+    'model_type_option_single_ab' => '独立',
+    'model_form_field_name' => '模型标识',
+    'model_form_field_name_place' => '请输入模型标识',
+    'model_form_field_name_tips' => '模型的唯一区分标识,由小写字母、数字或下划线组成，不能以数字开头',
+    'model_form_field_title' => '模型标题',
+    'model_form_field_title_place' => '请输入模型标题',
+    'model_form_field_title_tips' => '模型的标题，方便操作人员区分识别，可为中文',
+    'model_form_field_table' => '绑定数据表',
+    'model_form_field_table_place' => '请输入绑定数据表',
+    'model_form_field_table_tips' => '创建后不可更改。由小写字母、数字或下划线组成，如果不填写默认为 tb_cms_content_模型标识，如果需要自定义，请务必填写系统表前缀，#@_表示当前系统表前缀',
+    'model_form_field_type' => '模型类型',
+    'model_form_field_tips' => '此选项添加后不可更改。如果为 系统模型 将禁止删除，对于 独立模型，将强制创建字段id,cid,uid,model,title,create_time,update_time,sort,status,trash,view',
+    'model_form_field_status' => '是否启用',
+    'model_form_status_enable' => '启用',
+    'model_form_status_disable' => '禁用',
+    'model_form_field_sort' => '排序',
+    'model_form_table_exist' => '欲绑定的数据表已存在',
+    'model_form_table_error' => '数据表创建失败',
+    'model_form_field_fields' => '表头设置',
+    'model_form_field_fields_tips' => '设置对应内容列表的显示内容，每行一个字段，每个字段以<code>字段,标题,类型,(绑定路径),(提交参数)</code>格式设置。留空使用默认配置。',
+    'model_form_field_func' => '模型内容操作函数',
+    'model_form_field_func_tips' => '设置模型执行数据操作时的函数路径，格式:list:Goods/update,每行一条。未设置时使用通用的内容更新函数，如请求的地址是 <code>url("Goods/update")</code>，那么只需填写 <code>Goods/update</code>',
+
+    //字段列表页
+    'field_table_tips'  => '<code>【表单】表示是否在内容表单中显示；【状态】表示字段是否使用</code>',
+    'field_list_title_0' => '标题',
+    'field_list_title_1' => '名称',
+    'field_list_title_2' => '类型',
+    'field_list_title_3' => '更新时间',
+    'field_list_title_4' => '排序',
+    'field_list_title_5' => '表单',
+    'field_list_title_6' => '状态',
+    'field_list_title_7' => '操作',
+    'field_del_sys_error' => '系统字段禁止删除',
+
+    // 字段表单页面
+    'field_form_tips' => '<code>以下字段名称已存在，请不要建立同名的字段：id、cid、uid、title、model、create_time、update_time、sort、status、view、trash</code>',
+    'field_form_field_title' => '字段标题',
+    'field_form_field_title_place' => '请输入字段标题',
+    'field_form_field_title_tips' => '显示在表单中的标题，可为中文',
+    'field_form_field_name' => '字段名称',
+    'field_form_field_name_place' => '请输入字段名称',
+    'field_form_field_name_tips' => '数据表中的字段名称，仅可使用英文字母和下划线',
+    'field_form_field_type' => '字段类型',
+    'field_form_field_type_place' => '请选择字段类型',
+    'field_form_field_type_tips' => '字段类型决定了表单中的控件种类',    
+    'field_form_field_ajaxurl' => 'ajax路径',
+    'field_form_field_ajaxurl_place' => '请输入ajax路径',
+    'field_form_field_ajaxurl_tips' => '仅在ajax数据下拉框类型下有效，填入下拉框选项获取的路径，如请求的地址是 <code>url("Category/ajaxGetCate")</code>，那么只需填写 <code>Category/ajaxGetCate</code>，或者直接填写以 <code>http</code>开头的url地址',
+    'field_form_field_length' => '字段长度',
+    'field_form_field_length_place' => '请输入字段长度',
+    'field_form_field_length_tips' => '字段在数据表中最大长度',
+    'field_form_field_isnull' => '允许为空',
+    'field_form_field_isnull_tips' => '字段值是否允许是空值',
+    'field_form_isnull_enable' => '允许',
+    'field_form_isnull_disable' => '禁止',
+    'field_form_field_value' => '字段默认值',
+    'field_form_field_value_place' => '请输入字段默认值',
+    'field_form_field_value_tips' => '字段在数据表中的默认值',
+    'field_form_field_options' => '字段附加选项',
+    'field_form_field_options_place' => '请输入字段附加选项，每行一条记录',
+    'field_form_field_options_tips' => '用于单选、复选、下拉框类型的选项项目;每行一条记录',
+    'field_form_field_tips' => '字段说明',
+    'field_form_field_tips_place' => '请输入字段说明',
+    'field_form_field_tips_tips' => '字段的补充说明信息，显示在表单中作为提示信息',
+    'field_form_field_show' => '表单显示',
+    'field_form_field_show_tips' => '是否在表单中使用',
+    'field_form_field_status' => '字段状态',
+    'field_form_field_status_tips' => '字段是否使用，禁用后字段无论在前台后者后都被弃用',
+    'field_form_show_enable' => '使用',
+    'field_form_show_disable' => '隐藏',
+    'field_sys_exists' => '字段名已存在或是系统字段',
+
+
+    // 内容列表页
+    'content_list_title_0' => '标题',
+    'content_list_title_1' => '栏目',
+    'content_list_title_2' => '点击数',
+    'content_list_title_3' => '发布人',
+    'content_list_title_4' => '更新时间',
+    'content_list_title_5' => '排序',
+    'content_list_title_6' => '状态',
+    'content_list_title_7' => '操作',
+
+    // 内容表单页
+    'content_form_add_title' => '新增内容',
+    'content_form_edit_title' => '编辑内容',
+    'content_alias_is_exist' => '自定义地址已存在，请更换后再试',
+    'content_alias_is_module' => '自定义地址与系统模块名冲突，请重新设置',
+
+    // 栏目列表页
+    'cate_list_title_0' => '图标',
+    'cate_list_title_1' => '栏目名称',
+    'cate_list_title_show' => '导航显示',
+    'cate_list_title_2' => '状态',
+    'cate_list_field_sort' => '排序',
+    'cate_list_title_3' => '操作',
+    'cate_list_btn_add' => '新增子栏目',
+
+    // 栏目表单页
+    'cate_form_win_title' => '新增栏目',
+    'cate_form_win_title_edit' => '编辑栏目',
+    'cate_form_field_name' => '栏目名称',
+    'cate_form_field_en_name' => '英文名称',
+    'cate_form_field_icon' => '栏目图片',
+    'cate_form_field_pid' => '上级栏目',
+    'cate_form_field_show' => '导航显示',
+    'cate_form_field_sort' => '排序',
+    'cate_form_field_target' => '打开方式',
+    'cate_form_radio_opt_disable' => '否',
+    'cate_form_radio_opt_enable' => '是',
+    'cate_form_radio_target_self' => '当前页',
+    'cate_form_radio_target_blank' => '新窗口',
+    'cate_form_field_index' => '是否开启栏目首页',
+    'cate_form_field_aliaindex' => '栏目首页别名',
+    'cate_form_field_aliaindex_place' => '请设置栏目首页别名，如: shangping',
+    'cate_form_field_aliaindex_tips' => '如未开启栏目首页无需设置，别名设置后可直接使用<code>http://域名/别名</code> 的方式访问对应栏目首页',
+    'cate_form_field_alialist' => '栏目列表别名',
+    'cate_form_field_alialist_place' => '请设置栏目列表别名，如: shangping',
+    'cate_form_field_alialist_tips' => '别名设置后可直接使用<code>http://域名/别名</code> 的方式访问对应栏目列表',
+    'cate_form_index_tpl' => '栏目首页模板',
+    'cate_form_list_tpl' => '栏目列表页模板',
+    'cate_form_detail_tpl' => '内容详情模板',
+    'cate_form_model_name' => '绑定模型',
+    'cate_form_model_type' => '栏目类型',
+    'cate_form_model_type_single' => '单页内容',
+    'cate_form_model_type_list' => '列表栏目',
+    'cate_form_model_type_path' => '系统链接',
+    'cate_form_model_type_url' => '外部链接',
+    'cate_form_field_url' => '链接地址',
+    'cate_form_field_url_place' => '如栏目类型为外部链接，请务必填写链接地址。如不是，请留空',
+    'cate_form_field_url_tips' => '<code>系统链接为系统内部链接，如url("goods/list")请填写goods/list；外部链接请以http://开头。如不是，请留空</code>',
+];

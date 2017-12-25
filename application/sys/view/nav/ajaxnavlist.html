@@ -1,0 +1,23 @@
+{volist name="nav_lists" id="vo"}
+<tr>
+    <td height="50">{$vo.name}</td>
+    <td>
+        <div class="nav_link">
+            <a title="{$vo.link}" href="{$vo.link}">{:mb_substr($vo['link'],0,30)}...</a>
+            <button title="{$vo.link}" type="button" class="layui-btn layui-btn-small" style="display: none; width: 100%" onclick="window.open('{$vo.link}')">
+                前往链接
+            </button>
+        </div>
+    </td>
+</tr>
+{/volist}
+<script>
+    $('.nav_link').on('mouseenter', function () {
+        $(this).children('a').hide();
+        $(this).children('button').show();
+    });
+    $('.nav_link').on('mouseleave', function () {
+        $(this).children('a').show();
+        $(this).children('button').hide();
+    });
+</script>

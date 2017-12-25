@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{:tb_config('web_site_title',1)}--注册中心</title>
+
+	{tbcss module="shop" src="common.css,style.css,lightSlider.css,login.css"}
+	{tbjs  module="shop" src="jquery.min.js,../layer/layer.js"}
+
+</head>
+<body style="background: #fff;">
+
+	{include file="../shop/common/top_header"}
+	<header class="header bus_header bus_enter_header">
+		<div class="container w1200 clearfix">
+			<a href="/" class="logo fl"><img src="{:tb_config('web_site_logo',1)}" alt="" /></a>
+			<div class="header-intr fl">
+				<h1 class="color--d81c1d" style="line-height: 88px;">注册</h1>
+			</div>
+			<div class="header-right fr">
+				<p>已有账号？<a href="{:U('member/login/index')}">登录</a></p>
+			</div>
+		</div>
+	</header>
+
+	<main class="main login-main">
+		<div class="login-section">
+			<div class="container w1000">
+				<div class="box clearfix">
+					<div class="login-form-box fl">
+						<div class="login-form">
+							<div class="login-form-list right-btn-list">
+								<div class="name">用户名</div>
+								<div class="f-input">
+									<input type="text" id="username" class="input-200" placeholder="会员/邮箱/手机号" />
+									<div class="right-btn">
+										<a href="javascript:;" class="inline-btn">重复确认</a>
+									</div>
+								</div>
+							</div>
+							<div class="login-form-list">
+								<div class="name">昵称</div>
+								<div class="f-input">
+									<input type="text" id="nickname" class="input--100" placeholder="输入昵称" />
+								</div>
+							</div>
+							<div class="login-form-list">
+								<div class="name">设置密码</div>
+								<div class="f-input">
+									<input type="password" id="password" class="input--100" placeholder="输入密码" />
+								</div>
+							</div>
+							<div class="login-form-list">
+								<div class="name">确认密码</div>
+								<div class="f-input">
+									<input type="password" id="repassword" class="input--100" placeholder="在此输入密码" />
+								</div>
+							</div>
+							<div class="login-form-list">
+								<div class="name">手机号码</div>
+								<div class="f-input">
+									<input type="tel" id="mobile" class="input--100" placeholder="输入手机号码" />
+								</div>
+							</div>
+							<div class="login-form-list imgCode-list">
+								<div class="name">验证码</div>
+								<div class="f-input">
+									<input type="text" id="imgcode" class="input--100" placeholder="输入验证码" />
+								</div>
+								<div class="img-code">
+									<img id="img" src="{:captcha_src()}" data-src="{:captcha_src()}" onclick="getImgCode();">
+								</div>
+							</div>
+							<div class="login-form-list right-btn-list">
+								<div class="name">验证码</div>
+								<div class="f-input">
+									<input type="text" id="code" class="input-200" placeholder="输入验证码" />
+									<div class="right-btn">
+										<a href="javascript:;" class="inline-btn" onclick="getSmsCode('{:U("member/login/send_sms_reg_code")}')">获取验证码</a>
+									</div>
+								</div>
+							</div>
+							<div class="agree-block mt30">
+								<input type="checkbox" name="agreement" value="1" />
+								<span>阅读并同意<a href="javascript:;">《{:tb_config('web_seo_name',1)}用户注册协议》</a><a href="javascript:;">《隐私政策》</a></span>
+							</div>
+							{:token()}
+							<div class="login-btnBox mt40">
+								<a href="javascript:;" class="login-btn" onclick="sub_reg();">立即注册</a>
+							</div>
+						</div>
+					</div>
+					<div class="login-aslide fr">
+						{banner position="register_big"}
+						<a href="{$banner.ad_link}">
+								<img src="{$banner.ad_pic}" style="max-width: 600px;" />
+						</a>
+						{/banner}
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 横条信息 -->
+		<div class="login-block-intr">
+			<div class="container w1000">
+				<ul class="clearfix">
+					{banner position="login_reg_user"}
+					<li class="intr-item">
+						<h5>{$banner.ad_name}</h5>
+						<span class="line"></span>
+						<p>{$banner.ad_title}</p>
+					</li>
+					{/banner}
+				</ul>
+			</div>
+		</div>
+	</main>
+
+	{include file="../shop/common/footer"}
+	{tbjs module="shop" src="jquert.lightSlider.js"}
+
+	<script type="text/javascript">
+		$('.imageGallery').lightSlider({
+	        minSlide:1,
+		    maxSlide:1,
+		    mode:'fade',
+		    loop: true
+	    });
+
+		/**
+		 * 注册提交
+		 */
+		function sub_reg()
+		{
+			var agreement = $('input[name="agreement"]:checked').val();
+			if( agreement == undefined || agreement == null || agreement == '' )
+			{
+				alert("请选同意{:tb_config('web_seo_name',1)}用户注册协议");
+				return ;
+			}
+			// 获取信息
+			var username = $('#username').val();
+			var nickname = $('#nickname').val();
+			var mobile = $('#mobile').val();
+			var password = $('#password').val();
+			var repassword = $('#repassword').val();
+			var code = $('#code').val();
+			if( password == '' || password == undefined )
+			{
+				alert('请输入密码');
+				return false;
+			}
+			if( code == '' || code == undefined ){
+				alert('请输入短信验证码');
+				return false;
+			}
+			var token = $('input[name="__token__"]').val();
+			$.ajax({
+				type:'POST',
+				url:'{:U("member/login/register")}',
+				data:{username:username,nickname:nickname,mobile:mobile,password:password,repassword:repassword,code:code,__token__:token},
+				success:function (data) {
+					if ( data.code == 1 ){
+						alert('注册成功!');
+						location.href='{:url("member/login/index")}';
+					}else{
+						alert(data.msg);
+					}
+				}
+			})
+		}
+
+		/**
+		 * 获取手机验证码
+		 * @param url
+		 */
+		function getSmsCode(url)
+		{
+			// 获取验证码
+			var mobile = $('#mobile').val();
+			var code = $('#imgcode').val();
+			$.ajax({
+				type:"POST",
+				url:url,
+				data:{mobile:mobile,code:code},
+				success:function (data) {
+					if( data.code == 1 )
+					{
+						alert(data.msg);
+					}else{
+						getImgCode();
+						alert(data.msg);
+					}
+				}
+			})
+		}
+
+		function getImgCode() {
+			var url = $('#img').attr('data-src');
+
+			$('#img').attr('src',url+'?time='+Math.random());
+		}
+	</script>
+	
+</body>
+</html>

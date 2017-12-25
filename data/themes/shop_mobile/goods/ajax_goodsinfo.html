@@ -1,0 +1,248 @@
+<div class="message-slide">
+	<div class="swiper-container banner-container">
+	  	<div class="swiper-wrapper">
+		    {volist name="goods_images_list" id="ig"}
+			    <div class="swiper-slide"><a href="javascript:;"><img src="{$ig.image_url|common_thumb_img=420,420}" alt=""></a></div>
+			{/volist}
+	  	</div>
+	  	<div class="swiper-pagination"></div>
+	</div>
+</div>
+<div class="goods-part">
+	<div class="basic-info">
+		<div class="msgtitle">{$goods.title}</div>
+		<div class="price-row clearfix">
+			<div class="gp-left">
+				<p><strong><del>{:web_currency()}{$goods.market_price}</del></strong></p>
+				<p><strong class="price">{:web_currency()}{$goods_price}</strong></p>
+			</div>
+			<div class="gp-right">
+				<div class="gp-ctr">
+					<a href="javascript:;" class="ctr-item">
+						<img src="{:tb_config('resource_path',1)}mshop/images/shop_09.png" alt="" />
+						<p>9353</p>
+					</a>
+					<!-- <a href="javascript:;" class="ctr-item">
+						<img src="{:tb_config('resource_path',1)}mshop/images/m_05.png" alt="" />
+						<p>分享</p>
+					</a> -->
+				</div>
+			</div>
+		</div>
+		<div class="prod-act">
+			<p>税费：{empty name="goods.tariff"}包含{else/}{$goods.tariff}%{/empty}</p>
+			<!-- <p class="c-fc5">该产品的活动内容提示，该产品的活动内容提示该产品的活动内容提</p> -->
+		</div>
+	</div>
+</div>
+<!-- 规格 -->
+<div class="goods-part prod-bd mt10" on-open=".goodsSpec-menu" onclick="openMenu('.goodsSpec-menu')">
+	<div class="prod-spec clearfix">
+		<div class="txt">已选</div>
+		<div class="msg spec">{$spec_str}</div>
+		<div class="r-icon"><span class="bd-point"><i></i>
+		<i></i>
+		<i></i></span></div>
+	</div>
+</div>
+<!-- 商品详情 -->
+<div class="shopDetail-wrap mt10">
+	<div class="tabbar-box clearfix">
+		<div class="tab-bar on" for-bar="shop-detail">商品详情</div>
+		<div class="tab-bar" for-bar="detail-question">Q&A</div>
+		<div class="tab-bar" for-bar="detail-comment" onclick="ajaxcomment(1,0);">商品评价</div>
+	</div>
+	<div class="tabbarContent">
+		<!-- 详情 -->
+		<div class="tabbar-list shop-detail on">
+			<div class="detail-tab clearfix">
+				<div class="dtd on" dtd-for="1">商品介绍</div>
+				<div class="dtd" dtd-for="2">规格参数</div>
+				<div class="dtd" dtd-for="3">包装售后</div>
+			</div>
+			<div class="detail-tabContent">
+				<div class="detail-tablist on" dtd-for="1">
+					{$goods_content|htmlspecialchars_decode|htmlspecialchars_decode}
+				</div>
+				<div class="detail-tablist" dtd-for="2">
+					<div class="detail-table">
+						<table>
+							<tbody>
+							    <tr>
+							        <td colspan="2"><strong>商品属性</strong></td>
+							    </tr>
+							    <tr>
+							        <td>品牌</td>
+							        <td>{:getTableValue('shop_brand',['id'=>$goods['brand_id']],'name')}</td>
+							    </tr>
+							    <tr>
+							        <td>货号</td>
+							        <td>{$goods.goods_sn}</td>
+							    </tr>
+							    {if condition="empty($attribute) eq false AND empty($attr_list) eq false"}
+							    {foreach name="attr_list" item="v" key="k"}
+							    <tr>
+							        <td>{$attribute[$k]}</td>
+							        <td>{$v}</td>
+							    </tr>
+							    {/foreach}
+							    {/if}
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="detail-tablist plr3" dtd-for="3">
+					{:htmlspecialchars_decode(tb_config('shop_sale_safe',1))}
+				</div>
+			</div>
+		</div>
+		<!-- 问答 -->
+		<div class="tabbar-list detail-question">
+			<div class="qa-input">
+				<div class="textarea-box">
+					<textarea class="monitorWord" max-len="200" placeholder="请输入你要提问的内容" maxlength="200"></textarea>
+					<div class="txt">最多输入<i>200</i>字</div>
+				</div>
+				<div class="tright"><a href="javascript:;" class="qa-btn">提交问题</a></div>
+			</div>
+			<div class="question">
+				<div class="shop-title">
+					<span class="txt">问答列表</span>
+				</div>
+				<div class="content">
+					<div class="qa-item">
+						<div class="qa-top qnote clearfix">
+							<span class="quser">屋*石</span>
+							<span class="qtime">2017-04-05 08:00</span>
+						</div>
+						<div class="ask">
+							<i class="qa">问</i>
+							<div class="qmsg">云os5.1是基于哪个安卓版本？6.0还是7.0？</div>
+						</div>
+						<div class="answer">
+							<i class="qa">答</i>
+							<div class="qmsg">
+								<div class="qmsg-item">
+									<span class="qnote">2017-04-05 08:00 五大三：</span>
+									<span>不基于安卓，但使用跟安卓无异不基于安卓，但使用跟安卓无异</span>
+								</div>
+								<div class="qmsg-item">
+									<span class="qnote">2017-04-05 08:00 五大三：</span>
+									<span>不基于安卓，但使用跟安卓无异不基于安卓，但使用跟安卓无异</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="qa-item">
+						<div class="qa-top qnote clearfix">
+							<span class="quser">屋*石</span>
+							<span class="qtime">2017-04-05 08:00</span>
+						</div>
+						<div class="ask">
+							<i class="qa">问</i>
+							<div class="qmsg">云os5.1是基于哪个安卓版本？6.0还是7.0？</div>
+						</div>
+						<div class="answer">
+							<i class="qa">答</i>
+							<div class="qmsg">
+								<div class="qmsg-item">
+									<span class="qnote">2017-04-05 08:00 五大三：</span>
+									<span>不基于安卓，但使用跟安卓无异不基于安卓，但使用跟安卓无异</span>
+								</div>
+								<div class="qmsg-item">
+									<span class="qnote">2017-04-05 08:00 五大三：</span>
+									<span>不基于安卓，但使用跟安卓无异不基于安卓，但使用跟安卓无异</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 评论 -->
+		<div class="tabbar-list detail-comment">
+			<div class="comment-summ">
+			{comment_fraction goods="$goods['id']" id="comment_f"}
+				<ul class="clearfix">
+					<li>
+						<p class="tit">全部评价</p>
+						<p class="txt">{$comment_f.num_total|default=0}</p>
+					</li>
+					<li>
+						<p class="tit">好评</p>
+						<p class="txt">{$comment_f.num_good|default=0}</p>
+					</li>
+					<li>
+						<p class="tit">中评</p>
+						<p class="txt">{$comment_f.num_mid|default=0}</p>
+					</li>
+					<li>
+						<p class="tit">差评</p>
+						<p class="txt">{$comment_f.num_bad|default=0}</p>
+					</li>
+				</ul>
+			</div>
+
+			<div id="ajax_comment_return">
+				
+			</div>
+		</div>
+	</div>
+</div>
+<div class="cmall-mask"></div>
+	<div class="goodsSpec-menu pullBottom">
+		<div class="spec-menu-top pullHeader">
+			<div class="pic"><img src="{$goods.thumb|common_thumb_img=200,200}" alt=""></div>
+			<div class="spec">
+				<div class="pie"><strong>{:web_currency()}{$goods_price}</strong></div>
+				<div class="msg">重量{$goods.weight/1000}kg</div>
+
+			</div>
+			<span class="pull-close" onclick="closeMenu()"><img src="{:tb_config('resource_path',1)}mshop/images/close.png" alt=""></span>
+		</div>
+		<form id="buy_goods_form" name="buy_goods_form" method="post" >
+		<div class="spec-menu-content pullBody">
+			<div class="spec-mblock">
+				<div class="spec-mitem clearfix">
+					<div class="sm-left label">数量</div>
+					<div class="sm-right txt">
+						<span class="goods-quantity">
+							<i class="q reduce">-</i>
+							<input type="text" name="goods_num" id="goods_num" value="1">
+							<i class="q add">+</i>
+						</span>
+					</div>
+				</div>
+				{foreach name="filter_spec" item="v" key="k"}
+				<div class="spec-mitem clearfix">
+					<div class="sm-left label">{$v.name}</div>
+					<div class="sm-right txt">
+						{foreach name="v.item" item="v2" key="k2"}
+						{notempty name="v2.icon"}
+						<div class="spec-list" data-url="{$v2.href}">
+							<input type="radio" id="item_{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+							<span for="item_{$k}{$k2}"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+						</div>
+						{else/}
+						<div class="spec-list" data-url="{$v2.href}">
+							<input type="radio" id="item_{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} >
+							<span for="item_{$k}{$k2}">{$v2.item}</span>
+						</div>
+						{/notempty}
+						{/foreach}
+						
+					</div>
+				</div>
+				{/foreach}
+			</div>
+		</div>
+		<div class="spec-menu-bottom pullFooter">
+			<div class="btn-box">
+				<input type="hidden" name="goods_id" value="{$goods.id}" />
+				<input type="hidden" id="fee_total" value="{$goods_price}">
+				<a href="javascript:;" class="MenuMsgAddCartBtn">加入购物车</a>
+				<a href="javascript:;" class="MenuMsgNowBuy">立即购买</a>
+			</div>
+		</div>
+		</form>
+	</div>

@@ -1,0 +1,37 @@
+  <div class="set-top"><strong>{$eBiz.lang.Addr_select_my_address}</strong></div>
+  <div class="settl-address">
+  {volist name="address_list" id="v"}
+    <div class="s-address {eq name='v.is_default' value='1'}on{/eq}" data-id="{$v.id}" onclick="swidth_address(this);">
+      <input type="radio" data-province-id="{$v.province}" data-city-id="{$v.city}" data-district-id="{$v.district}" name="address_id" value="{$v.id}" {eq name='v.is_default' value='1'}checked="checked"{/eq} style="display: none;" />
+      <div class="ress-top"><strong>{$v.consignee} {$eBiz.lang.Addr_shou}</strong><span class="r-name ml20">{$v.mobile}</span></div>
+      <div class="ress-msg">{$eBiz.lang.Addr_page_zip}：{$v.zip}</div>
+      <div class="ress-msg">{$eBiz.lang.Addr_city_area}： {$v.address}</div>
+      <div class="ress-operate">
+        <a href="javascript:;" onclick="add_edit_address({$v.id});" class="ed-btn">{$eBiz.lang.Addr_edit}</a>
+      </div>
+    </div>
+  {/volist}
+  </div>
+  {if condition="!empty($address_list)"}
+  <input type="hidden" name="consignee" id="consignee" value="{$address_list.0.consignee}">
+  <input type="hidden" name="mobile" id="mobile" value="{$address_list.0.mobile}">
+  <input type="hidden" name="email" id="email" value="{$address_list.0.email}">
+  <input type="hidden" name="zip" id="zip" value="{$address_list.0.zip}">
+  <input type="hidden" name="address" id="address" value="{$address_list.0.address}">
+  {/if}
+  <div class="settl-bottom mt10">
+    {gt name=":count($address_list)" value="4"}
+    <a href="javascript:;" class="look-ress-btn">
+      <span>{$eBiz.lang.Addr_show_move}</span><em>{$eBiz.lang.Addr_hide_move}</em><i></i>
+    </a>
+    {/gt}
+    <a href="javascript:;" class="fr manage-ress-btn" onClick="add_edit_address(0);">{$eBiz.lang.Addr_use_new_address}</a>
+  </div>
+
+  <script type="text/javascript">
+    $('.look-ress-btn').click(function() {
+        $(this).toggleClass('on');
+        $('.settl-address').toggleClass('on');
+      })
+
+  </script>

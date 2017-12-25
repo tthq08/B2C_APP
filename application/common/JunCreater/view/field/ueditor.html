@@ -1,0 +1,40 @@
+{eq name="times.ueditor" value="1"}
+
+{tbjs module='Admin' src='../ueditor/ueditor.config.js,../ueditor/ueditor.all.min.js,../ueditor/lang/zh-cn/zh-cn.js'}
+{/eq}
+<div class="layui-form-item layui-form-text">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<script id="{$name}" type="text/plain" name="{$name}" style="width:100%;height:300px;">{$value|htmlspecialchars_decode|htmlspecialchars_decode}</script>
+	</div>
+</div>
+<!-- 实例化编辑器 -->
+<script type="text/javascript">
+    var ue = UE.getEditor('{$name}', {
+	    toolbars: [
+	        ['fullscreen', 'source', '|', 'undo', 'redo', '|',
+            'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+            'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+            'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+            'directionalityltr', 'directionalityrtl', 'indent', '|',
+            'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+            'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+            'simpleupload', 'insertimage', 'emotion', 'scrawl', 'insertvideo', 'attachment', 'map', 'insertframe', 'insertcode', 'pagebreak', 'template', 'background', '|',
+            'horizontal', 'date', 'time', 'spechars', 'snapscreen', 'wordimage', '|',
+            'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts', '|',
+            'preview', 'searchreplace', 'drafts']
+	    ],
+	});
+{eq name="times.ueditor" value="1"}
+    UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+    UE.Editor.prototype.getActionUrl = function (action) {
+    	if (action == 'uploadimage' || action == 'uploadscrawl' || action == 'uploadimage') {
+    		return "{:url('Sys/Upload/upload')}";
+    	} else if (action == 'uploadfile') {
+    		return "{:url('Sys/Upload/upload_file')}";
+    	}else{
+    		return this._bkGetActionUrl.call(this,action);
+    	}
+    }
+{/eq}
+</script>

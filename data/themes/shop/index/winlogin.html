@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>登录弹出窗 - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+</head>
+<body class="has-right">
+
+	<!-- 弹出层登录模块 -->
+	<div class="c-mask on">
+		<div class="cmall-layer login-layer" style="display: block;border-radius:0;">
+			<div class="layer-content">
+				<div class="login-wrap">
+                    <form id="custForm" action="{:U('member/login/dologin')}" method="POST">
+						<div class="form-box">
+	                        <div class="form-group item-name">
+	                            <div class="form-control-box">
+	                                <i class="icon"></i>
+	                                <input type="text" id="username" name="username" value="" class="text" tabindex="1" placeholder="会员名/邮箱/手机号" autocomplete="off" />
+	                            </div>
+	                        </div>
+	                        <div class="form-group item-password"  style="height: 50px;">
+	                            <div class="form-control-box">
+	                                <i class="icon"></i>
+	                                <input type="password" id="password" name="pass" value="" class="text" tabindex="2" placeholder="请输入密码" autocomplete="off" />
+	                            </div>
+	                        </div>
+	                        <input type="hidden" name="login_account" value="1">
+	                        <div class="safety clearfix">
+	                            <!-- <div class="cmall-reset-check">
+									<input id="aCheck" type="checkbox">
+									<span class="check-bg"></span>
+									<label for="aCheck">自动登录</label>
+								</div> -->
+								<div class="fr">
+	                            	<a href="{:U('member/Login/reset_pwd')}" target="_blank">忘记密码？</a>
+	                            	<a href="{:U('member/Login/reg')}" target="_blank">立即注册</a>
+	                            </div>
+	                        </div>
+	                        <div class="login-btn mt30">
+	                            <input type="button" name="submit" class="btn-img btn-entry" onClick="checkSubmit();" id="loginsubmit" value="立即登录" />
+	                        </div>
+	                        <!-- <input type="hidden" name="back_url" value="" /> -->
+	                    </div>
+	                    <div class="quick-logon">
+	                    	<div class="t"><span class="tt">快速登陆</span></div>
+	                        <div class="content mt20 clearfix">
+	                            <a href="{:U('member/apilogin/login',['oauth'=>'facebooks'])}" target="_top" class="q-item">
+	                                <img src="{:tb_config('resource_path',1)}shop/picture/login_10.jpg" alt="">
+	                                <span>Facebook</span>
+	                            </a>
+	                            <a href="{:U('member/apilogin/login',['oauth'=>'naver'])}" target="_top" class="q-item">
+	                                <img src="{:tb_config('resource_path',1)}shop/picture/login_12.jpg" alt="">
+	                                <span>Facebook</span>
+	                            </a>
+	                            <a href="{:U('member/apilogin/login',['oauth'=>'kakao'])}" target="_top" class="q-item">
+	                                <img src="{:tb_config('resource_path',1)}shop/picture/login_14.jpg" alt="">
+	                                <span>Facebook</span>
+	                            </a>
+	                    	</div>
+                        </div>
+                    </form>
+                </div>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+    document.onkeydown=function(event){
+        e = event ? event :(window.event ? window.event : null);
+        if(e.keyCode==13){
+            checkSubmit();
+        }
+    }
+    function checkSubmit()
+    {
+        var username = $.trim($('#username').val());
+        var password = $.trim($('#password').val());
+
+        var referurl = $('#referurl').val();
+        /*  var verify_code = $.trim($('#verify_code').val()); */
+        if(username == ''){
+            layer.msg('用户名不能为空!');
+            return false;
+        }
+
+        if(password == ''){
+            layer.msg('密码不能为空!');
+            return false;
+        }
+
+        $.ajax({
+            type : 'post',
+            url : "{:U('member/login/dologin')}?t="+Math.random(),
+            data : {username:username,password:password,referurl:referurl},
+            dataType : 'json',
+            success : function(res){
+                if(res.code == 1){
+                    parent.window.location.href = "{$url}";
+                }else{
+
+                    layer.msg(res.msg);
+                    /* verify(); */
+                }
+            },
+            error : function(XMLHttpRequest, textStatus, errorThrown) {
+                layer.msg('网络失败，请刷新页面后重试');
+            }
+        })
+
+    }
+</script>
+</html>

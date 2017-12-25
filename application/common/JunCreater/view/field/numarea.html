@@ -1,0 +1,9 @@
+{php}
+	$times = empty($value)?['','']:explode('~',$value);
+{/php}
+<div class="layui-input-inline" style="width: auto;">
+	<label class="layui-form-label" style="display: inline-block;width:auto;padding: 5px 0px;">{$title}</label>
+	<input style="display: inline-block;width: 50px;" type="number" name="{$name}[]" id="{$name}_start" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" value="{$times[0]}">
+	~
+	<input style="display: inline-block;width: 50px;" type="number" name="{$name}[]" id="{$name}_end" lay-verify="date" placeholder="{$placeholder}" autocomplete="off" class="layui-input" value="{$times[1]}">
+</div>

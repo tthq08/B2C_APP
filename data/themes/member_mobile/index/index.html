@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}css/appointment.css">
+<title>会员中心</title>
+<meta http-equiv="keywords" content="" />
+<meta name="description" content="" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common_order.css">
+</head>
+<style>
+    .indexloading{text-align: center; padding-top: 20px}
+    .indexloading img{ width:16px; height: 16px }
+    .my_card .brand {
+    	background: U({:tb_config('resource_path',1)}shop/images/card_bg.png) 0 -100px no-repeat;
+    }
+	.related .browse_related_list .slide_box a:hover{ border:0}
+	div.informations .in_01 .personal_head img {
+	  width: 84px;
+	  height: 84px;
+	  border: 1px solid #f1f1f1;
+	  padding: 2px;
+	  border-radius: 50%;
+	  -moz-border-radius: 50%;
+	  -webkit-border-radius: 50%;
+	  behavior: U(iecss3.htc);
+	  position:relative;
+	  z-index:2;
+	}		
+</style>
+<!-- 头部-s -->
+{include file="common/header" /}
+<!-- 头部-e -->
+<div class="wrap"> 
+  <!-- bread crumbs star -->
+  <div class="bread_crumbs"> <a href="{:U('member/index/index')}" class="crumbs_font target_no">我的BIZ</a> </div>
+  <!-- bread crumbs end --> 
+  
+  <!--菜单--> 
+  {include file="common/menu" /}
+  <!--菜单--> 
+  
+  <!-- 首页右侧 start -->
+  <div class="col_main myfeiniu">
+    <div class="informations clearfix">
+      <ul>
+        <li class="in_01">
+          <span id="loadingpic" class="indexloading"> <a class="personal_head   target_no" href="javascript:void(0);"><img width="100" height="100" src="{$user.head_pic|default='{:tb_config('resource_path',1)}shop/images/img88.jpg'}"></a> </span>
+          <h2>
+            <span class="num" id="spanNickname">{$user.nickname}</span>
+            <!-- <div> <a class="usertitle target_no" href="" >普通会员</a> </div> -->
+            <p id="greeting" class="greeting">您好，欢迎来到商城</p>
+          </h2>
+        </li>
+
+        <li class="in_02">
+          <div id="myQuanBonusBalance"> <i class="icon_line"></i> 
+          <a class="target_no" href="javascript:;"> 
+             <i class="icon_yue"></i>
+            <span class="label">会员折扣</span>
+            <span class="text"><small class="rmb">{$user['district'] * 10}</small> 折</span>
+            <span class="go">&gt;</span>
+          </a> 
+          </div>
+          <div id="myAcctBalance"> 
+             <i class="icon_line"></i> 
+             <a class="target_no" href="javascript:;"> 
+                 <i class="icon_purse"></i>
+                <span class="label">账户余额</span>
+                <span class="text"><small class="rmb">{$user['user_money']}</small> 元</span>
+                <span class="go">&gt;</span>
+            </a>
+            </div>
+          <div id="myAvaliableScore"> 
+          <i class="icon_line"></i> 
+          <a class="target_no" href="javascript:;"> 
+            <i class="icon_point"></i>
+            <span class="label">可用积分</span>
+            <span class="text"><small class="rmb">{$user['pay_points']}</small> 分</span>
+            <span class="go">&gt;</span>
+          </a>
+          </div>
+          <div id="myAvaliableScore"> 
+          <i class="icon_line"></i> 
+          <a class="target_no" href="javascript:;"> 
+          	<i class="icon_point"></i>
+            <span class="label">贡献值</span>
+            <span class="text"><small class="rmb">{$user['contribution']|default=0}</small></span>
+            <span class="go">&gt;</span>
+          </a>
+          </div>
+        </li>
+        <li class="in_03">
+          <div id="loadinguserinfo" class="slide_box J_slide_box">
+            <ul class="genre clearfix">
+              <li>
+                <span class="gray"><i class="icon_phone"></i>手机</span>
+                <a class="blue target_no" href="{:U('/Home/User/mobile_validate',array('type'=>'mobile','step'=>1))}">
+                    {if condition="$user['mobile_validated'] eq 0"}未绑定{else/}更换绑定{/if}
+                </a>
+              </li>
+
+              <li>
+                
+              </li>
+
+              <li style="margin-top:20px;">
+                <div> <a class="usertitle target_no" href="{:U('Cust/Index/index')}" >商户中心</a> </div>
+              </li>
+
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="informations clearfix" style="height: 25px;padding: 10px 0 5px 0;background: rgb(255, 244, 244);border: 1px solid #ffe6e6;">
+      <div class="middle_infor" style="margin-left: 30px;font-weight: bolder;">
+        推广链接：<a href="" target="_blank"></a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="usertitle target_no" href="javascript:;" onclick="showQR();">推广二维码</a>
+      </div>
+    </div>
+    <div class="grid_02">
+      <div class="middle_infor">
+        <div class="order_tips">
+          <div class="cell_title clearfix">
+            <h2>我的订单</h2>
+            <p class="type">
+              <a class="target_no" href="{:U('member/index/order_list',array('type'=>'1'))}"  title="待付款">待付款</a>
+              <span class="v_line"></span>
+              <a class="target_no" href="{:U('member/index/order_list',array('type'=>'2'))}" title="待发货">待发货</a>
+              <span class="v_line"></span>
+              <a class="target_no" href="{:U('member/index/order_list',array('type'=>'3'))}" title="待收货">待收货</a>
+              <span class="v_line"></span>
+              <a class="target_no" href="{:U('member/index/order_list',array('type'=>'4'))}" title="待评价">待评价</a>
+            </p>                        
+              <a href="{:U('member/index/order_list')}" class="order_viewAll">查看全部订单</a>
+          </div>
+          <div class="order_list J_order_list">
+            {if condition="count($orderList) gt 0"}
+            {volist name="orderList" id="v"}
+              <!--购买过商品-->
+              <table class='paying'>
+                <tr class="list_top">
+                  <td colspan="3">
+                    <div class="f_left order_info">
+                      <span class="time num">{$v['add_time']}</span>
+                      <span class="order_No">订单号：<small class="num">{$v['order_sn']}</small></span>
+                    </div>
+                    <div class="f_right order_tip">
+                      <span class="num">金额：<em class="rmb">{:web_currency()}</em>{$v['payable_price']}</span>
+                      {if condition="$v.is_pay eq 0"}<a href='{:U('/Home/Cart/cart4',array('order_id'=>$v['id']))}' class="btn_pay">立即付款</a>{/if}
+                      {if condition="$v.is_send eq 1"}<a onclick="if(confirm('你确定收到货了吗?')) location.href='{:U('Home/User/order_confirm',array('id'=>$v['id']))}'"  class="btn_pay">收货确认</a>{/if}
+                    </div>
+                  </td>
+                </tr>
+                  {php}$goods_arr = getOrderGoods($v['id']);{/php}
+                {volist name="goods_arr" id="vo"}
+                  <tr class='list_cont '>
+                    <td class="td_01">
+                      <div class="list_main clearfix">
+                        <a href="{:U('Home/Goods/goodsInfo',array('id'=>$vo['id']))}" class="J_hover"> <img src="{$vo.thumb}"></a>
+                        {$vo.goods_name}
+                      </div>
+                    </td>
+                    <td class="td_02">
+                      <p><a class="target_no" href="{:U('Home/User/order_detail',array('id'=>$v['id']))}">订单详情</a></p>
+                    </td>
+                    <td class="td_03">
+                      <p><a href='{:U('Home/Goods/goodsInfo',array('id'=>$vo['id']))}' class="btn-02">再次购买</a></p>
+                      <if condition="($v['comment_btn'] eq 1) and ($vo['is_comment'] eq 0)">
+                        <p><a href='{:U('Home/User/comment')}' class="btn-02">评价</a></p>
+                      </if>
+                    </td>
+                  </tr>
+                {/volist}
+                <!-- 预售单处理 -->
+              </table>
+              {/volist}
+              <!--购买过商品 end-->
+              {else /}
+              <!--未购买过商品-->
+              <div class="null">
+                <p>您还没购买过商品哟，<a class="blue" title="去逛逛吧！" alt="去逛逛吧！" href="/" target="_blank">去逛逛吧！</a></p>
+              </div>
+              <!--未购买过商品 end-->
+            {/if}
+
+          </div>
+        </div>
+    </div>
+  </div>
+  <!-- 首页右侧  end --> 
+</div>
+<div style="clear: both;"></div>
+<!--导入用户中心的底部-->
+{include file="common/footer" /}
+<script src="__PUBLIC__/shop/js/layer/layer.js"></script>
+<script type="text/javascript">
+  function showQR () {
+    layer.open({
+      type:1,
+      title: '推广二维码',
+      content: '<img src="{:U("member/index/com_qrcode")}">'
+    });
+  }
+</script>
+</body>
+</html>

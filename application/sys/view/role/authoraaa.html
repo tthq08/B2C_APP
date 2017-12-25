@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+
+<link rel="stylesheet" href="http://localhost:93/public/static/admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://localhost:93/public/static/admin/css/oneui.css">
+<link rel="stylesheet" href="http://localhost:93/public/static/admin/css/dolphin.css" id="css-main">
+
+
+<body>
+<div class="content">
+    <div class="row">
+        <form action="{:url('')}" name="form-builder" method="post" class="form-horizontal form-builder">
+        <div class="block-content tab-content">
+            <div class=" auth-node" id="tab2">
+                {notempty name="menus"}
+                {volist name="menus" id="menu"}
+                <div class="block block-bordered">
+                    <div class="block-header bg-gray-lighter auth-node-top">
+                        <label class="css-input css-checkbox css-checkbox-primary">
+                            <input type="checkbox" name="menu_auth[]" value="{$menu.id}" class="js-check-all-node"><span></span> <i class="{$menu.icon}"></i> {$menu.title}
+                        </label>
+                    </div>
+                    <div class="block-content">
+                        {notempty name="menu.menus"}
+                        {volist name="menu.menus" id="submenu"}
+                        <div class="auth-node-parent">
+                            <div>
+                                <label class="css-input css-checkbox css-checkbox-primary">
+                                    <input type="checkbox" name="menu_auth[]" data-parent-id="{$menu['id']}" value="{$submenu.id}" class="js-check-all-group"><span></span> <i class="{$submenu.icon}"></i> {$submenu.title}
+                                </label>
+                            </div>
+                            {notempty name="submenu.children"}
+                            <div class="auth-node-child">
+                                {php}foreach ($submenu['children'] as $submenu2):{/php}
+                                <div class="auth-node-row">
+                                    <label class="css-input css-checkbox css-checkbox-primary">
+                                        <input type="checkbox" name="menu_auth[]" data-parent-id="{$submenu['id']}" value="{$submenu2.id}" class="js-check-all-row"><span></span> <i class="{$submenu2.icon}"></i> {$submenu2.title}
+                                    </label>
+
+                                    {notempty name="$submenu2.children"}
+                                    <div class="auth-node-child">
+                                        {php}foreach ($submenu2['children'] as $submenu3):{/php}
+                                        <label class="css-input css-checkbox css-checkbox-primary push-10-r">
+                                            <input type="checkbox" name="menu_auth[]" data-parent-id="{$submenu2['id']}" value="{$submenu3.id}"><span></span> {$submenu3.title}
+                                        </label>
+                                        {php}endforeach;{/php}
+                                    </div>
+                                    {/notempty}
+                                </div>
+                                {php}endforeach;{/php}
+                            </div>
+                            {/notempty}
+                        </div>
+                        {/volist}
+                        {/notempty}
+                    </div>
+                </div>
+                {/volist}
+                {/notempty}
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+</body>
+<script>
+    $(document).ready(function(){
+        // 全选或反选
+        $('.js-check-all-node').change(function () {
+            $(this).closest('.block').find('.block-content input:checkbox').prop('checked',this.checked);
+        });
+        $('.js-check-all-group').change(function () {
+            $(this).closest('.auth-node-parent').find('.auth-node-child input:checkbox').prop('checked',this.checked);
+        });
+        $('.js-check-all-row').change(function () {
+            $(this).closest('.auth-node-row').find('.auth-node-child input:checkbox').prop('checked',this.checked);
+        });
+
+        // 自动选中父节点
+        var check_parent = function (id) {
+            var self = $('input:checkbox[value="'+id+'"]');
+            var pid = self.data('parent-id') || '';
+            self.prop('checked', true);
+
+            if (pid == '') {
+                return false;
+            }
+            check_parent(pid);
+        };
+        $('input[name="menu_auth[]"]').change(function () {
+            if (this.checked) {
+                var $parnet_id = $(this).data('parent-id') || '';
+                check_parent($parnet_id);
+            }
+        });
+    });
+</script>
+</html>

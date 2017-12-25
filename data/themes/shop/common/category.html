@@ -1,0 +1,50 @@
+<div class="mall-classify">
+    <h2 class="font">主题市场</h2>
+    <div class="classify-box">
+        {nav position="'pc_index_category_left'" item="vo"}
+        <div class="item" style="color: #ffffff">
+            {nav pid="$vo['id']" position="'pc_index_category_left_line'" item="vv"}
+            {if condition="$i != 1"}/{/if}
+            <a href="{$vv.link}" style="color: #ffffff">{$vv.name}</a>
+            {/nav}
+            <div class="sub-classify">
+                <div class="box clearfix">
+                    <div class="sub-shop fl">
+                        {nav pid="$vo['id']" position="'pc_index_category_right'" item="vv2"}
+                        <div class="c-item clearfix">
+                            <div class="name"><a href="{$vv2.link}" class="cs-items">{$vv2.name}</a></div>
+                            <div class="msg">
+                                {nav pid="$vv2['id']" position="'pc_index_category_right_2'" item="vv3"}
+                                {if condition="$i != 1"}<span style="color: #DDDDDD; margin-left: 4px; margin-right: 4px;">|</span>{/if}
+                                <a href="{$vv3.link}" class="cs-items">{$vv3.name}</a>
+                                {/nav}
+                            </div>
+                        </div>
+                        {/nav}
+                    </div>
+                    <div class="sub-brand fr">
+                        <div class="box clearfix" style="border-bottom: 1px solid #fafafa;border-right: 1px solid #fafafa;">
+                            <a href="" class="b-i-item"><img src="" alt="" /></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {/nav}
+    </div>
+</div>
+
+<script>
+
+    $('.classify-box .item a').on('mouseenter',function (data) {
+        var data_val = $(this).attr('data-val');
+        var me = $(this);
+        var sub_length = me.parent().children('.sub-classify').html().length;
+        if( sub_length == 0 || sub_length == '' || sub_length == undefined )
+        {
+            // get
+            $.ajax({type:'get',url:'{:U("shop/index/category")}',data:{pid:data_val},success:function (data) {if( data.code == 0 ){alert(data.msg);}me.parent().children('.sub-classify').html(data);}})
+        }
+
+    })
+</script>

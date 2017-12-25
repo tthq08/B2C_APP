@@ -1,0 +1,59 @@
+{notempty name="commentlist"}
+{volist name="commentlist" id="v"}
+<div class="comment-block">
+	<div class="cmt-top clearfix">
+		<div class="cleft">
+			<div class="cmt-user">
+			<?php
+				$user_head = !empty($v['head_pic'])?$v['head_pic']:tb_config('resource_path',1).'shop/picture/user.jpg';
+			?>
+				<img src="{$user_head}" alt="" style="width: 40px;height: 40px;" />
+				<span class="utxt">{$v['username']}</span>
+			</div>
+		</div>
+		<div class="cright">
+			<div class="cmt-time">{$v.add_time|mb_substr=0,10}</div>
+		</div>
+	</div>
+	<div class="cmt-content">
+		<div class="score-box">
+			<span class="score">
+			{for start="1" end="6" key="i"}
+			{elt name="i" value="$v['goods_rank']"}
+				<i class="on"></i>
+			{else/}
+				<i class=""></i>
+			{/elt}
+			{/for}
+			</span>
+		</div>
+		<div class="msg">
+			{$v['content']|htmlspecialchars_decode}
+		</div>
+		<div class="img clearfix">
+		{foreach name="v['img']" item="v2" }
+			<span class="thumb" show-src="{$v2|common_thumb_img=400,400}"><img src="{$v2|common_thumb_img=72,72}" alt="" /></span>
+		{/foreach}
+		</div>
+		<!-- <div class="desc">
+			<span>购买日期：2017-07-12 21:33:24</span>
+		</div> -->
+		<div class="desc">
+			<span>{$v.spec_item}</span>
+		</div>
+	</div>
+	<!-- <div class="cctr">
+		<a href="javascript:;"><img src="{:tb_config('resource_path',1)}mshop/images/cmt.png" alt="" />（24）</a>
+		<a href="javascript:;"><img src="{:tb_config('resource_path',1)}mshop/images/fol.png" alt="" />（24）</a>
+	</div> -->
+</div>
+	<div class="comment-block more-comment-block">
+		<a href="javascript:;" class="more-comment" oncancel="getMoreComment();">更多评论。。。</a>
+	</div>
+{/volist}
+{else/}
+<div class="comment-block">
+  <i class="tip-icon"></i>
+  <div class="tip-text">还没有任何评价哦</div>
+</div>
+{/notempty}

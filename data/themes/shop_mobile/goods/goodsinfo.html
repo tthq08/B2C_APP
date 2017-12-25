@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<meta property="og:url"           content="{:get_url()}" />
+	<meta property="og:type"          content="website" />
+	<meta property="og:title"         content="{$goods.title}" />
+	<meta property="og:description"   content="{$goods.goods_remark}" />
+	<meta property="og:image"         content="http://{$_SERVER['SERVER_NAME']}{$goods.thumb}" />
+	{assign name="seo" value=":api('shop','goods','getSeo',[$goods.id])"}
+	<meta name="keyword" content="{$seo.seo_keyword}">
+	<meta name="description" content="{$seo.seo_description}">
+	<title>
+		{if condition="empty($seo.seo_title)"}
+		{$goods.title}-{:tb_config('web_site_title',1,$lang)}
+		{else/}
+		{$seo.seo_title}
+		{/if}
+	</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/message.css" />
+</head>
+<body style="background: #f0f0f0;">
+
+	<header class="header header-fixed">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="">
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Detail_page_title}</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body fixed-header-body">
+		<div class="message-slide">
+			<div class="swiper-container banner-container">
+			  	<div class="swiper-wrapper">
+					{goods_images id="$goods['id']" spec=":request()->param('s')" item="ig"}
+					    <div class="swiper-slide"><a href="javascript:;"><img src="{$ig.image_url|common_thumb_img=420,420}" alt=""></a></div>
+					{/goods_images}
+			  	</div>
+
+			  	<div class="swiper-pagination"></div>
+			</div>
+		</div>
+
+		<div class="goods-part">
+			<div class="basic-info">
+				<div class="msgtitle">{$goods.title} &nbsp;&nbsp;{notempty name="goods.is_empty"}<span style="color:red;">[备货中...]</span>{/notempty}</div>
+				<div class="price-row clearfix">
+					<div class="gp-left">
+						<p><strong><del>{$goods.market_price}元</del></strong></p>
+						<p><strong class="price">{$goods_price}<small>元</small></strong></p>
+					</div>
+					<div class="gp-right">
+						<div class="gp-ctr">
+							<!-- <a href="javascript:;" class="ctr-item">
+								<img src="{:tb_config('resource_path',1)}mshop/images/shop_09.png" alt="" />
+								<p>9353</p>
+							</a> -->
+							<a href="javascript:;" class="ctr-item" onclick="showShare();">
+								<img src="{:tb_config('resource_path',1)}mshop/images/m_05.png" alt="" />
+								<p>分享</p>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div class="prod-act">
+					<p>{$eBiz.lang.Detail_taxation}：{empty name="goods.tariff"}包含{else/}{$goods.tariff}%{/empty}</p>
+					<!-- <p class="c-fc5">该产品的活动内容提示，该产品的活动内容提示该产品的活动内容提</p> -->
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+		function showShare() {
+			layer.open({
+			  type: 1,
+			  shade: false,
+			  title: false, //不显示标题
+			  area:['95%','120px'],
+			  content: $('.share-box'),
+			});
+		}
+		</script>
+		<style type="text/css">
+
+			.share-box {
+				display: none;
+				text-align: center;
+			}
+			.share-btn {
+				display: inline-block;
+				margin-right: 15px;
+			}
+			.share-btn img {
+				width: 60px;
+				height: 60px;
+			}
+			.share-btn .btn {
+				width: 60px;
+				height: 60px;
+			}
+		</style>
+		<div class="share-box goods-part prod-bd mt10" id="share_box">
+			<div class="share-btn" id="kakaostory-share-button" data-url="{:get_url()}"></div>
+			<span class="share-btn">
+				<script type="text/javascript" src="http://share.naver.net/js/naver_sharebutton.js"></script>
+				<script type="text/javascript">
+				new ShareNaver.makeButton({"type": "e" , "title":"{$goods.title}-{:tb_config('web_site_title',1,$lang)}"});
+				</script>
+			</span>
+
+			<a class="share-btn" href="https://twitter.com/intent/tweet?url={:urlencode(get_url())}&text={$goods.title}-{:tb_config('web_site_title',1,$lang)}" target="_blank"><img src="{:tb_config('resource_path',1)}mshop/images/twitter.jpg"></a>
+
+			<a class="facebook share-btn" href="https://www.facebook.com/sharer/sharer.php?u={:urlencode(get_url())}" target="_blank" id="J-share-facebook"><img src="{:tb_config('resource_path',1)}shop/images/facebook.jpg"></a>
+
+		</div>
+		<!-- 规格 -->
+		<div class="goods-part prod-bd mt10" on-open=".goodsSpec-menu" onclick="openMenu('.goodsSpec-menu')">
+			<div class="prod-spec clearfix">
+				<div class="txt">{$eBiz.lang.Detail_selected_spec}</div>
+				<div class="msg spec">{$spec_str}</div>
+				<div class="r-icon"><span class="bd-point"><i></i>
+				<i></i>
+				<i></i></span></div>
+			</div>
+		</div>
+
+		<!-- 商品详情 -->
+		<div class="shopDetail-wrap mt10">
+			<div class="tabbar-box clearfix">
+				<div class="tab-bar on" for-bar="shop-detail">商品详情</div>
+				<div class="tab-bar" for-bar="detail-question" onclick="ajaxconsult(1);">Q&A</div>
+				<div class="tab-bar" for-bar="detail-comment" onclick="ajaxcomment(1,1);">商品评价</div>
+			</div>
+			<div class="tabbarContent">
+				<!-- 详情 -->
+				<div class="tabbar-list shop-detail on">
+					<div class="detail-tab clearfix">
+						<div class="dtd on" dtd-for="1">商品介绍</div>
+						<div class="dtd" dtd-for="2">规格参数</div>
+						<div class="dtd" dtd-for="3">包装售后</div>
+					</div>
+					<div class="detail-tabContent">
+						<div class="detail-tablist on" dtd-for="1">
+							{$goods_content|htmlspecialchars_decode|htmlspecialchars_decode}
+						</div>
+						<div class="detail-tablist" dtd-for="2">
+							<div class="detail-table">
+								<table style="width:100%;">
+									<tbody>
+									    <tr>
+									        <td colspan="2"><strong>商品属性</strong></td>
+									    </tr>
+									    <tr>
+									        <td>品牌</td>
+									        <td>{:getTableValue('shop_brand',['id'=>$goods['brand_id']],'name')}</td>
+									    </tr>
+									    <tr>
+									        <td>货号</td>
+									        <td>{$goods.goods_sn}</td>
+									    </tr>
+									    {if condition="empty($attribute) eq false AND empty($attr_list) eq false"}
+									    {foreach name="attr_list" item="v" key="k"}
+									    <tr>
+									        <td>{$attribute[$k]}</td>
+									        <td>{$v}</td>
+									    </tr>
+									    {/foreach}
+									    {/if}
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div class="detail-tablist plr3" dtd-for="3">
+							{:htmlspecialchars_decode(tb_config('shop_sale_safe',1))}
+						</div>
+					</div>
+				</div>
+				<!-- 问答 -->
+				<div class="tabbar-list detail-question">
+					<div class="qa-input">
+					<form id="consultForm" method="post" action="{:U('goods/ajax_ask')}">
+						<div class="textarea-box">
+							<textarea class="monitorWord" id="content" name="content" max-len="200" placeholder="请输入你要提问的内容" maxlength="200"></textarea>
+							<div class="txt">最多输入<i>200</i>字</div>
+						</div>
+						<input type="hidden" name="goods_id" value="{$goods.id}">
+						<div class="tright"><button type="button" id="sub_btn" onclick="postAsk();" class="qa-btn">提交问题</button></div>
+					</form>
+					</div>
+					<div class="question">
+						<div class="shop-title">
+							<span class="txt">问答列表</span>
+						</div>
+						<div class="content" id="ajax_consult_return">
+
+						</div>
+					</div>
+				</div>
+				<!-- 评论 -->
+				<div class="tabbar-list detail-comment">
+					<div class="comment-summ">
+					{comment_fraction goods="$goods['id']" id="comment_f"}
+						<ul class="clearfix">
+							<li>
+								<p class="tit">全部评价</p>
+								<p class="txt">{$comment_f.num_total|default=0}</p>
+							</li>
+							<li>
+								<p class="tit">好评</p>
+								<p class="txt">{$comment_f.num_good|default=0}</p>
+							</li>
+							<li>
+								<p class="tit">中评</p>
+								<p class="txt">{$comment_f.num_mid|default=0}</p>
+							</li>
+							<li>
+								<p class="tit">差评</p>
+								<p class="txt">{$comment_f.num_bad|default=0}</p>
+							</li>
+						</ul>
+					</div>
+
+					<div id="ajax_comment_return">
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- footer -->
+	<footer class="footer message-footer footer-fixed">
+		<section class="info clearfix">
+
+				<div class="btn-box">
+					<a href="javascript:;" onclick="ajaxBuy();" class="w50 MenuMsgNowBuy">立即购买</a>
+					<a href="javascript:;" onClick="javascript:AjaxAddCart({$goods.id},$('#goods_num').val(),1);" class="w50 MenuMsgAddCartBtn">加入购物车</a>
+				</div>
+		</section>
+	</footer>
+
+	<div class="cmall-mask {eq name='pannel' value='open'}on{/eq}"></div>
+	<div class="goodsSpec-menu pullBottom {eq name='pannel' value='open'}menu-open{/eq}">
+		<div class="spec-menu-top pullHeader">
+			<div class="pic"><img src="{$goods.thumb|common_thumb_img=200,200}" alt=""></div>
+			<div class="spec">
+				<div class="pie"><strong>{$goods_price}元</strong></div>
+				<div class="msg">重量{$goods.weight/1000}kg</div>
+
+			</div>
+			<span class="pull-close" onclick="closeMenu()"><img src="{:tb_config('resource_path',1)}mshop/images/close.png" alt=""></span>
+		</div>
+		<form id="buy_goods_form" name="buy_goods_form" method="post" >
+		<div class="spec-menu-content pullBody">
+			<div class="spec-mblock">
+				<div class="spec-mitem clearfix">
+					<div class="sm-left label">数量</div>
+					<div class="sm-right txt">
+						<span class="goods-quantity">
+							<i class="q reduce">-</i>
+							<input type="text" name="goods_num" id="goods_num" value="1">
+							<i class="q add">+</i>
+						</span>
+					</div>
+				</div>
+				{foreach name="filter_spec" item="v" key="k"}
+				<div class="spec-mitem clearfix">
+					<div class="sm-left label">{$v.name}</div>
+					<div class="sm-right txt">
+						{foreach name="v.item" item="v2" key="k2"}
+						{notempty name="v2.icon"}
+						<div class="spec-list" data-url="{$v2.href}">
+							<input type="radio" id="item_{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} />
+							<span for="item_{$k}{$k2}"><img  style="width:34px;height: 34px" src="{$v2['icon']}"><span style="font-size: 10px;padding-left:5px;">{$v2.item}</span></span>
+						</div>
+						{else/}
+						<div class="spec-list" data-url="{$v2.href}">
+							<input type="radio" id="item_{$k}{$k2}" name="goods_spec[{$k}]" value="{$v2.id}"  {in name='v2.id' value='$lowPriceKey'}checked="checked"{/in} >
+							<span for="item_{$k}{$k2}">{$v2.item}</span>
+						</div>
+						{/notempty}
+						{/foreach}
+					</div>
+				</div>
+				{/foreach}
+			</div>
+		</div>
+		<div class="spec-menu-bottom pullFooter">
+			<div class="btn-box">
+				<input type="hidden" name="goods_id" value="{$goods.id}" />
+				<input type="hidden" id="fee_total" value="{$goods_price}">
+				<a href="javascript:;" onClick="ajaxBuy();" class="w50 MenuMsgNowBuy">立即购买</a>
+				<a href="javascript:;" onClick="javascript:AjaxAddCart({$goods.id},$('#goods_num').val(),1);" class="w50 MenuMsgAddCartBtn">加入购物车</a>
+			</div>
+		</div>
+		</form>
+	</div>
+	{include file="public/right" /}
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+	<script type="text/javascript">
+		var banner = new Swiper('.banner-container', {
+			autoplay: 5000,//可选选项，自动滑动
+			pagination : '.swiper-pagination'
+		})
+
+		function openMenu(cls) {
+			$('.cmall-mask').addClass('on');
+			$(cls).addClass('menu-open');
+		}
+		function closeMenu() {
+			$('.cmall-mask').removeClass('on');
+			$('.pullBottom.menu-open').removeClass('menu-open');
+		}
+
+		// 详情切换
+		$('.tabbar-box').on('click','.tab-bar',function() {
+			var me = $(this);
+			var bar = me.attr('for-bar');
+			me.addClass('on').siblings('.tab-bar').removeClass('on');
+			$('.tabbar-list.' + bar).addClass('on').siblings('.tabbar-list').removeClass('on');
+		})
+		// 商品详情tab
+		$('.detail-tab').on('click','.dtd',function() {
+			var me = $(this);
+			var is = me.attr('dtd-for');
+			me.addClass('on').siblings('.dtd').removeClass('on');
+			me.parent().siblings('.detail-tabContent').find('.detail-tablist[dtd-for="' + is + '"]').show().siblings('.detail-tablist').hide();
+		})
+
+		$('.monitorWord').on('input propertychange',function() {
+			var me = $(this);
+			var len = Number(me.val().length);
+			var max = Number(me.attr('max-len'));
+			me.siblings('.txt').text('还可以输入' + (max-len) + '字');
+		})
+
+
+		// 查看图片
+		$('.comment-block').on('click','.img .thumb',function() {
+			var me = $(this);
+			var url = me.attr('show-src');
+			var imgbox = me.parent().siblings('.showImg');
+			var img = imgbox.find('.simg');
+			imgbox.show();
+			me.addClass('on').siblings('.thumb').removeClass('on');
+			img.attr('src',url).hide().fadeIn();
+		})
+		$('.comment-block').on("click",'.showImg .close',function() {
+			$(this).parent().fadeOut();
+			$(this).parent().siblings('.img').find('.thumb.on').removeClass('on')
+		})
+
+		function postAsk() {
+			var content = $('#content').val();
+			if (content=='') {
+				parent.layer.msg('请输入要咨询的信息');
+				return false;
+			}
+			$('#sub_btn').attr('disabled',true);
+			$.ajax({
+			    type : "POST",
+			    url:$('#consultForm').attr('action'),
+			    data : $('#consultForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					parent.layer.msg(data.msg,{time:1000},function () {
+						if (data.code == 1) {
+							parent.layer.closeAll();
+						}else{
+							$('#sub_btn').attr('disabled',false);
+						}
+					});
+			    }
+			});
+		}
+		var consult_page = 0;
+		 // 用ajax分页显示评论
+	    function ajaxconsult(page){
+	    	if (page=='next') {
+	    		page = consult_page;
+	    	}else{
+	    		consult_page = page;
+	    	}
+
+	        $.ajax({
+	            type : "GET",
+	            url:"{:U('shop/Goods/ajaxConsult',['goods_id'=>$goods['id']])}",//+tab,
+	            data:{
+	            	page:page
+	            },
+	            success: function(data){
+	            	consult_page ++;
+	                $("#ajax_consult_return").html('');
+	                $("#ajax_consult_return").append(data);
+	            }
+	        });
+	    }
+
+		 // 用ajax分页显示评论
+	    function ajaxcomment(type,page){
+
+	        $.ajax({
+	            type : "GET",
+	            url:"{:U('shop/Goods/ajaxComment',['goods_id'=>$goods['id']])}",//+tab,
+	            data:{
+	            	type:type,
+	            	page:page
+	            },
+	            success: function(data){
+	                $("#ajax_comment_return").html('');
+	                $("#ajax_comment_return").append(data);
+	            }
+	        });
+	    }
+
+	    $('.spec-mitem .spec-list').off().click(function(e) {
+	    	var me = $(this);
+	    	console.log(me);
+	    	me.find('input').prop('checked',true);
+	    	me.siblings('.spec-list').find('input').prop('checked',false);
+	    	ajaxFreshInfo(me)
+	    	return false;
+	    })
+
+	    function ajaxFreshInfo(obj) {
+	    	var url = $(obj).attr('data-url');
+	    	location.href = url+'?pannel=open';
+	    	// $.ajax({
+	    	// 	url:url,
+	    	// 	success: function(data){
+	    	// 		$('#goodsInfo_area').html(data)
+	    	// 		$('.spec-mitem .spec-list').off();
+	    	// 	}
+	    	// });
+	    }
+
+	    // 购物车数量操作
+		$('.goods-quantity .reduce').click(function() {
+			var input = $('#goods_num');
+			var num = Number(input.val());
+			if(num == 1) {
+				layer.msg('不能小于1');
+				return ;
+			} else {
+				input.val(--num);
+			}
+		});
+		$('.goods-quantity .add').click(function() {
+			var input = $('#goods_num');
+			var num = Number(input.val());
+			var max = Number($(this).attr('data-max'));
+			if(num == max) {
+				layer.msg('不能大于' + max);
+				return ;
+			} else {
+				input.val(++num);
+			}
+		});
+
+		 /**
+		 * addcart 将商品加入购物车
+		 * @goods_id  商品id
+		 * @num   商品数量
+		 * @form_id  商品详情页所在的 form表单
+		 * @to_catr 加入购物车后再跳转到 购物车页面 默认不跳转 1 为跳转
+		 */
+		function AjaxAddCart(goods_id,num,to_catr)
+		{
+	        $.ajax({
+	            type : "POST",
+	            url:"{:U('shop/Cart/ajaxAddCart')}",
+	            data : $('#buy_goods_form').serialize(),// 你的formid 搜索表单 序列化提交
+				dataType:'json',
+	            success: function(data){
+					if(data.code < 0)
+					{
+						layer.alert(data.msg, {icon: 2});
+						return false;
+					}
+				   // 加入购物车后再跳转到 购物车页面
+				   if(to_catr == 1)  //直接购买
+				   {
+				   		layer.msg('加入购物车成功',{time:1000},function() {
+				   		});
+				   }
+				   else
+				   {
+						layer.msg('加入购物车成功');
+				   }
+	            }
+	        });
+		}
+
+		function ajaxBuy() {
+			$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/ajaxAddCart')}",
+				data : $('#buy_goods_form').serialize(),
+				dataType : 'json',
+				success: function(data){
+					location.href = '{:url("shop/cart/cart2")}?cart='+data.data.id;
+				}
+			});
+		}
+	</script>
+
+</body>
+</html>

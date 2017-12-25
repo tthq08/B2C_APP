@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>秒杀</title>
+
+	{include file="public/static" /}
+</head>
+<body>
+
+	<header class="header header-fixed">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="">
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">秒杀</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body" style="margin-top: 60px;">
+		<!-- 秒杀时间 -->
+		<div class="seck-time">
+
+			<ul class="clearfix">
+				{volist name="time_slot" id="vo"}
+				{eq name="vo.status" value="0"}
+				<li class="sktm-item" data-id="{$key}" onclick="getTimsFlash(this);">
+					<a href="javascript:;">
+						<p class="num">{$vo.time}</p>
+						<p class="txt">{$eBiz.lang.Index_Text_flash_timeout}</p>
+					</a>
+				</li>
+				{/eq}
+				<!-- 抢购进行中 -->
+				{eq name="vo.status" value="1"}
+				<li class="sktm-item on" data-id="{$key}" onclick="getTimsFlash(this);">
+					<a href="javascript:;">
+						<p class="num">{$vo.time}</p>
+						<p class="txt">{$eBiz.lang.Index_Text_end_time}</p>
+					</a>
+				</li>
+				{/eq}
+				<!-- 抢购未开始 -->
+				{eq name="vo.status" value="2"}
+				<li class="sktm-item" data-id="{$key}" onclick="getTimsFlash(this);">
+					<a href="javascript:;">
+						<p class="num">{$vo.time}</p>
+						<p class="txt">{$eBiz.lang.Index_Text_ready_start}</p>
+					</a>
+				</li>
+				{/eq}
+				{/volist}
+			</ul>
+		</div>
+		<!-- ad -->
+		<div class="block"><img src="{:tb_config('resource_path',1)}mshop/picture/seck_02.jpg" width="100%" alt=""></div>
+		<div class="seckill-section">
+			<div class="seckill-top">
+				<div class="clearfix">
+					<div class="sleft">
+						<span>秒杀中哦</span>
+						<span class="ml10">先到先得</span>
+					</div>
+					<div class="sright">
+						<span class="ttit">距离结束</span>
+						<span class="seckill-time countdown">
+							<span class="im hours">00</span><i>:</i>
+							<span class="im minutes">11</span><i>:</i>
+							<span class="im seconds">30</span>
+						</span>
+					</div>
+				</div>
+			</div>
+			<div class="seckpdt-itembox" id="flash_list">
+
+				{volist name="list" id="vo"}
+				<div class="seckpdt-item">
+					<div class="pic"><img src="{:common_thumb_img($vo['goods']['thumb'],230,230)}" alt="" /></div>
+					<div class="info">
+						<div class="sk-name">{$vo.goods.title}</div>
+						<div class="sk-desc">
+							<div class="descl">
+								<p class="price">{$vo.goods.price}元</p>
+								<del>{$vo.goods.shop_price}元</del>
+							</div>
+							<div class="descr">
+								<div class="sell"><span class="sed">&nbsp;<!-- 07售</span><span>/10件 --></span></div>
+								<div class="btnbox">
+									<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}" class="gobtn start">去秒杀</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{/volist}
+			</div>
+		</div>
+		
+	</main>
+	{include file="public/right" /}
+	<!-- footer -->
+	<footer class="footer footer-fixed">
+		<nav class="seckill-nav clearfix">
+			<a href="javascript:;" class="nav-item on">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_131.png" alt="" />
+				<span>TBmall秒杀</span>
+			</a>
+			<a href="{:U('group_buy')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_16.png" alt="" />
+				<span>TBmall团购</span>
+			</a>
+			<a href="{:U('new_goods')}" class="nav-item">
+				<img src="{:tb_config('resource_path',1)}mshop/images/seck_19.png" alt="" />
+				<span>TBmall新品</span>
+			</a>
+		</nav>
+	</footer>
+
+	<!-- 倒计时 -->
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.downCount.js"></script>
+	<script class="source" type="text/javascript">
+		// $(function () {
+		// 	getNextTimsFlash();
+		// });
+		// 获取不同时期的抢购活动
+		function getTimsFlash(obj) {
+			var me = $(obj);
+			var time_id = me.attr('data-id');
+			$.ajax({
+				url:"{:U('Index/flash_buy')}",
+				data:{
+					type:time_id,
+					nums:10,
+				},
+				success: function(data){									
+					$('#flash_list').html(data);
+					me.addClass('on').siblings().removeClass('on');
+				}
+			});	
+		}
+
+        $('.countdown').downCount({
+            date: '{$now_end_time|date="Y-m-d H:i:s",###}',
+            offset: +8
+        }, function () {
+            // alert('倒计时结束!');
+        });
+    </script>
+	
+</body>
+</html>

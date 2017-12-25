@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{include file="../shop/common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+<style type="text/css">
+	.order-info .dl {
+		width: 50%;
+	}
+	.order-info .item .info-rcol {
+		width: 75%;
+	}
+</style>
+</head>
+<body>
+	<main class="main bus-main" style="margin-top: 0px;margin-bottom: 0px;margin-left: 10px;">
+		<div class="container clearfix">
+			<div class="bus-right" style="float:left;">
+				<!-- <div class="user-block-1">
+					<strong>订单详情</strong>
+				</div> -->
+				<!-- 订单状态 -->
+				<div class="j-user-section user-section order-state-box mt20 plr20-section">
+					<div class="order-state clearfix">
+						<div class="state-lcol">
+							<div class="state-top"><span>{:lang('Detail_order_sn')}：{$order_info.order_sn}</span></div>
+							<div class="state-txt"><strong>{$order_info.status}</strong></div>
+							<div class="state-btn">
+								
+								<!-- <a href="javascript:;" class="cmall-btn-i btn-item">查看发票详情</a> -->
+
+								{if condition="$status > 0"}
+					              {if condition="$order_info.is_pay eq 0"}
+					              	<button class="cmall-btn-i btn-item" onClick="cancel_order({$order_info.id})" >{$eBiz.lang.Detail_order_cancle}</button>
+					              {/if}
+					              {if condition="$order_info.is_pay eq 0"}<button class="c-answer-btn btn-item"  onclick="top.location.href='{:U('/shop/Cart/cart4',array('order_id'=>$order_info['id']))}'" >{$eBiz.lang.Detail_go_pay}</button>{/if}
+					              {eq name="status" value="4"}
+					              <button class="c-answer-btn btn-item"  onClick=" if(confirm('{$eBiz.lang.Detail_receive_ask}')) location.href='{:U('shop/User/order_confirm',array('id'=>$order_info['id']))}'">{$eBiz.lang.Detail_confirm_receive}</button>
+					              {/eq}
+					              {eq name="status" value="5"}
+					              <button class="c-answer-btn btn-item" onClick="location.href='{:U('shop/User/order_comment',array('id'=>$order_info['id']))}'">评价订单</button>
+					              {/eq}
+					            {else/}
+					            <a class="c-answer-btn btn-item">{$eBiz.lang.Detail_buy_again}</a>
+					            {/if}
+							</div>
+						</div>
+						<div class="state-rcol clearfix">
+							<!-- <div class="state-top"><span>订单已经完成，感谢您在TB MALL商城购物，欢迎您对本次交易及所购商品进行评价。</span></div> -->
+							<div class="order-process clearfix">
+								<div class="node">
+									<i class="node-icon icon-start"></i>
+									<div class="n-txt">
+										<p>{$eBiz.lang.Detail_sub_order}</p>
+										<p>{$order_info.add_time}</p>
+									</div>
+								</div>
+								<div class="proce {eq name='order_info.is_pay' value='1'}done{/eq}">
+									<i class="bg"></i>
+								</div>
+								<div class="node {eq name='order_info.is_pay' value='1'}done{/eq}">
+									<i class="node-icon icon-pay"></i>
+									<div class="n-txt">
+										<p>{$eBiz.lang.Detail_pay_success}</p>
+										<p>{$order_info.pay_time}</p>
+									</div>
+								</div>
+								<div class="proce {notempty name='order_info.send_time'}done{/notempty}">
+									<i class="bg"></i>
+								</div>
+								<div class="node {notempty name='order_info.send_time'}done{/notempty}">
+									<i class="node-icon icon-express"></i>
+									<div class="n-txt">
+										<p>{$eBiz.lang.Detail_wait_receive}</p>
+										<p>{$order_info.send_time}</p>
+									</div>
+								</div>
+								<div class="proce {notempty name='order_info.receiving_time'}done{/notempty}">
+									<i class="bg"></i>
+								</div>
+								<div class="node {notempty name='order_info.receiving_time'}done{/notempty}">
+									<i class="node-icon icon-finish"></i>
+									<div class="n-txt">
+										<p>{$eBiz.lang.Detail_receive_success}</p>
+										<p>{$order_info.receiving_time}</p>
+									</div>
+								</div>
+							</div>
+							<div class="state-other">
+								{$eBiz.lang.Detail_user_point} <span class="color--e4393c">+</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 订单信息 -->
+				<div class="j-user-section user-section mt20 p20">
+					<div class="order-info">
+						<div class="clearfix">
+							<div class="dl">
+							    <div class="dt">
+							        <h4>{$eBiz.lang.Detail_consignee_info}</h4>
+							    </div>
+							    <div class="dd">
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_consignee}：</span>
+							            <div class="info-rcol">{$order_info.consignee}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_address}：</span>
+							            <div class="info-rcol">{$order_info.address}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_shipping_type}：</span>
+							            <div class="info-rcol">{$order_info.shipping_name}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_postage}：</span>
+							            <div class="info-rcol">{:web_currency()}{$order_info.postage}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_shipping_code}：</span>
+							            <div class="info-rcol">{$order_info.shipping_sn} {notempty name="order_info.shipping_sn"}<a onclick="showShipping(this);" data-href="{:U('user/chaxun',['id'=>$order_info.id])}" href="javascript:void(0);" id="shippingCode" >({$eBiz.lang.Detail_go_search})</a>{/notempty}</div>
+							        </div>
+							    </div>
+							</div>
+							<div class="dl">
+							    <div class="dt"><h4>{$eBiz.lang.Detail_pay_info}</h4></div>
+							    <div class="dd">
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_pay_type}：</span>
+							            <div class="info-rcol">{$order_info.pay_code}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_pay_time}：</span>
+							            <div class="info-rcol">{$order_info.pay_time}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_total_fee}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.total_price}</span>
+							            </div>
+							        </div>
+							         <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_favour_fee}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.discount_price}</span>
+							            </div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_coupon}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.coupon_price}</span>
+							            </div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_balance_favour}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.balance_price}</span>
+							            </div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_point_to_mny}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.points_price}</span>
+							            </div>
+							        </div>							        
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_postage_fee}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.postage}</span>
+							            </div>
+							        </div>
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_payable_fee}：</span>
+							            <div class="info-rcol">
+							                <span class="f-price">{:web_currency()}{$order_info.payable_price+$order_info.postage}</span>
+							            </div>
+							        </div>
+							       
+							    </div>
+							</div>
+							<div class="dl">
+							    <div class="dt">
+							        <h4>{$eBiz.lang.Detail_bill_info}</h4>
+							    </div>
+							    <div class="dd">
+							        <div class="item">
+							            <span class="label">{$eBiz.lang.Detail_bill_title}：</span>
+							            <div class="info-rcol">{$order_info.invoice_title}</div>
+							        </div>
+							        <div class="item">
+							            <span class="label">发票内容：</span>
+							            <div class="info-rcol">明细</div>
+							        </div>
+							        <div class="item">
+							        	<a href="javascript:;" class="color--005ea7">查看发票详情</a>
+							        </div>
+							    </div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- 订单商品信息 -->
+				<div class="j-user-section user-section mt20">
+					<div class="order-com-table">
+						<table>
+							<thead>
+								<tr>
+									<th width="50%">{$eBiz.lang.Detail_goods_name}</th>
+									<th width="10%">{$eBiz.lang.Detail_goods_spec}</th>
+									<th width="10%">{$eBiz.lang.Detail_true_price}</th>
+									<th width="10%">{$eBiz.lang.Detail_goods_num}</th>
+									<th width="10%">{$eBiz.lang.Detail_min_total}</th>
+									<th width="15%">{$eBiz.lang.Detail_action}</th>
+								</tr>
+							</thead>
+							<tbody>
+							{volist name="order_info.goods_list" id="goods"}
+								<tr>
+									<td align="left"><div class="pic"><img src="{:common_thumb_img(getTableValue('shop_goods','id='.$goods['goods_id'],'thumb'),80,80)}" alt=""></div><div class="info"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$goods['goods_id']))}">{$goods.goods_name}</a></div></td>
+									<td align="center">{$goods.spec_title}</td>
+									<td align="center">{:web_currency()}{$goods.pay_price}</td>
+									<td align="center">{$goods['goods_num']}</td>
+									<td align="center">{:web_currency()}{$goods.payable_price}</td>
+									<td align="center">
+
+										{if condition="($order_info['status'] > 1) and ($goods['is_send'] eq 1)"}
+										<p class="mt10"><a href="{:U('shop/User/return_goods',array('order_id'=>$order_info['id'],'order_sn'=>$order_info['order_sn'],'goods_id'=>$goods['goods_id'],'spec_key'=>$goods['spec_key']))}">{$eBiz.lang.Detail_need_serv}</a></p>
+										{/if}
+										{if condition="($order_info.status eq 5) and ($goods['is_comment'] eq 0)"}
+										<p class="mt10"><a href="{:U('shop/User/comment')}"><span>评价</span></a></p>
+										{/if}
+										{eq name="goods.is_comment" value="1"}
+										<p><a href="javascript:;" data-href="{:U('shop/User/comm_show',['order_id'=>$order_info['id'],'goods_id'=>$goods['goods_id'],'spec_key'=>$goods['spec_key']])}" onclick="comm_show(this);" >{$eBiz.lang.Detail_show_comm}</a></p>
+										{/eq}
+										<p class="mt10"><a href="javascript:;" onclick="addCart('{$goods.goods_id}','{$goods.goods_num}','{$goods.spec_key}');">{$eBiz.lang.Detail_buy_again}</a></p>
+									</td>
+								</tr>
+							{/volist}
+							</tbody>
+						</table>
+					</div>
+					<div class="goods-total p20 clearfix">
+					    <!-- <ul>
+					        <li>
+					            <span class="label">商品总额：</span>
+					            <span class="txt">¥24.80</span>
+					        </li>
+					        <li>
+					            <span class="label">返　　现：</span>
+					            <span class="txt">-¥0.00</span>
+					        </li>
+					        <li>
+					            <span class="label">运　　费：</span>
+					            <span class="txt">¥6.00</span>
+					        </li>
+					        <li class="ftx-01">
+					            <span class="label">应付总额：</span>
+					            <span class="txt count">¥30.80</span>
+					        </li>
+					    </ul> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="text/javascript">
+		//取消订单
+	    function cancel_order(id){
+	      if(!confirm("{$eBiz.lang.Detail_order_cancle_ask}"))
+	          return false;
+	      location.href = "{:U('member/Order/cancel')}?id="+id;
+	    }
+
+	    function showShipping (obj) {
+	      layer.open({
+	        type: 2,
+	        title: '{$eBiz.lang.Order_order_shipping}',
+	        shadeClose: true,
+	        shade: 0.8,
+	        area: ['480px', '90%'],
+	        content: $(obj).attr('data-href') //iframe的url
+	      });
+	    }
+
+	    // 再次购买
+	    function addCart(id,nums,spec) {
+	    	$.ajax({
+	    		url:"{:U('shop/Cart/ajaxAddCart')}",
+	    		data:{
+	    			goods_id:id,
+	    			goods_num:nums,
+	    			spec_key:spec
+	    		},			
+	    		success: function(data){									
+	    			layer.msg(data.msg,{time:1000});
+	    		}
+	    	});	
+    	}
+
+    	function comm_show(obj) {
+    		var url = $(obj).attr('data-href');
+	    	var index = layer.open({
+			  type: 2,
+			  title: '评价详情',
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['90%', '90%'],
+			  content: url
+			});
+	    	return;
+    	}
+	</script>
+</body>
+</html>

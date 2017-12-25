@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Reg_title_setPass} - {:tb_config('web_site_title',1)}</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/lightSlider.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/login.css" />
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/layer/layer.js"></script>
+	<style type="text/css">
+		.btn-disabled, .btn-disabled:hover{
+			background: #adabab;
+		}
+	</style>
+</head>
+<body style="background: #fff;">
+
+{include file="../shop/common/top_header" /}
+<header class="header bus_header bus_enter_header">
+	<div class="container w1200 clearfix">
+		<a href="/" class="logo fl"><img src="{:tb_config('resource_path',1)}shop/picture/logo.png" alt="" /></a>
+		<div class="header-intr fl">
+			<h1 class="color--d81c1d" style="line-height: 88px;font-size: 23px;">找回密码</h1>
+		</div>
+		<!-- <div class="header-right fr">
+            <p>{$eBiz.lang.Reg_had_account}<a href="{:U('Login/index')}">{$eBiz.lang.Reg_go_login}</a></p>
+        </div> -->
+	</div>
+</header>
+
+<main class="main login-main">
+	<div class="login-section">
+		<div class="container w1000" style="width: 470px;">
+			<div class="box clearfix">
+				<div class="fl">
+					<div class="login-form">
+						<form id="ResetPwd" class="form-horizontal"  action="" method="post">
+							<p>我们已将验证码发送到您的邮箱中,请注意查收!</p>
+							<div class="login-form-list">
+								<div class="name">邮箱:</div>
+									<span>{$email}</span>
+							</div>
+							<div class="login-form-list right-btn-list">
+								<div class="name">邮箱验证码</div>
+								<div class="f-input">
+									<input type="text" name="code" class="input--100" placeholder="" />
+								</div>
+							</div>
+
+							<div class="login-btnBox mt40">
+								<button type="submit" id="btn_submit" class="signup-btn">验证</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</main>
+
+{include file="../shop/common/footer" /}
+<script type="text/javascript">
+
+	$(function() {
+		$("input[type='checkbox']").click(function() {
+			if ($(this).is(":checked")) {
+				$("#btn_submit").removeAttr("disabled");
+				$("#btn_submit").removeClass("btn-disabled");
+			} else {
+				$("#btn_submit").attr("disabled", true);
+				$("#btn_submit").addClass('btn-disabled');
+			}
+		});
+	});
+
+	function checkMail(obj) {
+		var regEmail = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+		var _val = $('input[name="email"]').val();
+		if(!regEmail.test(_val)){
+			layer.msg('{:lang("Reg_form_email_place")}');
+			$(obj).focus();
+		}
+	}
+
+	function send_sms_reg_code(){
+		var email = $('input[name="email"]').val();
+		var code = $('input[name="verify_code"]').val();
+		$.ajax({
+			type : "POST",
+			url:"{:U('member/login/send_email_code')}",
+			data : {
+				email:email,
+				code:code
+			},
+			dataType : 'json',
+			success: function(data){
+				layer.msg(data.msg,{time:1000},function () {
+					if (data.code==1) {
+						$('#sendSms').attr("disabled",true);
+						intAs = 180; // 手机短信超时时间
+						jsInnerTimeout('sendSms',intAs);
+					}
+				});
+			}
+		});
+	}
+	// $('#sendSms').removeAttr("disabled");
+	//倒计时函数
+	function jsInnerTimeout(id,intAs)
+	{
+		var codeObj=$("#"+id);
+		//var intAs = parseInt(codeObj.attr("IntervalTime"));
+
+		intAs--;
+		if(intAs<=-1)
+		{
+			codeObj.removeAttr("disabled");
+			codeObj.text("{$eBiz.lang.Reg_form_getmcode}");
+			return true;
+		}
+
+		codeObj.text(intAs+'초');
+//	        codeObj.attr("IntervalTime",intAs);
+
+		setTimeout("jsInnerTimeout('"+id+"',"+intAs+")",1000);
+	};
+
+	function reg_submit() {
+		var pass = $('input[name="pass"]').val();
+		var repass = $('input[name="repass"]').val();
+		var mobile = $('input[name="mobile"]').val();
+		if (pass=='' || repass=='' || mobile=='') {
+			layer.msg('{$eBiz.lang.Reg_form_has_empty}');
+			return false;
+		}
+
+		if (pass != repass) {
+			layer.msg('{$eBiz.lang.Reg_form_pass_not_same}');
+			return false;
+		}
+
+		if(checkRank(pass)<2){
+			layer.msg('{:lang("Reg_form_pass_simple")}');
+			return false;
+		}
+
+
+		var verify_code = $('input[name="verify_code"]').val();
+		var code = $('input[name="code"]').val();
+		if (code=='') {
+			layer.msg('{$eBiz.lang.Reg_form_has_empty}');
+			return false;
+		}
+		$.ajax({
+			type : "POST",
+			url:$('#RegisterModel').attr('action'),
+			data : $('#RegisterModel').serialize(),
+			dataType : 'json',
+			success: function(data){
+				layer.msg(data.msg,{time:3000},function () {
+					if (data.code) {
+						location.href = data.url;
+					}
+				});
+			}
+		});
+	}
+
+	function checkRank(val){
+		if(val.length<6||/^[0-9]{1,8}$/.test(val))
+		{
+			// showPwRank(0);
+			return 0;
+		}
+		var ls = 0;
+		if (val.match(/[a-z]/g)){ ls++; }
+		if(val.match(/[A-Z]/g)){ ls++; }
+		if (val.match(/[0-9]/g)){ ls++; }
+		if (val.match(/[^a-zA-Z0-9]/g)){ ls++; }
+		if (val.length < 8 && ls > 1){  ls = 1;}
+		if(ls>3) {   ls=3; };
+		return ls;
+	}
+</script>
+
+</body>
+</html>

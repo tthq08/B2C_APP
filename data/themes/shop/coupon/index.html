@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="format-detection" content="email=no,telephone=no,address=no" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+    <title>优惠券</title>
+    {include file="common/static" /}
+</head>
+
+<body class="has-right">
+    <!-- top -->
+    {include file="common/top_header"}
+    <!-- header -->
+    {include file="common/header"}
+    <!-- nav -->
+    {include file="common/nav"}
+    <!-- 右侧功能栏 -->
+    {include file="common/right_column"}
+    <main class="main pb50">
+        <!-- 当前位置、已筛选 -->
+        <div class="c-location-section background-location">
+            <div class="container w1200">
+                <ul class="">
+                    <li class="location-item has"><a href="/">首页</a></li>
+                    <li class="location-item"><a href="javascript:;">优惠券</a></li>
+                    <li style="float: right"><a href="{:U('shop/Coupon/code')}">优惠码兑换</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="cmall-conpon-wrap mt30">
+
+            <div class="container w1200">
+            	<!-- 筛选 -->
+                <div class="m">
+
+                	<div class="mc">
+                	    <div class="quan-filter" id="coupons-filter">
+                	        <div class="clearfix">
+                	            <div class="f-sort">
+                	                <a href="{:U('shop/Coupon/index',array_merge($param,['sort'=>'']))}" {if condition="empty($param['sort'])"}class="selted"{/if}>默认</a>
+                	                <a href="{:U('shop/Coupon/index',array_merge($param,['sort'=>'time']))}" {if condition="!empty($param['sort']) && $param['sort'] == 'time'"}class="selted"{/if}>即将过期</a>
+                	                <a href="{:U('shop/Coupon/index',array_merge($param,['sort'=>'money']))}" {if condition="!empty($param['sort']) && $param['sort'] == 'money'"}class="selted"{/if}>面值最大</a>
+                	            </div>
+                	            <div class="f-types">
+                	                <a href="{:U('shop/Coupon/index',array_merge($param,['cl'=>'']))}" {if condition="empty($param['cl'])"}class="selted"{/if} data-id="0"><i></i>全部类型</a>
+                                    {volist name="coupon_level" id="vo"}
+                	                <a href="{:U('shop/Coupon/index',array_merge($param,['cl'=>$vo['level']]))}" {if condition="!empty($param['cl']) && $param['cl'] == $vo['level']"}class="selted"{/if} data-value="{$vo.level}"><i></i>{$vo.name}</a>
+                                    {/volist}
+                	            </div>
+                	            <!--<div class="f-service">-->
+                	                <!--<a href="javascript:;"><i></i>抢券</a>-->
+                	                <!--<a href="javascript:;"><i></i>京豆换券</a>-->
+                	            <!--</div>-->
+                	        </div>
+                	    </div>
+                	</div>
+                </div>
+                <!-- 列表 -->
+                <div class="m mt30">
+                    <div class="mc">
+                        <div class="quan-list" id="coupons-list">
+                            {volist name="list" id="vo"}
+                            <div id="coupon-{$vo.id}" class="quan-item quan-d-item quan-item-acoupon {if condition="$vo.num == $vo.send_num || $vo['is_receive'] == true"}quan-gray-item{/if}">
+                                <div class="q-type" style="background-image: url({$vo.icon}); background-size: 120px ; background-position: right; background-position-x: 180px; background-position-y: 10px; background-repeat: no-repeat;">
+                                    <div class="q-price">
+                                        <div>{$vo.title}</div>
+                                        <em> {$vo.discount_type_id} </em>
+                                        <strong class="num" style="font-size: 28px;">{$vo.quota}</strong>
+
+                                    </div>
+                                    <div class="txt">
+                                        <div class="limit">
+                                            <span class="ftx-06">{$vo.coupon_level_name}&nbsp;&nbsp;|&nbsp;&nbsp;{$vo.tisp}</span>
+                                        </div>
+                                    </div>
+                                    <div class="q-range">
+                                        <div class="range-item">
+                                            <p title="">满{:web_currency()}{$vo.money}可用</p>
+                                        </div>
+                                        <div class="range-item">
+
+                                        </div>
+                                        <div class="range-item" coupon-time="{$vo['send_start_time']}">{:date('y.m.d H:i',$vo['send_start_time'])} - {:date('y.m.d H:i',$vo['send_end_time'])}</div>
+                                    </div>
+                                </div>
+                                <div class="q-opbtns">
+                                    <a href="javascript:void(0);" onclick="receiveCoupon({$vo.id});">
+                                        <b class="semi-circle"></b>
+                                        <span id="coupon-{$vo.id}-str">{if condition="$vo.is_receive == true"}已领取{else/}立即领取{/if}</span>
+                                    </a>
+                                </div>
+                                <div class="q-state">
+                                    {if condition="$vo.num == $vo.send_num"}<div class="btn-state btn-getend">已抢完</div>{/if}
+                                </div>
+                            </div>
+                            {/volist}
+
+                        </div>
+                        <div class="ui-page-wrap clearfix mb40">
+                            <div class="ui-page">
+                                {$page}
+                                <!--<a rel="0" class="prev-disabled" href="javascript:void(0);"><b></b>上一页</a>-->
+                                <!--<a rel="1" class="ui-page-curr" href="javascript:void(0)">1</a>-->
+                                <!--<a rel="2" class="ui-pager-next" href="//a.jd.com/coupons.html?ct=0&amp;page=2">下一页<b></b></a>-->
+                            </div>
+                            <!-- /if -->
+                        </div>
+                        <!-- /pagination -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    {include file='common/footer'/}
+    <script type="text/javascript" src="js/justTools.js"></script>
+    <script type="text/javascript">
+    // 提示层
+    $(".just-tipLeft").mouseover(function(event) {
+        $.justToolsTip({
+            events: event,
+            animation: "moveInLeft",
+            //width:"300px",
+            contents: $(this).attr('data-tip'),
+            gravity: 'left'
+        });
+    })
+        function receiveCoupon(coupon_id)
+        {
+            if( coupon_id == null || coupon_id == undefined){
+                alert('请选择您需要领取的优惠券');
+            }
+            $.ajax({
+                type:'post',
+                url:"{:U('shop/coupon/receive')}",
+                data:{coupon:coupon_id},
+                success:function (data) {
+                    if( data.code == 0 ){
+                        if( data.url !== undefined ){
+                            location.href=data.url;
+                        }else{
+                            alert(data.msg);
+                        }
+                    }else{
+                        alert(data.msg);
+                        var cid = '#coupon-'+coupon_id;
+                        var cidStr = '#coupon-'+coupon_id+'-str';
+                        $(cid).addClass('quan-gray-item');
+                        $(cidStr).html('已领取');
+                    }
+                }
+            });
+
+        }
+    </script>
+</body>
+
+</html>

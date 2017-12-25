@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>关注的商品</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body style="background: #fff;">
+	{assign name="active_page" value="Focus" /}
+	{include file="public/u_header"/}
+	<!-- body -->
+<main class="cmall-body fixed-footer-body">
+
+	<!--关注中心导航-->
+	<div class="m-follow">
+		<div class="m-follow-nav">
+			<ul class="m-follow-navlist  clearfix">
+				<li class="on">
+					<a href="javascript:;">关注产品<span class="follow-nums">（{$nums_goods}）</span></a>
+				</li>
+
+				<li>
+					<a href="{:U('user/goods_history')}">浏览记录<span class="follow-nums">（{$nums_his}）</span></a>
+				</li>
+			</ul>
+		</div>
+		<div class="f-goods-list pb5" id="collect_list">
+			{volist name="goods_list" id="vo"}
+			<div class="uflw-item">
+				<div class="pic"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['goods_id']])}"><img src="{$vo.goods_id|goods_thum_images=200,200}" alt=""></a></div>
+				<div class="info">
+					<div class="flw-name"><a href="{:U('shop/goods/goodsInfo',['id'=>$vo['goods_id']])}">{:getTableValue('shop_goods','id='.$vo['goods_id'],'title')}</a></div>
+					<div class="flw-price">
+						<span class="price">{:getTableValue('shop_goods','id='.$vo['goods_id'],'shop_price')}<small>元</small></span>
+					</div>
+					<div class="useful">
+					{notempty name="list.spec_key"}
+						<span>【规格：{:getTableValue('shop_spec_price',['goods_id'=>$vo['goods_id'],'key_sign'=>$vo['spec_key']],'key_name')}】</span>
+					{/notempty}
+						<!-- <span>满2000.00减100，满5000.00减300</span> -->
+					</div>
+					<div class="ctr">
+						<a href="javascript:;" onclick="addCart('{$vo.goods_id}','1','{$vo.spec_key}');" class="btn cbtn mr10">加入购物车</a>
+						<a href="javascript:;" onclick="delCollect('{$vo.id}');" class="btn fbtn">取消关注</a>
+					</div>
+				</div>
+			</div>
+			{/volist}
+			
+		</div>
+		<div class="itembox pb20" style="text-align: center;">
+			<button type="button" id="more_goods_btn" style="border: 0px;" onclick="loadMoreGoods();">查看更多></button>
+		</div>
+</main>
+
+</body>
+	<script type="text/javascript">
+		// 加入购物车
+	    function addCart(id,nums,spec) {
+	    	$.ajax({
+	    		url:"{:U('Cart/ajaxAddCart')}",
+	    		data:{
+	    			goods_id:id,
+	    			goods_num:nums,
+	    			spec_key:spec
+	    		},			
+	    		success: function(data){									
+	    			layer.msg(data.msg,{time:1000});
+	    		}
+	    	});	
+    	}
+
+    	function delCollect(id) {
+    		$.ajax({
+    			url:"{:U('User/del_goods_collect')}",
+    			data:{id:id},			
+    			success: function(data){									
+    				layer.msg(data.msg,{time:1000},function () {
+    					if (data.code==1) {
+    						location.reload();
+    					}
+    				})
+    			}
+    		});	
+    	}
+
+    	var goods_page = 2;
+    	// 加载更多商品
+    	function loadMoreGoods() {
+    		$('#more_goods_btn').attr('disable',true);
+    		if (goods_page>0) {
+    			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2				
+    		}
+    		$.ajax({
+    			url:"{:U('user/user_collect')}",
+    			data:{
+    				page:goods_page
+    			},
+    			success: function(data){
+    				$('#collect_list').append(data);
+    				layer.close(index);
+    				$('#more_goods_btn').attr('disable',false);
+    				if (data!='') {
+    					goods_page ++;    					
+    				}
+    			}
+    		});	
+    	}
+	</script>
+</html>

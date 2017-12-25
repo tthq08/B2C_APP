@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<link rel="stylesheet" href="{:tb_config('sys_plugin_src',1,$lang_id)}css/metroStyle/metroStyle.css" type="text/css">
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.ztree.core.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.ztree.excheck.js"></script>
+<body>
+<div>
+	<div class='tree_box zTreeDemoBackground' style="display: inline-block; width: 200px; height: 100%; padding: 10px; border: 1px solid #ddd; overflow: auto;">
+	    <ul id="spec" class=" ztree">
+		</ul>
+	</div>
+
+
+    <div class="site-tips tree_box" style="display: inline-block; height: 200px;  padding: 10px; margin-left: 10px; vertical-align: top; overflow: auto;" id="item"></div>
+
+    <div >
+		<button  style="width:200px;" onclick="showSpec();" class='layui-btn layui-btn-small'>{$eBiz.lang.spec_price_btn_add_spec}</button>
+		<button  style="width:200px;" onclick="confirmSpec();" class='layui-btn layui-btn-small'>{$eBiz.lang.spec_price_btn_confirm}</button>
+	</div>
+</div>
+</body>
+<script>
+$(function() {
+	var win_height = $(document).height();
+	var win_width = $(document).width();
+	$('.tree_box').css('height',win_height-43);
+	$('.site-tips').css('height',win_height-43);
+	$('.site-tips').css('width',win_width-230);
+
+	layui.use(['form','element'],function(){
+	});
+});
+
+</script>
+<SCRIPT type="text/javascript">
+	var setting = {
+		check: {
+			enable: true,
+		},
+		callback: {
+			onCheck: onCheck
+		},
+		async: {
+			enable: true,
+			url:"{:url('Spec/ajaxgetspec',['id'=>$id])}"
+		}
+	};
+
+
+	$(document).ready(function(){
+		$.fn.zTree.init($("#spec"), setting);
+	});
+
+	var code, log, className = "dark";
+
+	function onCheck(e, treeId, treeNode) {
+		var treeObj = $.fn.zTree.getZTreeObj("spec");
+		var nodes = treeObj.getCheckedNodes(true);
+		console.log(nodes);
+		var checked = [];
+		for (var i = 0; i < nodes.length; i++) {
+			var node = nodes[i];
+			var spec_item = {'id':node.id,'name':node.name,'pid':node.pid,'spec_name':node.spec_name};
+
+			if (node.level!=0) {
+				checked.push(spec_item);
+			}
+		}
+		var item = JSON.stringify(checked);
+		$.ajax({
+		    type : "POST",
+		    url:"{:url('Spec/ajaxList2Tree')}",
+		    data:{
+				'items':item
+			},
+		    dataType : 'json',
+		    success: function(data){
+				if (data.status==1) {
+					var specHtml = '';
+
+
+					var tb_data = data.data;
+					var Html = specHtml+'<table class="layui-table table-hover" lay-even="" lay-skin="nob"><thead>';
+              		var head = '<tr class="left">';
+              		var td_html = '';
+					for (var i = 0; i < tb_data.length; i++) {
+						var tr_data = tb_data[i];
+              			td_html += '<tr id="spec_'+i+'">';
+              			var spec_id = '';
+              			var spec_name = '';
+						for (var j = 0; j < tr_data.length; j++) {
+							var td_data = tr_data[j];
+							var rows = 1;
+							spec_id += td_data.id+'_';
+							spec_name += td_data.spec_name+":"+td_data.name+" ";
+
+							if (i==0) {
+								head += '<th>'+td_data.spec_name+'</th>';
+							}
+
+							td_html += '<td style="width: 100px;" rowspan="'+rows+'">'+td_data.name+'</td>';
+						}
+						spec_id = spec_id.substring(0,spec_id.length-1);
+						var goods_sn = "{$goods_sn}"+"-"+(i+1);
+						td_html += '<input type="hidden" name="spec_id['+i+']" value="'+spec_id+'">' +
+								'<input type="hidden" name="spec_name['+spec_id+']" value="'+spec_name+'">' +
+								'<td style="width:120px;"><input type="text" style="width:100%;" name="spec_sn['+spec_id+']" value="'+goods_sn+'"></td>' +
+								'<td style="width:120px;"><input type="text" style="width:100%;" name="spec_price['+spec_id+']" value=""></td>' +
+								'<td style="width:100px;"><input type="text" style="width:100%;" name="spec_points['+spec_id+']" value=""></td>' +
+								'<td style="width:100px;"><input type="text" style="width:100%;" name="spec_stock['+spec_id+']" value=""></td>' +
+								'<td style="width:100px;"><button type="button" style="width:80px;" onclick="upSpecPics(this);" data-sn="'+goods_sn+'" data-spec="'+spec_id+'" class="layui-btn layui-btn-small">{$eBiz.lang.spec_price_table_btn_pics}</button></td>' +
+								'<td style="width:100px;"><button type="button" style="width:80px;" onclick="setSpecContent(this);" data-sn="'+goods_sn+'" data-spec="'+spec_id+'" class="layui-btn layui-btn-small">{$eBiz.lang.spec_price_table_btn_content}</button></td>' +
+								'<td style="width:100px;"><button type="button" style="width:80px;" onclick="setSpecAttr(this);" data-sn="'+goods_sn+'" data-spec="'+spec_id+'" class="layui-btn layui-btn-small">{$eBiz.lang.spec_price_table_btn_attr}</button></td>' +
+								'<td style="width:100px;"><button type="button" style="width:80px;" onclick="delTR('+i+');" class="layui-btn layui-btn-small">删除</button></td>';
+						td_html += '</tr>';
+					}
+					head += '<th style="width:120px;">{$eBiz.lang.spec_price_table_title_sn}</th><th style="width:100px;">{$eBiz.lang.spec_price_table_title_price}</th><th style="width:100px;">{$eBiz.lang.spec_price_table_title_points}</th><th style="width:100px;">{$eBiz.lang.spec_price_table_title_stock}</th><th>{$eBiz.lang.spec_price_table_title_pics}</th><th>{$eBiz.lang.spec_price_table_title_content}</th><th>{$eBiz.lang.spec_price_table_title_attr}</th><th style="width:100px;">操作</th>';
+					head += '</tr></thead><tbody>';
+					Html += head+td_html+'</tbody></table>';
+					$('#item').html(Html);
+				}
+		    }
+		});
+
+	}
+
+	function showSpec() {
+	 	var index = layer.open({
+	      type: 2,
+	      title: false,
+	      // closeBtn:1,
+	      title: ['{$eBiz.lang.spec_list_outside_window_title}','height:0px;'],
+	      shadeClose: false,
+	      shade:  [0.8, '#393D49'],
+	      maxmin: true, //开启最大化最小化按钮
+	      area: ['90%', '90%'],
+	      content: '{:url("Spec/lists")}',
+	      cancel:function() {
+	      	var treeObj = $.fn.zTree.getZTreeObj("spec");
+	      	treeObj.reAsyncChildNodes(null, "refresh");
+	      }
+	    });
+	    layer.full(index);
+	}
+
+	function confirmSpec() {
+		parent.spec_callback($('#item').html());
+	}
+
+	function upSpecPics() {
+		layer.msg('{$eBiz.lang.spec_up_pics_msg}');
+	}
+
+	function setSpecContent() {
+		layer.msg('{$eBiz.lang.spec_set_content_msg}');
+	}
+
+	function setSpecAttr() {
+		layer.msg('{$eBiz.lang.spec_set_attr_msg}');
+	}
+</SCRIPT>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/ico" href=""/>
+    <!-- Bootstrap Css-->
+    <link href="{:tb_config('sys_plugin_src',1,$lang_id)}assets/css/vendor/bootstrap/bootstrap.min.css"
+          rel="stylesheet">
+    <!-- animate Css -->
+    <link rel="stylesheet" href="{:tb_config('sys_plugin_src',1,$lang_id)}assets/css/vendor/animate/animate.min.css">
+    <!-- 主体样式 -->
+
+    <link rel="stylesheet" type="text/css" href="{:tb_config('sys_plugin_src',1,$lang_id)}common/global.css"
+          media="all">
+    <link rel="stylesheet" type="text/css" href="{:tb_config('sys_css_src',1,$lang_id)}adminstyle.css" media="all">
+    <link rel="stylesheet" type="text/css" href="{:tb_config('sys_css_src',1,$lang_id)}fonts.css" media="all">
+    <!-- jQuery -->
+    <script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}assets/js/jquery.js"></script>
+    <!-- Bootstrap Js -->
+    <script src="{:tb_config('sys_plugin_src',1,$lang_id)}assets/js/vendor/bootstrap/bootstrap.min.js"></script>
+    <!-- 导航滚动条美化 -->
+    <script type="text/javascript"
+            src="{:tb_config('sys_plugin_src',1,$lang_id)}assets/js/vendor/nicescroll/jquery.nicescroll.min.js"></script>
+    <!-- animate动画库 -->
+
+    <script type="text/javascript"
+            src="{:tb_config('sys_plugin_src',1,$lang_id)}assets/js/vendor/animate-numbers/jquery.animateNumbers.js"></script>
+
+    <!-- bootstrap 日历控件 -->
+    <link rel="stylesheet" type="text/css"
+          href="{:tb_config('sys_css_src',1,$lang_id)}../bootstrap-datetimepicker/css/bootstrap-datetimepicker.css"
+          media="all">
+
+    <script type="text/javascript"
+            src="{:tb_config('sys_css_src',1,$lang_id)}../bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+
+
+    <!-- 主体 js -->
+    <script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}assets/js/biz.js"></script>
+
+    <script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}js/echarts.min.js"></script>
+
+
+    <title>{:tb_config('web_site_title',1,$lang_id)}</title>
+
+    <style>
+        .datetimepicker {
+            width: 220px;
+        }
+    </style>
+
+</head>
+<body style="background-color: #eeeeee">
+
+<div style="min-height: 200px; color: #dddddd; background-color: #eeeeee; background-image: url({:tb_config('sys_plugin_src',1,$lang_id)}images/sbg-data.jpg)">
+    <div style="width: 70%; margin: 0 auto; padding-top: 50px;">
+        <div>
+            <h4>积分收支</h4>
+        </div>
+        <form class="form-inline" action="#" id="condition" role="form" style="margin-top: 20px;">
+
+            <div class="radio">
+                <label>
+                    <input type="checkbox" name="accurate" id="optionsRadios1" value="1">&nbsp;是否精确时间(精确时间,计算的开始时间和结束时间,将会精确到当天的秒时)
+                </label>
+            </div>
+            <br/>
+            <br/>
+
+            <div class="form-group">
+                <input size="20" type="text" name="start_time" id="datetimeStart" class="form_datetime form-control"
+                       placeholder="选择开始时间">
+                <p style="line-height: 30px;">开始计算时间,计算开始的时间</p>
+            </div>
+            ----
+            <div class="form-group">
+                <input size="20" type="text" id="datetimeEnd" name="end_time" class="form_datetime form-control"
+                       placeholder="选择结束时间">
+                <p style="line-height: 30px;">结束计算时间,计算结束的时间</p>
+            </div>
+
+            <div class="form-group" style="margin-left: 30px; margin-right: 30px;">
+                <label for="selectList">统计单位</label>
+                <select class="form-control" name="type" style="width: 50px;">
+                    <option value="y">年</option>
+                    <option value="m">月</option>
+                    <option value="w">周</option>
+                    <option value="d" selected>日</option>
+                </select>
+                <p style="line-height: 30px;">统计单位,例如: 日:按照天数统计,月:按照月份统计</p>
+            </div>
+
+            <script type="text/javascript">
+                var format = 'yyyy-mm-dd hh:ii:ss';
+                var minView = 0;
+
+                $("#datetimeStart").datetimepicker({
+                    format: format,
+                    minView: minView,
+                    language: 'zh-CN',
+                    autoclose: true,
+                    startDate: '',
+                }).on("click", function () {
+                    $("#datetimeStart").datetimepicker("setEndDate", $("#datetimeEnd").val())
+                });
+
+                $("#datetimeEnd").datetimepicker({
+                    format: format,
+                    minView: minView,
+                    language: 'zh-CN',
+                    autoclose: true,
+                    startDate: $("#datetimeStart").val(),
+                }).on("click", function () {
+                    $("#datetimeEnd").datetimepicker("setStartDate", $("#datetimeStart").val());
+                });
+
+                function get() {
+                    $.ajax({
+                        type: "post",
+                        data: $('#condition').serialize(),
+                        url: '{:U("stt/Order/ajaxGet")}',
+                        success: function (data) {
+                            $('#echarts').html(data);
+                        }
+                    })
+                }
+
+            </script>
+            <button type="button" class="btn btn-default" onclick="get();">获取</button>
+        </form>
+    </div>
+</div>
+
+<div id="echarts" style="margin-top: 20px;">
+    <div id="main" style="width: 80%;height:450px; margin: 0 auto;">
+
+    </div>
+    <script type="text/javascript">
+
+        var myChart = echarts.init(document.getElementById('main'));
+
+        var names = {:json_encode($names)};
+        var output = {$output};
+        var input = {$input};
+
+        var option = {
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow',
+                    label: {
+                        show: true
+                    }
+                }
+            },
+            toolbox: {
+                show: true,
+                feature: {
+                    mark: {show: true},
+                    dataView: {show: true, readOnly: false},
+                    magicType: {show: true, type: ['line', 'bar']},
+                    restore: {show: true},
+                    saveAsImage: {show: true}
+                }
+            },
+            calculable: true,
+            legend: {
+                data: ['支出', '收入'],
+                itemGap: 5
+            },
+            grid: {
+                top: '12%',
+                left: '10%',
+                right: '10%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: names
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    name: '积分收支',
+                    axisLabel: {
+                        formatter: function (a) {
+                            a = +a;
+                            return isFinite(a)
+                                    ? echarts.format.addCommas(+a)
+                                    : '';
+                        }
+                    }
+                }
+            ],
+            dataZoom: [
+                {
+                    show: true,
+                    start: 94,
+                    end: 100
+                },
+                {
+                    type: 'inside',
+                    start: 94,
+                    end: 100
+                },
+                {
+                    show: true,
+                    yAxisIndex: 0,
+                    filterMode: 'empty',
+                    width: 30,
+                    height: '80%',
+                    showDataShadow: false,
+                    left: '93%'
+                }
+            ],
+            series: [
+                {
+                    name: '支出',
+                    type: 'bar',
+                    data: output
+                },
+                {
+                    name: '收入',
+                    type: 'bar',
+                    data: input
+                }
+            ]
+        };
+
+        myChart.setOption(option);
+    </script>
+</div>
+
+</body>
+</html>

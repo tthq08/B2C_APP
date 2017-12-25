@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>我的积分</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+{assign name="active_page" value="Points" /}
+	{include file="public/u_header" /}
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body">
+		<div class="m-intergral">
+			<div class="inter-main-wrap">
+				<div class="inter-main clearfix">
+					<span class="inter-main-left">
+						<img src="{:tb_config('resource_path',1)}mshop/images/u_cash_01.png" alt=""/>
+					</span>
+					<span class="inter-main-right">
+						<b>{$user.pay_points}</b>&nbsp;<small>p</small>
+					</span>
+				</div>
+			</div>
+			<!-- <div class="inter-type-list">
+				<div class="inter-type-item clearfix">
+					<a class="inter-type-item-link" href="javascript:;">
+						<span class="inter-type-item-left">预计累计积分</span>
+						<sapn class="inter-type-item-right"><b>980</b><small>p</small><i>&gt;</i></sapn>
+					</a>
+				</div>
+				<div class="inter-type-item clearfix">
+					<a class="inter-type-item-link" href="javascript:;">
+						<span class="inter-type-item-left">将要过期的积分</span>
+						<sapn class="inter-type-item-right"><b>210</b><small>p</small><i>&gt;</i></sapn>
+					</a>
+				</div>
+			</div> -->
+			
+			<div class="inter-det-list-wrap">
+				<div class="inter-det-head clearfix">
+					<span class="inter-det-head-left">
+						积分明细
+					</span>
+					<!-- <span class="inter-det-head-right">
+						<a href="javascript:;">详细<i>&gt;</i></a>
+					</span> -->
+				</div>
+
+				<div class="inter-det-list" id="point_list">
+				</div>
+				<div class="itembox pb20" style="text-align: center;">
+					<button type="button" id="more_goods_btn" style="border: 0px;" onclick="ajaxDftAccountLog();">查看更多></button>
+				</div>
+			</div>
+		</div>
+
+	</main>
+
+</body>
+<script type="text/javascript">
+	var goods_page = 1;
+	$(function () {
+		ajaxDftAccountLog(goods_page);
+	})
+	function ajaxDftAccountLog(page) {
+		$('#more_goods_btn').attr('disable',true);
+		if (goods_page>1) {
+			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2			
+		}
+		$.ajax({
+			url:"{:U('User/ajaxPointLog')}",
+			data:{page:goods_page},
+			success: function(data){
+
+				$('#point_list').append(data);
+				layer.close(index);
+				$('#more_goods_btn').attr('disable',false);
+				if (data!='') {
+					goods_page ++;
+				}
+			}
+		});	
+	}
+</script>
+</html>

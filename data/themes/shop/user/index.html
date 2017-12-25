@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Ucenter_center_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+
+	<style type="text/css">
+	.guess-like-list {margin-left: 13px;}
+	.guess-like-list:nth-child(4n+1) {
+		margin-left: 0px;
+	}
+	.nums_round {
+		border: 1px solid red;
+	    background: red;
+	    color: #fff;
+	    border-radius: 10px;
+	}
+	</style>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+	<!-- 导航 -->
+	
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+			
+
+			<div class="bus-right">
+				<!-- 用户信息 -->
+				<div class="j-user-section user-introduct">
+
+					<div class="user-counts">
+						<ul class="clearfix">
+							<li class="cou">
+								<a href="{:U('user/order_list',['type'=>1])}">
+									<img src="{:tb_config('resource_path',1)}shop/picture/user_03.png" alt="" />
+									<span>{$eBiz.lang.Order_wait_pay}<span class="nums_round">{$order1}</span></span>
+								</a>
+							</li>
+							<li class="cou">
+								<a href="{:U('user/order_list',['type'=>2])}">
+									<img src="{:tb_config('resource_path',1)}shop/picture/user_05.png" alt="" />
+									<span>{$eBiz.lang.Order_wait_send}<span class="nums_round">{$order3}</span></span>
+								</a>
+							</li>
+							<li class="cou">
+								<a href="{:U('user/order_list',['type'=>4])}">
+									<img src="{:tb_config('resource_path',1)}shop/picture/user_07.png" alt="" />
+									<span>{$eBiz.lang.Order_wait_receive}<span class="nums_round">{$order4}</span></span>
+								</a>
+							</li>
+							<li class="cou">
+								<a href="{:U('user/order_list',['type'=>5])}">
+									<img src="{:tb_config('resource_path',1)}shop/picture/user_09.png" alt="" />
+									<span>{$eBiz.lang.Order_wait_comment}<span class="nums_round">{$order5}</span></span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<!-- 我的订单 -->
+				<div class="j-user-section user-order mt20 plr20-section">
+					<div class="user-top">
+						<div class="user-title">
+							<span class="t">{$eBiz.lang.User_Index_my_order}</span>
+							<a class="fr" href="{:U('user/order_list')}">{$eBiz.lang.User_Index_all_order}</a>
+						</div>
+					</div>
+					<div class="user-content pb30">
+						<div class="order-list-box pt20">
+							<div class="order-list-table">
+								<table>
+									<thead>
+										<tr>
+											<th width="50%">{$eBiz.lang.Order_table_goods}</th>
+											<th width="12.5%">{$eBiz.lang.Order_table_receiver}</th>
+											<th width="10%">{$eBiz.lang.Order_table_amount}</th>
+											<th width="12.5%">{$eBiz.lang.Order_table_status}</th>
+											<th width="15%">{$eBiz.lang.Order_table_action}</th>
+										</tr>
+									</thead>
+								{volist name="orderList" id="list"}
+									<tbody class="u-order-list">
+										<tr class="sep-tr">
+											<td colspan="5"></td>
+										</tr>
+										<tr class="tr-th">
+											<td colspan="5">
+												<span class="otime">{$list.add_time}</span>
+												<span class="order-num ml20">{$eBiz.lang.Order_table_order_sn}：<i>{$list.order_sn}</i></span>
+											</td>
+										</tr>
+										{volist name="list.goods_list" id="good" key="k"}
+										<tr class="tr-bd">
+										{assign name="goods_row" value=":count($good)" /}
+											<td class="intr">
+												<div class="pic"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$good['goods_id']))}" target="_blank"><img src="{$good.thumb|common_thumb_img=80,80}" title="{$good.goods_name}" /></a></div>
+												<div class="info">
+													<div class="na"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$good['goods_id']))}" target="_blank">{$good.goods_name}</a></div>
+													<div class="spec">{:getTableValue('shop_spec_price',['goods_id'=>$good['goods_id'],'key_sign'=>$good['spec_key']],'key_name')}</div>
+												</div>
+												<div class="goods-num">x{$good.goods_num}</div>
+											</td>
+											{elt name="k" value="1"}
+											<td rowspan="{$goods_row}"><span>{$list.consignee}</span></td>
+											<td rowspan="{$goods_row}">
+												<p>{$eBiz.lang.Order_total_amount}</p>
+												<p>{$list.payable_price}</p>
+											</td>
+											<td rowspan="{$goods_row}">
+												<p>{:getOrderStatusName($list['status'])}</p>
+												{egt name="list.status" value="4"}
+												<!-- 物流跟踪 -->
+												<p><a onclick="showShipping(this);" data-href="{:U('user/chaxun',['id'=>$list.id])}'" href="javascript:;" class="a">{$eBiz.lang.Order_order_shipping}</a></p>
+												{/egt}
+												<!-- 订单详情 -->
+												<p><a href="javascript:;" data-msg="{$eBiz.lang.Order_order_detail}" onclick="openWin(this);" data-href="{:U('shop/User/order_detail',array('id'=>$list['id']))}" class="b">{$eBiz.lang.Order_order_detail}</a></p>
+											</td>
+											<td rowspan="{$goods_row}">
+											{neq name="list.status" value="0"}
+												{eq name="list.is_pay" value="0"}
+												<!-- 立即付款 -->
+												<p>
+													<a href="{:U('Cart/cart4',array('order_id'=>$list['id']))}" class="btn_pay" style="color:red">{$eBiz.lang.Order_pay_now}</a>
+												</p>
+												<!-- 取消订单 -->
+												<p>
+													<a data-href="{:U('User/cancel_order',['id'=>$list['id']])}" data-msg="{$eBiz.lang.Order_cancle}" href="javascript:;" onclick="actOrd(this);" class="btn_pay" style="color:#666666;">{$eBiz.lang.Order_cancle}</a>
+												</p>
+												{/eq}
+												{eq name="list.status" value="4"}
+												<p>
+												<!-- 确认收货 -->
+													<a onclick="if(confirm('{$eBiz.lang.Order_receive_msg}?')) location.href='{:U('shop/User/order_confirm',array('id'=>$list['id']))}'"  class="btn_pay" style="color:red">{$eBiz.lang.Order_receive_confirm}</a>
+												</p>
+												{/eq}
+											{/neq}
+											{egt name="list.status" value="5"}
+												<!-- 评价订单 -->
+												<p><a href="javascript:;" data-msg="{$eBiz.lang.Order_order_comment}" data-href="{:U('shop/User/order_comment',['id'=>$list['id']])}" onclick="openWin(this);" class="b">{$eBiz.lang.Order_order_comment}</a></p>
+												<!-- 申请售后 -->
+												<p><a href="javascript:;" data-msg="{$eBiz.lang.Order_sale_serv}" onclick="openWin(this);" data-href="{:U('Home/User/return_goods',array('order_id'=>$list['id'],'order_sn'=>$list['order_sn'],'goods_id'=>$good['goods_id']))}" class="b">{$eBiz.lang.Order_sale_serv}</a></p>
+											{/egt}
+											</td>
+											{/elt}
+										</tr>
+										{/volist}
+									</tbody>
+								{/volist}
+									
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+	
+</body>
+	<script type="text/javascript">
+		function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1040px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+
+		function showShipping (obj) {
+	      layer.open({
+	        type: 2,
+	        title: '{$eBiz.lang.Order_order_shipping}',
+	        shadeClose: true,
+	        shade: 0.8,
+	        area: ['480px', '90%'],
+	        content: $(obj).attr('data-href') //iframe的url
+	      });
+	    }
+
+	    function actOrd(obj) {
+	    	layer.confirm("{:lang('Order_cancle_confirm')}",{btn:['Yes','No']},function () {
+	    		$.ajax({
+	    			url:$(obj).attr('data-href'),
+	    			success: function(data){
+	    				layer.msg(data.msg,{time:1000},function () {
+	    					if (data.code==1) {
+	    						location.reload();
+	    					}
+	    				})
+	    			}
+	    		});	
+	    	})
+	    }
+	</script>
+</html>

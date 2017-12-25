@@ -1,0 +1,8 @@
+{volist name="list" id="vo"}
+<tr>
+	<td>{$vo.change_time|date="m-d H:i",###}</td>
+	<td>{gt name="vo.user_money" value="0"}+{/gt}{$vo.user_money}</td>
+	<td>{gt name="vo.frozen_money" value="0"}+{/gt}{$vo.frozen_money}</td>
+	<td>{$vo.desc}</td>
+</tr>
+{/volist}

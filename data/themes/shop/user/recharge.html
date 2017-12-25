@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Recharge_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/list.css" />
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/layer/layer.js"></script>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="j-user-section user-order plr20-section">
+					<div class="user-top">
+						<div class="user-title">
+							<span class="t">{$eBiz.lang.Recharge_recharge_list}<i class="t-note ml10"></i></span>
+						</div>
+					</div>
+					<div class="user-content pb30 mt20">
+						<div class="rech-box">
+							<!-- <div class="user-info-tooltop">
+								<div class="i-img"><img src="picture/nan_for_18.jpg" alt=""></div>
+								<div class="i-msg">
+									<div class="u-name">用户名：jian77822</div>
+									<div class="mt5"><span class="u-vip">VIP 1</span></div>
+									<div class="u-type mt10">余额：<strong class="color--3CBE06">500.00</strong></div>
+								</div>
+							</div> -->
+							<div class="rech-item w600">
+								<p class="mb10 rt">{$eBiz.lang.Recharge_recommond_mount}</p>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="10000" id="money-10000" name="money" type="radio" />
+									<label for="money-10000">10000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="20000" id="money-20000" name="money" type="radio" />
+									<label for="money-20000">20000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="50000" id="money-50000" name="money" type="radio" />
+									<label for="money-50000">50000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="100000" id="money-100000" name="money" type="radio" />
+									<label for="money-100000">100000元</label>
+								</span>
+								<span class="rech-recom">
+									<input onchange="recom(this)" data-val="200000" id="money-200000" name="money" type="radio" />
+									<label for="money-200000">200000元</label>
+								</span>
+							</div>
+							<div class="rech-item">
+								<span class="">{$eBiz.lang.Recharge_mount}：</span>
+								<input type="text" placeholder="{$eBiz.lang.Recharge_mount_place}" id="rech-input" class="input-200" />
+								<span>元</span>
+							</div>
+							<div class="rech-item">
+								<div class="rt mb10">{$eBiz.lang.Recharge_recharge_type}</div>
+							{volist name="payList" id="v"}
+								<span class="rech-type">
+									<input type="radio" name="pay_radio" value="{$v.code}" id="type-{$v.code}" style="display: none;" />
+									<label for="type-{$v.code}"><img src="{$v.icon}" alt="" style="width: 80px; height: 30px; margin-top: 5px;" /></label>
+								</span>
+							{/volist}								
+							</div>
+							<div class="rech-item">
+								<a href="javascript:;" class="cmall-btn-g ml0" onclick="subRecharge();">{$eBiz.lang.Recharge_recharge_confirm}</a>
+								{$eBiz.lang.Recharge_mount}：<strong class="rech-num color--b1191a"></strong>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="j-user-section user-section user-introduct plr20-section" id="recharge_list" >
+					
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+	{tbjs module="shop" src="jquery-validate.js,method.js"}
+	<script type="text/javascript">
+
+		function subRecharge() {
+			var recharge_num = $('#rech-input').val();
+			var pay_radio = $('input[name="pay_radio"]:checked').val();
+
+
+			$.ajax({
+				type:"post",
+				url:"{:U('shop/user/do_recharge')}",
+				data:{recharge_num:recharge_num,pay_radio:pay_radio},
+				success:function (data) {
+					if( data.code == 1 ){
+						alert(data.msg);
+					}else if( data.code === 0 ){
+						alert(data.msg);
+					}else {
+						layer.open({
+							type: 1,
+							title:'在线充值',
+							skin: 'layui-layer-rim', //加上边框
+							area: ['600px', '540px'], //宽高
+							content: data
+						});
+					}
+				}
+			});
+		}
+
+		function recom(obj) {
+			var me = $(obj);
+			$('#rech-input').val(me.attr('data-val'));
+			$('.rech-num').text(me.attr('data-val') + '元');
+		}
+		$("#rech-input").on('input propertychange',function() {
+			$('.rech-num').text($(this).val() + '元');
+		})
+
+		$(function() {
+			ajaxDftChargeLog();
+		});
+		$('body').on('click','.user-pagination li:not(".disabled")',function(e) {
+			e.preventDefault();
+			console.log('fdsa')
+			var me = $(this);
+			var url = me.find('a').attr('href');
+			ajaxGetChargeLog(url)
+		})
+
+		function ajaxDftChargeLog() {
+			$.ajax({
+				url:"{:U('User/ajaxChargeLog')}",
+				success: function(data){									
+					$('#recharge_list').html(data);
+				}
+			});	
+		}
+		function ajaxGetChargeLog(url) {
+			$.ajax({
+				url:url,
+				success: function(data){									
+					$('#recharge_list').html(data);
+				}
+			});	
+		}
+
+	</script>
+	
+</body>
+</html>

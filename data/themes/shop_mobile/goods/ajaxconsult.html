@@ -1,0 +1,33 @@
+{notempty name="list"}
+{volist name="list" id="v"}
+<div class="qa-item">
+	<div class="qa-top qnote clearfix">
+		<?php
+			$showName = $v['is_hidename']==1?'匿名':$v['username'];
+		?>
+		<span class="quser">{$showName}</span>
+		<!-- <span class="qtime">{$v.add_time}</span> -->
+	</div>
+	<div class="ask">
+		<i class="qa">问</i>
+		<div class="qmsg">{$v.content}</div>
+	</div>
+	<div class="answer">
+		<i class="qa">答</i>
+		<div class="qmsg">
+		{volist name="v.answer" id="vo"}
+			<div class="qmsg-item">
+				<span class="qnote">{$vo.username}：</span>
+				<span>{$vo.content}</span>
+			</div>
+		{/volist}
+		</div>
+	</div>
+</div>
+{/volist}
+<div class="qa-item" style="text-align: center;">
+	<a href="javascript:;" onclick="ajaxconsult('next');">查看更多</a>
+</div>
+{else/}
+暂无咨询问题
+{/notempty}

@@ -1,0 +1,48 @@
+{empty name="cartList"}
+	<div style="text-align: center;min-height: 120px;">
+		<h3 style="margin-top: 20px;">您的购物车还没有商品...</h3>
+		<a href="{:U('/')}" class="cmall-cart-btn mt10">去逛逛</a>
+	</div>
+{else/}
+<ul>
+	{volist name="cartList" id="vo"}
+	<li class="item">
+		{assign name="goods_key" value="$vo['goods'].'--'.$vo['spec_key']"}
+		<div class="pic"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}"><img src="{$vo.goods|goods_thum_images=200,200}" alt=""></a></div>
+		<div class="info">
+			<div class="tit"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}">{$vo.goods_name}【{$vo.spec_text}】</a></div>
+			<div class="price">
+				{assign name="truePrice" value=":compute()->promGoodsPrice($vo.goods,$vo.spec_key)" /}
+				<strong class="p">{:web_currency()}{$truePrice}</strong>
+				<strong>X {$vo.goods_num}</strong>
+				<span class="fr"><a href="javascript:;" onclick="del_cart({$vo.id});">删除</a></span>
+			</div>
+		</div>
+	</li>
+	{/volist}
+</ul>
+{/empty}
+
+<script type="text/javascript">
+
+
+	function del_cart(ids){
+
+	 	$.ajax({
+			type : "POST",
+			url:"{:U('shop/Cart/ajaxDelCart')}",//+tab,
+			data:{ids:ids}, // 
+		    dataType:'json',		
+			success: function(data){
+
+			   if(data.code == 1){
+			   	    layer.msg(data.msg);
+				    ajax_cart_list(); // ajax 请求获取购物车列表
+			   }else{
+				   //layer.msg(data.msg);
+				   layer.msg(data.msg)
+			   }	   			   
+			}
+		});
+	}
+</script>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style type="text/css">
+    .pagination {margin:0px;}
+</style>
+<section class="layui-larry-box">
+    {notempty name="tabel_tips"}
+    <blockquote class="layui-elem-quote">{$tabel_tips}</blockquote>
+    {/notempty}
+    <div class="larry-personal">
+        <div class="layui-tab layui-tab-card">
+            <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+                <div class="layui-tab-item layui-field-box layui-show">
+                    <div>
+
+                            <form class="layui-form" action="" method="get">
+
+                                <div style="width: 200px; float: left; padding-right: 20px;">
+                                    <p>通过用户搜索:</p>
+                                    <input type="text" style="display: inline; float: left;" name="user" placeholder="请输入用户ID/昵称/邮箱" autocomplete="off" class="layui-input" value="{$Request.param.user}">
+
+                                </div>
+
+                                <div style="width: 210px; float: left;">
+                                    <p>通过拼团搜索:</p>
+                                    <div style="width: 200px; float: left;">
+                                        <select name="pieces" lay-filter="province" style="width: 200px;float: left;" lay-search>
+                                            <option value=" ">选择拼团</option>
+                                        </select>
+                                    </div>
+
+                                </div>
+
+                                <div style="width: 340px; float: left;">
+                                    <p> 其他:</p>
+                                    <div style="width: 340px; float: left;">
+                                        <input type="checkbox" name="is_pay[0]" value="1" title="已支付" {if condition="!empty($param['is_pay']) && in_array(1,$param['is_pay'])"}checked{/if}>
+                                        <input type="checkbox" name="is_pay[1]" value="0" title="未支付" {if condition="!empty($param['is_pay']) && in_array(0,$param['is_pay'])"}checked{/if}>
+                                        <input type="checkbox" name="is_return" value="1" title="已退还" {if condition="!empty($param['is_return']) && $param['is_return'] == 1"}checked{/if}>
+                                    </div>
+                                </div>
+
+                                <div style="width: 200px; float: left; padding-right: 20px; margin-top: 18px;">
+                                    <button class="layui-btn layui-btn-small" lay-submit lay-filter="formDemo">筛选</button>
+                                </div>
+                            </form>
+
+                            <div style="clear: both; margin: 10px 0 5px 0;float: left; display: inline-block;">
+                                <button type="button" class="layui-btn layui-btn-small layui-btn-danger" id="deleteAll" onclick="delSelected();">批量删除</button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <form id="listFrom" method="post" action="" >
+                        <table class="layui-table table-hover" lay-even="">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkall"></th>
+                                <th width="50" style="text-align: center;">ID</th>
+                                <th width="100">订单号</th>
+                                <th width="160" style="text-align: left;">会员</th>
+                                <th style="text-align: left;">拼团名称</th>
+                                <th width="180" style="text-align: left;">下单时间</th>
+                                <th width="100">是否支付</th>
+                                <th width="160" style="text-align: left;">团长</th>
+                                <th width="120">状态</th>
+                                <th width="200">操作</th>
+
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="data" id="vo"}
+                            <tr>
+                                <td><input type="checkbox" value="" name="id[]" ></td>
+                                <td style="text-align: center;">{$vo.id}</td>
+                                <td width="100">{$vo.pieces_sn}</td>
+                                <td width="160" style="text-align: left;">
+                                    <a href="javascript:;" data-href="{:url('member/Index/edit',['id'=>$vo.user.id])}" data-msg="{$vo.user.nickname}" onclick="showFrame(this);">{$vo.user.nickname}({$vo.user.mobile})</a>
+                                </td>
+                                <td style="text-align: left;">
+                                    <a >{$vo.pieces.title}</a>
+                                </td>
+                                <td style="text-align: left;">{$vo.add_time}</td>
+                                <td>{eq name="$vo.is_pay" value="1"}已支付{else/}否{/eq}</td>
+                                <td style="text-align: left;">
+                                    <a href="javascript:;" data-href="{:url('shop/PiecesGroup/smallOrder',['pieces'=>$vo.pieces_id,'head'=>$vo.head_id])}" data-msg="{$vo.head.nickname}下的拼团" onclick="showFrame(this);">{$vo.head.nickname}</a>
+                                </td>
+                                <td>{$vo.status_string}</td>
+                                <td>
+                                    <!--<button type="button" class="layui-btn layui-btn-small">详情</button>-->
+                                    {if condition="empty($vo.order_id) && $vo.status == 1"}
+                                    <button type="button" class="layui-btn layui-btn-small layui-btn-normal" onclick="showConfirm(this);" data-msg="您确定要退还该笔订单吗?" data-href="{:url('shop/PiecesGroup/returnOrder',['id'=>$vo.id])}">
+                                        退还
+                                    </button>
+                                    {/if}
+                                    <button type="button" class="layui-btn layui-btn-small layui-btn-danger" onclick="showConfirm(this);" data-msg="您确定要删除该笔订单吗?删除后不可恢复!" data-href="{:url('shop/PiecesGroup/delete',['id'=>$vo.id])}">删除</button>
+                                </td>
+
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="larry-table-page clearfix">
+                        {notempty name="page"}
+                        <div id="page" class="page">{$page}</div>
+                        {/notempty}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    layui.use(['jquery','form','layer','element','laypage'],function(){
+        var form = layui.form();
+        window.jQuery = window.$ = layui.jquery;
+        window.layer = layui.layer;
+        var element = layui.element(),
+            laypage = layui.laypage;
+        form.on('switch(switch)', function(data){
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.elem.checked?1:0;
+            $.ajax({
+                type : "POST",
+                url:url,
+                data : {
+                    'field':field,
+                    'val':val
+                },
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000});
+                }
+            });
+        });
+        form.on('select(province)', function(data){
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.value;
+            $.ajax({
+                type : "POST",
+                url:url,
+                data : {
+                    'field':field,
+                    'val':val
+                },
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000});
+                }
+            });
+        });
+    });
+    $('#checkall').click(function () {
+        $("input[name^='id']").prop("checked",$(this).prop("checked"));
+    });
+
+    function showFrame (obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+
+    function showConfirm (obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes','No'] //按钮
+        }, function(){
+            $.ajax({
+                url:$(obj).attr('data-href'),
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            location.reload();
+                        }
+                    })
+                }
+            });
+        });
+    }
+    function callback () {
+        layer.closeAll();
+        location.reload();
+    }
+    function ajaxInput (obj) {
+        var url = $(obj).attr('data-href');
+        var field = $(obj).attr('data-field');
+        var value = $(obj).val();
+        $.ajax({
+            type : "POST",
+            url:url,
+            data : {
+                'field_name':field,
+                'field' : value
+            },
+            dataType : 'json',
+            success: function(data){
+                layer.msg(data.msg,{time:1000},function () {
+                    if (data.code==1) {
+                        location.reload();
+                    };
+                });
+            }
+        });
+    }
+
+    function showConfirm_form (obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes','No'] //按钮
+        }, function(){
+            $.ajax({
+                type : "POST",
+                url:$(obj).attr('data-href'),
+                data :$('#listFrom').serialize(),
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            location.reload();
+                        };
+                    });
+                }
+            });
+        })
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <div class="layui-form-item" id="findGoods">
+        <label class="layui-form-label">选择指定商品</label>
+        <div class="layui-input-block">
+            <input type="button" id="selectgoods" style="width: 400px;" onclick="selectGoods();" placeholder="选择指定商品"
+                   autocomplete="off" class="layui-btn layui-btn-primary" value="选择指定商品">
+            <div>
+                <table class="layui-table">
+                    <thead>
+                    <tr>
+                        <th style="font-size: 12px;">商品名称</th>
+                        <th style="font-size: 12px;">商品价格</th>
+                        <th style="font-size: 12px;">商品库存</th>
+                        <th width="200">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="goodspec">
+                    {notempty name="$goods"}
+                    <tr id="goods{$goods.id}">
+                        <td style="font-size: 12px;" title="{$goods.title}">{:mb_substr($goods.title,0,20)}..</td>
+                        <td style="font-size: 12px;">{:priceFormat($goods.shop_price,1)}</td>
+                        <td style="font-size: 12px;">{$goods.stock}</td>
+                        <td>
+                            <botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal"
+                                    onclick="selectGoodsSpec({$goods.id});">选择抢购规格
+                            </botton>
+                            <botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger"
+                                    onclick="delGoods({$goods.id});">删除
+                            </botton>
+                        </td>
+                        <input type="hidden" name="goods" id="goods" value="{$goods.id}">
+                        <input type="hidden" id="goodsspec" name="spec" value='{$groupData.goodsspec}'>
+                    </tr>
+                    {/notempty}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var form;
+        layui.use(['form', 'upload', 'element', 'layedit', 'laydate'], function () {
+            form = layui.form();
+
+        });
+        function selectGoods() {
+            layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '{:url("shop/Promotion/select_goods")}',
+            });
+        }
+
+        /**
+         * 删除商品
+         * @param id
+         */
+        function delGoods(id) {
+            var g_id = '#goods' + id;
+            $(g_id).remove();
+        }
+    </script>
+</section>
+</body>
+</html>
+

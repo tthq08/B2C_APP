@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>直接下单</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f0f2f5">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">直接下单 </h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="images/filter.png" width="24" alt="" />
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<form name="cart2_form" id="cart2_form" method="post">
+	<main class="cmall-body fixed-body fixed-footer-body">
+		<div class="order-address" {empty name="user_id"}onclick="add_edit_address(0);"{else/}onclick="choose_addr('{$addr.id|default=0}');"{/empty} id="ajax_address">
+			<input type="hidden" name="address_id" value="{$address_id|default=''}">
+			<p class="mb10 tit"><span>{$consignee|default=''}</span><span class="fr">{$phone|default=''}</span></p>
+			<p class="amsg">收货地址：{$address|default=''}</p>
+			<div class="line"></div>
+		</div>
+		<div id="order_list">
+
+		</div>
+	</main>
+	</form>
+</body>
+	<script type="text/javascript">
+		// 提交订单
+		ajax_return_status = 1; // 标识ajax 请求是否已经回来 可以进行下一次请求
+		function submit_order()
+		{
+			// if(ajax_return_status == 0)
+			//     return false;
+			var consignee = $('#consignee').val();
+			var consignee_en = $('#consignee_en').val();
+			var mobile = $('#mobile').val();
+			var emali = $('#emali').val();
+			var zip = $('#zip').val();
+			var address = $('#address').val();
+			var base_addr = $('#base_addr').val();
+			var en_address = $('#en_address').val();
+			var clearance_sn = $('#clearance_sn').val();
+			var ord_pwd = $('#ord_pwd').val();
+			var ord_repwd = $('#ord_repwd').val();
+
+			if (typeof(consignee)=='undefined' || consignee=='' || consignee_en=='' || base_addr=='' || en_address=='' || mobile=='') {
+				layer.msg('请设置收货地址信息');
+				return false;
+			}
+
+			if (ord_pwd=='') {
+				layer.msg('请设置订单密码');
+				return false;
+			}
+
+			if (ord_pwd!=ord_repwd) {
+				layer.msg('再次设置的密码不一致');
+				return false;
+			}
+
+			ajax_return_status = 0;
+			
+			$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/gobuy2')}",//+tab,
+				data : $('#cart2_form').serialize()+"&act=submit_order",// 你的formid
+		        dataType: "json",
+				success: function(data){												
+					ajax_return_status = 1; // 上一次ajax 已经返回, 可以进行下一次 ajax请求	
+					if(data.code != '1')
+					{
+						layer.alert(data.msg, {icon: 2});				
+						
+						// 登录超时
+						if(data.status == -100) 
+						{
+							location.href ="{:U('shop/User/login')}";
+						}						
+						return false;
+					}
+		            // console.log(data);
+					// $("#postFee").text(data.msg.postFee); // 物流费
+					//layer.alert('订单提交成功，跳转支付页面!', {icon: 1}); //alert('订单提交成功，跳转支付页面!');
+
+					layer.msg('订单提交成功，跳转支付页面!', {
+					  icon: 1,   // 成功图标
+					  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+					}, function(){ // 关闭后执行的函数
+						location.href = "{:U('shop/Cart/cart4')}?serial_id="+data.msg.order_id; // 跳转到结算页
+					});
+
+				}
+			});	
+		}
+
+		$(function () {
+			ajaxLoadGobuy();
+		});
+
+		// 数量操作
+		function nums_reduce(obj) {
+			var id = $(obj).attr('data-id');
+			var input = $(obj).siblings('.in').find('input');
+			var num = Number(input.val());
+			if(num == 1) {
+				layer.msg('不能小于1');
+				return ;
+			} else {
+				input.val(--num);
+				gobuynums(id,num);
+			}
+		}
+
+		function nums_add(obj) {
+			var id = $(obj).attr('data-id');
+			var input = $(obj).siblings('.in').find('input');
+			var num = Number(input.val());
+			var max = Number($(obj).attr('data-max'));
+			if(num == max) {
+				layer.msg('不能大于' + max);
+				return ;
+			} else {
+				input.val(++num);
+				gobuynums(id,num);
+			}
+		}
+
+		// Ajax加载订单列表
+		function ajaxLoadGobuy() {
+			$.ajax({
+				url:"{:U('cart/ajaxGobuyList')}",
+				success: function(data){
+					$('#order_list').html(data);
+				}
+			});	
+		}
+
+		function gobuynums(id,nums) {
+			$.ajax({
+				url:"{:U('Cart/gobuynums')}",
+				data:{
+					id:id,
+					nums:nums
+				},		
+				success: function(data){									
+					// layer.msg(data.msg,{time:1000},function () {
+					if (data.code==1) {
+						ajaxLoadGobuy();
+					}else{
+						layer.msg(data.msg);
+					}
+					// })
+				}
+			});	
+		}
+
+		/**
+		* 新增修改收货地址
+		* id 为零 则为新增, 否则是修改
+		*  使用 公共的 layer 弹窗插件  参考官方手册 http://layer.layui.com/
+		*/
+		function add_edit_address(id)
+		{
+			var url = "{:U('cart/set_address')}";	// 新增地址
+			layer.open({
+				type: 2,
+				title: '设置收货地址',
+				shadeClose: true,
+				shade: 0.8,
+				area: ['99%', '99%'],
+				content: url,
+			}); 	
+		}
+
+		/**
+		* 选择收货地址
+		*/
+		function choose_addr(id)
+		{
+			var url = "{:U('cart/choose_addr')}?id="+id;	// 新增地址
+			layer.open({
+				type: 2,
+				title: '选择收货地址',
+				shadeClose: true,
+				shade: 0.8,
+				area: ['99%', '99%'],
+				content: url,
+			}); 	
+		}
+
+		function address_callback(data) {
+			$("#ajax_address").html('');
+			$("#ajax_address").append(data);
+			layer.closeAll();
+		}
+
+		function delBuy(id) {
+			$.ajax({
+				url:"{:U('cart/delbuy')}",
+				data:{id,id},
+				success: function(data){
+					if (data.code==1) {
+						ajaxLoadGobuy();
+					}else{
+						layer.msg(data.msg);
+					}
+				}
+			});	
+		}
+	</script>
+</html>

@@ -1,0 +1,52 @@
+<header class="header mall-header">
+    <div class="container w1200 clearfix">
+        <div class="header-left">
+            <a href="/" class="logo" >
+                <img src="{:tb_config('web_site_logo',1)}" alt="" style="max-width: 100px;" />
+            </a>
+            <div class="header-intr">
+                <h1 class="t">TB mall</h1>
+                <p class="m">B2C商城</p>
+            </div>
+        </div>
+        <div class="header-middle">
+
+            <form method="get" action="{:U('Goods/search')}">
+                <div class="mall-search-box">
+                    <input type="text" name="keyword" placeholder="{:lang('Comm_Top_Text_search_place')}" {notempty name="keyword"} value="{$keyword}"{/notempty}/>
+                    <button type="submit" class="btn">
+                        <img src="{:tb_config('resource_path',1)}shop/picture/search.png" alt="" /></button>
+                </div>
+            </form>
+        </div>
+        <div class="header-right fr">
+            <div class="cart-frame">
+                <a class="cart-con" href="{:U('shop/cart/cart')}">
+                    <img src="{:tb_config('resource_path',1)}shop/picture/cart.png" alt="">
+                    <span>购物车</span>
+                    {notempty name="cart_num"}
+                    <span class="num" id="header_cart_nums">{$cart_num}</span>
+                    {/notempty}
+                </a>
+                <div class="cart-subbox" id="cart_list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<script type="text/javascript">
+    getsCart = false;
+    $('.cart-frame').mouseenter(function() {
+        if( getsCart == true ){
+            return false;
+        }
+        $.ajax({
+            url:"{:U('index/ajaxBarCart')}",
+            success: function(data){
+                $('#cart_list').html(data);
+                getsCart = true;
+            }
+        });
+    })
+</script>

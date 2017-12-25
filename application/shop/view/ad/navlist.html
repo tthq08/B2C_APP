@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <div class="layui-tab layui-tab-card">
+
+            <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+                {volist name="module_menu" id="vo" key="k"}
+                <div class="layui-tab-item layui-field-box {eq name='vo.name' value='$modu_now'}layui-show{/eq}">
+                    <div class="larry-table-page clearfix">
+                        <a href="javascript:;" class="layui-btn layui-btn-small" onclick="addMenu();">
+                            <i class="layui-icon">&#xe61f;</i>
+                            {$eBiz.lang.menu_list_bottom_btn_add}
+                        </a>
+                        <a href="javascript:;" data-href="{:url('Menu/dels',['m'=>$k])}" class="layui-btn layui-btn-small" onclick="dels(this,'{$k}');">
+                            <i class="iconfont icon-shanchu1"></i>
+                            {$eBiz.lang.menu_list_bottom_btn_del}
+                        </a>
+                        <!-- <div id="page{$i}" class="page"></div> -->
+                    </div>
+                    <form id="listFrom{$k}" method="post" action="" >
+                        <table class="layui-table table-hover" lay-even="" lay-skin="nob"  id="treeTable{$k}">
+                            <thead>
+                            <tr>
+                                <th><input type="checkbox" id="checkall{$k}"></th>
+                                <th>ID</th>
+                                <th>{$eBiz.lang.menu_list_th_title_0}</th>
+                                <th style="width:300px;" class="left">{$eBiz.lang.menu_list_th_title_1}</th>
+                                <th style="width:300px;" class="left">{$eBiz.lang.menu_list_th_title_2}</th>
+                                <th>{$eBiz.lang.menu_list_th_title_3}</th>
+                                <th>{$eBiz.lang.menu_list_th_title_4}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="vo.menus" id="v"}
+                            <tr id="{$v.id}" {neq name="v.pid" value="0"}pId="{$v.pid}"{/neq}>
+                            <td><input type="checkbox" name="id{$k}[{$v.id}]" value="1"></td>
+                            <td>{$v.id}</td>
+                            <td><input name="sort[{$v.id}]" data-id="{$v.id}" value="{$v.sort}" style="width:40px;" onblur="sortMenu(this);"></td>
+                            <td class="left"><i class="{$v.icon}"></i>{$v.title}</td>
+                            <td class="left">{$v.name}</td>
+                            <td class="layui-form">
+                                <input type="checkbox" data-id="{$v.id}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.status" value="1" }checked{/eq}>
+                            </td>
+                            <td>
+                                <div class="layui-btn-group">
+                                    <button type="button" onclick="doMenu(this);" data-href="{:url('Sys/Menu/add',['pid'=>$v['id']])}" class="layui-btn layui-btn-small" title="{$eBiz.lang.menu_list_btn_add}">
+                                        <i class="layui-icon">&#xe654;</i>
+                                    </button>
+                                    <button type="button" onclick="doMenu(this);" data-href="{:url('Sys/Menu/edit',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-normal" title="{$eBiz.lang.menu_list_btn_edit}">
+                                        <i class="layui-icon">&#xe642;</i>
+                                    </button>
+                                    <button type="button" onclick="delMenu(this);" data-href="{:url('Sys/Menu/del',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-danger" title="{$eBiz.lang.menu_list_btn_del}">
+                                        <i class="layui-icon">&#xe640;</i>
+                                    </button>
+                                </div>
+                            </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+                {/volist}
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}treeTable/jquery.treeTable.js" type="text/javascript"></script>
+<script type="text/javascript">
+    layui.use(['jquery','form','layer','element','laypage'],function(){
+        var form = layui.form();
+        window.jQuery = window.$ = layui.jquery;
+        window.layer = layui.layer;
+        var element = layui.element(),
+                laypage = layui.laypage;
+        form.on('switch(switch)', function(data){
+            var id = $(data.elem).attr('data-id');
+            var val = data.elem.checked?1:0;
+            $.ajax({
+                type : "POST",
+                url:"{:url('Menu/switchs')}",
+                data : {
+                    'id':id,
+                    'val':val
+                },
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000});
+                }
+            });
+        });
+    });
+    $(function(){
+        var option = {
+            theme:'default',
+            column:3,
+            expandLevel : 1,
+            beforeExpand : function($treeTable, id) {
+                //判断id是否已经有了孩子节点，如果有了就不再加载，这样就可以起到缓存的作用
+                if ($('.' + id, $treeTable).length) { return; }
+                //这里的html可以是ajax请求
+                var html = '';
+
+                $treeTable.addChilds(html);
+            },
+            onSelect : function($treeTable, id) {
+                window.console && console.log('onSelect:' + id);
+            }
+
+        };
+        {volist name="module_menu" id="mn" key="a"}
+        $('#treeTable{$a}').treeTable(option);
+        {/volist}
+    });
+    {volist name="module_menu" id="mn" key="b"}
+    $('#checkall{$b}').click(function () {
+        $("input[name^='id{$b}']").prop("checked",$(this).prop("checked"));
+    });
+    {/volist}
+
+    function addMenu () {
+        var index = layer.open({
+            type: 2,
+            title: '{$eBiz.lang.menu_window_add_title}',
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: '{:url("Menu/add")}'
+        });
+        layer.full(index);
+    }
+    function doMenu (obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('title'),
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+    function delMenu (obj) {
+        layer.confirm('{$eBiz.lang.del_frame_confirm_title}', {
+            btn: ['{$eBiz.lang.del_frame_btn_yes}','{$eBiz.lang.del_frame_btn_no}'] //按钮
+        }, function(){
+            $.ajax({
+                url:$(obj).attr('data-href'),
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            location.href=data.url;
+                        }
+                    })
+                }
+            });
+        });
+    }
+    function callback (url) {
+        layer.closeAll();
+        location.href = url;
+    }
+    function sortMenu (obj) {
+        var id = $(obj).attr('data-id');
+        var sort = $(obj).val();
+        $.ajax({
+            type : "POST",
+            url:"{:url('Menu/sort')}",
+            data : {
+                'id' : id,
+                'sort' : sort
+            },
+            dataType : 'json',
+            success: function(data){
+                layer.msg(data.msg,{time:1000},function () {
+                    if (data.code==1) {
+                        location.href=data.url;
+                    };
+                });
+            }
+        });
+    }
+
+    function dels (obj,key) {
+        // console.log($('#listFrom').serialize());
+        // return false;
+        $.ajax({
+            type : "POST",
+            url:$(obj).attr('data-href'),
+            data :$('#listFrom'+key).serialize(),
+            dataType : 'json',
+            success: function(data){
+                layer.msg(data.msg,{time:1000},function () {
+                    if (data.code==1) {
+                        location.href=data.url;
+                    };
+                });
+            }
+        });
+    }
+</script>
+</body>
+</html>

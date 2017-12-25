@@ -1,0 +1,79 @@
+{if condition="empty($list)"}
+<div style="font-size: 18px; text-align: center; color: #999999; margin-top: 100px;">暂无内容</div>
+{else/}
+<div class="dir">
+    <ul class="clearfix">
+        {volist name="list" id="vo"}
+        {if condition="!empty($vo)"}
+        <li data-id="{$vo.id}" class="fitem {if condition="$vo.type == 'folder'"}folder{/if}" data-act="{$vo.base_path}">
+            <span class="check">
+                <input class="item-check" type="checkbox" />
+            </span>
+
+            {if condition="$vo['type'] == 'folder'"}
+            <div class="img">
+                <img src="{tbimg module='Admin' src='../picturelibrary/img/file.png'}" alt="">
+            </div>
+            {else/}
+            <div class="img" style="height: 56px; text-align: center;">
+                <img class="imgZoom" src="{$vo.path}" style="max-height: 56px; width: 56px;" alt="">
+            </div>
+            {/if}
+            <div class="info handle_info">
+                <span class="open_handle">{$vo.name}</span>
+                <div class="handle_wrap" style="border-radius: 5px;">
+                    <ul class="handle_list">
+                        <li class="handle_item">打开文件夹</li>
+                        <li class="handle_item">下载</li>
+                        <li class="handle_item">
+                            移动到 <span style="float: right; color: #999999">></span>
+                        </li>
+                        <li class="handle_item">重新命名</li>
+                        <hr style="margin-top: 5px;margin-bottom: 5px;">
+                        <li class="handle_item">移到回收站</li>
+                        <li class="handle_item" style="color: #d62900;">彻底删除</li>
+                    </ul>
+                </div>
+            </div>
+        </li>
+        {/if}
+        {/volist}
+    </ul>
+</div>
+{/if}
+{tbjs module="Admin" src="../picturelibrary/js/jquery.min.js,jquery.mousewheel.js,jquery.imgZoom.js,jquery.drag.js"}
+
+<script type="text/javascript">
+    $(".imgZoom").imgZoom();
+    var open = false;
+    var open_id = false;
+    $('.fitem').contextmenu(function(e){
+        if( open == false ){
+            if(!$(this).children('.handle_info').hasClass('handle_info_open')){
+                $(this).children('.handle_info').addClass('handle_info_open');
+            }
+            e.preventDefault();
+            open = true;
+            open_id = $(this).attr('data-id');
+            return false;
+        }else{
+            if( open_id == $(this).attr('id') ){
+                if($('.handle_info').hasClass('handle_info_open'))  $('.handle_info').removeClass('handle_info_open');
+                open = false;
+            }else{
+                if($('.handle_info').hasClass('handle_info_open'))  $('.handle_info').removeClass('handle_info_open');
+                if(!$(this).children('.handle_info').hasClass('handle_info_open')){
+                    $(this).children('.handle_info').addClass('handle_info_open');
+                }
+                e.preventDefault();
+                open = true;
+                open_id = $(this).attr('data-id');
+                return false;
+            }
+        }
+    });
+
+    $(document).click(function(){
+        if($('.handle_info').hasClass('handle_info_open'))  $('.handle_info').removeClass('handle_info_open');
+    });
+</script>

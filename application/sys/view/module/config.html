@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <form class="layui-form" action="{:url('Module/configUpdate')}" method="post">
+
+        <div class="larry-personal">
+            <header class="larry-personal-tit">
+                <span>{$eBiz.lang.menu_action_title}</span>
+            </header><!-- /header -->
+            <div class="larry-personal-body clearfix">
+                <input type="hidden" name="id" value="{$config.id}">
+                <input type="hidden" name="module" value="{$module.name}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">PC模板</label>
+                    <div class="layui-input-block">
+                        <select name="home_template" id="home_template" lay-filter="home_template"
+                                lay-verify='required'>
+                            <option value="">选择PC模板</option>
+                            {volist name="tmpList" id="vo"}
+                            <option value="{$vo}" {if condition="$config['home_template'] == $vo" }selected{/if}>{$vo}</option>
+                            {/volist}
+
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">手机模板</label>
+                    <div class="layui-input-block">
+                        <select name="mobile_template" id="mobile_template" lay-filter="mobile_template" lay-verify='required'>
+                            <option value="">选择手机模板</option>
+                            {volist name="tmpList" id="vo"}
+                            <option value="{$vo}" {if condition="$config['mobile_template'] == $vo" }selected{/if}>{$vo}</option>
+                            {/volist}
+
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button type="button" class="layui-btn" lay-submit="" lay-filter="*">
+                        {$eBiz.lang.menu_form_btn_submit}
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-primary">{$eBiz.lang.menu_form_btn_reset}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script type="text/javascript">
+    layui.use(['form', 'upload'], function () {
+        var form = layui.form();
+        form.on('submit(*)', function (data) {
+            var url = $(data.form).attr('action');
+            $.ajax({
+                type: "POST",
+                url: '{:url("Module/configUpdate")}',
+                data: data.field,
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {time: 1000}, function () {
+                        if (data.code == 1) {
+                            parent.callback(data.url);
+                        };
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{notempty name="list"}
+{volist name="list" id="v"}
+<div class="qa-item">
+	<div class="ask item">
+		<i class="icon">问</i>
+		<span class="msg">{$v.content}</span>
+		<?php
+			$showName = $v['is_hidename']==1?'匿名':$v['username'];
+		?>
+		<span class="time">{$showName} {$v.add_time}</span>
+	</div>
+	<div class="answer item">
+		<i class="icon">答</i>
+		{volist name="v.answer" id="vo"}
+		{eq name="i" value="1"}
+		<span class="msg">{$vo.content}</span>
+		<span class="time">{$vo.username} {$vo.add_time}</span>
+		{else/}
+		<div class="an-item" style="display: block;">
+			<span class="msg">{$vo.content}</span>
+			<span class="time">{$vo.username} {$vo.add_time}</span>
+		</div>
+		{/eq}
+		{/volist}
+	</div>
+</div>
+{/volist}
+{$page}
+{else/}
+暂无咨询问题
+{/notempty}
+
+<script>
+    // 点击分页触发的事件
+    $("#ajax_consult_return .pagination  a").click(function(){
+        cur_page = $(this).data('p');
+        parent.location.href='#goods_evaluate';
+        ajaxconsult(cur_page);
+    });
+</script>

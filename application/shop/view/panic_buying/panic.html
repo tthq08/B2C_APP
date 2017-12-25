@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style type="text/css">
+    .pagination {margin:0px;}
+</style>
+<section class="layui-larry-box">
+    {notempty name="tabel_tips"}
+    <blockquote class="layui-elem-quote">{$tabel_tips}</blockquote>
+    {/notempty}
+    <div class="larry-personal">
+        <div class="layui-tab layui-tab-card">
+            {notempty name="top_btn"}
+            <blockquote class="layui-elem-quote mylog-info-tit">
+                <ul class="layui-tab-title">
+                    {volist name="top_btn" id="top"}
+                    {switch name="top.type"}
+                    {case value="frame"}{assign name="action" value="showFrame" /}{/case}
+                    {case value="confirm_form"}{assign name="action" value="showConfirm_form" /}{/case}
+                    {/switch}
+                    <li class="layui-btn {$top.class}" onclick="{$action}(this);" data-msg="{$top.msg}" data-href="{:url($top['url'],$top['pram'])}"><i class="{$top.icon}"></i>{$top.title}</li>
+                    {/volist}
+                </ul>
+            </blockquote>
+            <div class="larry-separate"></div>
+            {/notempty}
+            {notempty name="nav_list"}
+            <ul class="layui-tab-title">
+                {volist name="nav_list" id="nav"}
+                <li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+                {/volist}
+            </ul>
+            {/notempty}
+            <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+                <div class="layui-tab-item layui-field-box layui-show">
+
+                    <form id="listFrom" method="post" action="" >
+                        <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                            <thead>
+                            <tr>
+                                {eq name="show_check" value="1"}
+                                <th><input type="checkbox" id="checkall"></th>
+                                {/eq}
+                                {volist name="tb_title" id='vo'}
+                                <th {notempty name="vo.css"}style="{$vo.css}"{/notempty}>{$vo.title}</th>
+                                {/volist}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="panicList" id="v"}
+                            <tr>
+                                {eq name="show_check" value="1"}
+                                <td><input type="checkbox" value="{$v.id}" name="id[{$v.id}]" ></td>
+                                {/eq}
+                                {volist name="tb_title" id='vv'}
+                                {neq name="vv.type" value="btn"}
+                                <td class="layui-form">
+                                    {switch name="vv.type"}
+                                    {case value="input"}
+                                    <input name="{$vv.field}[{$v.id}]" data-href="{:url($vv['url'],[$vv['pram']=>$v['id']])}" data-field="{$vv.field}" value="{$v[$vv['field']]}" style="width:40px;" onblur="ajaxInput(this);">
+                                    {/case}
+                                    {case value="switch"}
+                                    <input type="checkbox" name="{$vv['field']}" data-href="{:url($vv['url'],[$vv['pram']=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v[$vv['field']]" value="1" }checked{/eq}>
+                                    {/case}
+                                    {case value="img"}
+                                    <img src="{$v[$vv['field']]}" style="max-width:150px;max-height:80px;">
+                                    {/case}
+                                    {case value="select"}
+                                    <select name="{$vv['field']}" data-href="{:url($vv['url'],[$vv['pram']=>$v['id']])}" lay-skin="select" lay-filter="select">
+                                        {volist name="vv.options" id="vvo" key="kkey"}
+                                        <option value="{$kkey}" {eq name="v[$vv['field']]" value="$kkey" }selected=""{/eq}>{$vvo}</option>
+                                        {/volist}
+                                    </select>
+                                    {/case}
+                                    {default/}{$v[$vv['field']]}
+                                    {/switch}
+                                </td>
+                                {else/}
+                                <td>
+                                    <div class="layui-btn-group">
+                                        {volist name="btn_lst" id="btn"}
+                                        {switch name="btn.type"}
+                                        {case value="frame"}{assign name="action" value="showFrame" /}{/case}
+                                        {case value="confirm"}{assign name="action" value="showConfirm" /}{/case}
+                                        {/switch}
+                                        <?php
+                        $condition = $btn['condition'];
+                        $con = true;
+                        if (!empty($condition)) {
+                          switch ($condition[1]) {
+                            case '=':
+                              $con = ($v[$condition[0]] == $condition[2]);
+                              break;
+                            case '>':
+                                        $con = ($v[$condition[0]] > $condition[2]);
+                                        break;
+                                        case '>=':
+                                        $con = ($v[$condition[0]] >= $condition[2]);
+                                        break;
+                                        case '<':
+                                        $con = ($v[$condition[0]] < $condition[2]);
+                                        break;
+                                        case '<=':
+                                        $con = ($v[$condition[0]] <= $condition[2]);
+                                        break;
+                                        case '<>':
+                                        $con = ($v[$condition[0]] <> $condition[2]);
+                                        break;
+                                        }
+                                        }
+                                        ?>
+                                        {eq name="con" value='true'}
+                                        <button type="button" onclick="{$action}(this);" data-msg="{$btn.msg}" data-href="{:url($btn['url'],[$btn['pram']=>$v['id']])}" class="layui-btn layui-btn-small {$btn.class}" title="{$btn.title}"><i class="{$btn.icon}"></i></button>
+                                        {/eq}
+                                        {/volist}
+                                    </div>
+                                </td>
+                                {/neq}
+                                {/volist}
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </form>
+                    <div class="larry-table-page clearfix">
+                        {notempty name="page"}
+                        <div id="page" class="page">{$page}</div>
+                        {/notempty}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    layui.use(['jquery','form','layer','element','laypage'],function(){
+        var form = layui.form();
+        window.jQuery = window.$ = layui.jquery;
+        window.layer = layui.layer;
+        var element = layui.element(),
+            laypage = layui.laypage;
+        form.on('switch(switch)', function(data){
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.elem.checked?1:0;
+            $.ajax({
+                type : "POST",
+                url:url,
+                data : {
+                    'field':field,
+                    'val':val
+                },
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000});
+                }
+            });
+        });
+        form.on('select(select)', function(data){
+            var url = $(data.elem).attr('data-href');
+            var field = $(data.elem).attr('name');
+            var val = data.value;
+            $.ajax({
+                type : "POST",
+                url:url,
+                data : {
+                    'field':field,
+                    'val':val
+                },
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000});
+                }
+            });
+        });
+        form.render('select');
+    });
+    $('#checkall').click(function () {
+        $("input[name^='id']").prop("checked",$(this).prop("checked"));
+    });
+
+    function showFrame (obj) {
+        var index = layer.open({
+            type: 2,
+            title: $(obj).attr('data-msg'),
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: $(obj).attr('data-href')
+        });
+        layer.full(index);
+    }
+
+    function showConfirm (obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes','No'] //按钮
+        }, function(){
+            $.ajax({
+                url:$(obj).attr('data-href'),
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            location.reload();
+                        }
+                    })
+                }
+            });
+        });
+    }
+    function callback () {
+        layer.closeAll();
+        location.reload();
+    }
+    function ajaxInput (obj) {
+        var url = $(obj).attr('data-href');
+        var field = $(obj).attr('data-field');
+        var value = $(obj).val();
+        $.ajax({
+            type : "POST",
+            url:url,
+            data : {
+                'field_name':field,
+                'field' : value
+            },
+            dataType : 'json',
+            success: function(data){
+                layer.msg(data.msg,{time:1000},function () {
+                    if (data.code==1) {
+                        location.reload();
+                    };
+                });
+            }
+        });
+    }
+
+    function showConfirm_form (obj) {
+        layer.confirm($(obj).attr('data-msg'), {
+            btn: ['Yes','No'] //按钮
+        }, function(){
+            $.ajax({
+                type : "POST",
+                url:$(obj).attr('data-href'),
+                data :$('#listFrom').serialize(),
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function () {
+                        if (data.code==1) {
+                            location.reload();
+                        };
+                    });
+                }
+            });
+        })
+    }
+</script>
+</body>
+</html>

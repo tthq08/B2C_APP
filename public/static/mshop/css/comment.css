@@ -1,0 +1,205 @@
+@charset 'utf-8';
+
+.sp_idear {
+    overflow: hidden;
+    padding: .3rem;
+    background-color: white;
+}
+.maleri30 {
+    margin: 0 .64rem;
+}
+.com_igy {
+    margin-left: .64rem;
+    float: right;
+}
+.com_igy p {
+    font-size: .6rem;
+}
+
+.shuxg {
+    margin-top: .59733rem;
+}
+
+.confine-wsp {
+    width: 10.15467rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.p:before, .p:after {
+    content: "";
+    clear: both;
+    display: block;
+    font-size: 0;
+    height: 0;
+}
+.comm_text_goods {
+    background: #f3f5f7;
+    padding: 0.6rem 0;
+}
+.customer-messa .maleri30 {
+    position: relative;
+    overflow: hidden;
+}
+.comm_text_goods .tapassa {
+    height: 3.84rem;
+    background: inherit;
+    outline: none;
+    border: 0;
+    line-height: .85333rem;
+}
+
+.customer-messa textarea {
+    width: 100%;
+    height: 2.56rem;
+    border: 1px solid #ebebeb;
+    padding: .21333rem;
+    font-size: .55467rem;
+    color: #232326;
+    margin: .42667rem 0;
+    resize: none;
+}
+
+textarea {
+    overflow: auto;
+}
+
+.customer-messa .xianzd {
+    position: absolute;
+    color: #999;
+    bottom: .64rem;
+    right: .21333rem;
+    font-size: .55467rem;
+}
+
+span, img {
+    vertical-align: middle;
+}
+
+.seravetype {
+    overflow: hidden;
+    font-family: "黑体";
+    background: white;
+    padding: .42667rem 0;
+}
+
+.seravetype ul {
+    overflow: hidden;
+}
+
+.seravetype ul li {
+    float: left;
+    width: 20%;
+    margin: .4rem 0;
+}
+.seravetype ul li .shcph {
+    width: 2.6rem;
+    height: 2.6rem;
+    border: 1px solid #dadde0;
+    text-align: center;
+    cursor: pointer;
+}
+.seravetype ul li .shcph img {
+    width: 2.6rem;
+    height: 2.6rem;
+}
+.wlcomenser {
+    background: white;
+    border-bottom: 1px solid #ebebeb;
+}
+.ma-to-20 {
+    margin-top: .42667rem;
+}
+.p_zyft {
+    padding: .64rem 0;
+}
+.wlcomenser .lifi {
+    color: #666666;
+    font-size: .59733rem;
+    margin-top: .08533rem;
+}
+.thirs_commen {
+    background: white;
+    padding-bottom: 1.06667rem;
+}
+.al_comentaid {
+    padding-top: 1.06667rem;
+}
+.al_comentaid .taidh {
+    float: left;
+    font-size: .68267rem;
+    margin-top: .04267rem;
+    padding-left: 1.408rem;
+}
+.al_comentaid .star_click {
+    float: right;
+    margin-top: 0;
+}
+
+.star_click {
+    margin-top: .46933rem;
+    position: relative;
+}
+.star_click .comment-item-star_wr {
+    height: .74667rem;
+    width: .96rem;
+    background: url("../images/comment-star_wr.png") repeat-x 0 0;
+    background-size: .96rem;
+    display: inline-block;
+    background-position-y: -.85333rem;
+    cursor: pointer;
+}
+.real-star_wr {
+    height: .74667rem;
+    background: url("../images/comment-star_wr.png") repeat-x 0 0;
+    background-size: .96rem;
+    display: inline-block;
+    background-position-y: -.02133rem;
+}
+
+
+.comment-item-star {
+    display: inline-block;
+    overflow: hidden;
+    width: 3.1rem;
+    height: .46933rem;
+    margin-top: .42667rem;
+    margin-bottom: -.256rem;
+    background: url(../images/comment-star.png) repeat-x 0 -.46933rem;
+    background-size: .64rem .93867rem
+}
+
+.comment-item-star .real-star {
+    display: inline-block;
+    height: .93867rem;
+    background: url(../images/comment-star.png) repeat-x 0 0;
+    background-size: .64rem .93867rem
+}
+
+.comment-stars-width5 {
+    width: 100%
+}
+
+.comment-stars-width4 {
+    width: 80%
+}
+
+.comment-stars-width3 {
+    width: 60%
+}
+
+.comment-stars-width2 {
+    width: 40%
+}
+
+.comment-stars-width1 {
+    width: 20%
+}
+
+.comment-btn {
+	background: #3f94d4;
+	color: #fff;
+	padding: 10px;
+	width: 100%;
+	border-radius: 5px;
+}

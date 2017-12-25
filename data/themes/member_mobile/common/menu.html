@@ -1,0 +1,15 @@
+<div class="menu-title">个人中心</div>
+<div class="menu-list">
+    <a class="menu-item {if condition=" $Request.controller eq 'Order'"}item-active{/if}" href="{:U('member/Order/index')}" data-monitor="user_myorder_myorder">我的订单</a>
+
+    <a class="menu-item coupon_menu {if condition=" $Request.action eq 'coupon'"}item-active{/if}" href="{:U('member/user/coupon')}" data-monitor="user_mycoupon_mycoupon">我的优惠券</a>
+
+    <a class="menu-item favorite_menu {if condition=" $Request.action eq 'shop_collect' OR
+    $Request.action eq 'goods_collect'"}item-active{/if}" href="{:U('member/user/goods_collect')}" data-monitor="user_myfavorite_myfavorite">我的喜欢</a>
+
+    <a class="menu-item user_address_address {if condition="$Request.Controller eq 'Address'"}item-active{/if}" href="{:U('member/Address/index')}" data-monitor="user_address_address">收货地址</a>
+</div>
+<div class="menu-title">售后服务</div>
+<div class="menu-list">
+    <a class="menu-item afterSale_menu" href="javascript:;" data-monitor="user_returnlist_returnlist">我的退换货</a>
+</div>

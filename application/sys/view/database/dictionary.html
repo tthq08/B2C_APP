@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+	<div class="larry-personal">
+	    <div class="layui-tab layui-tab-card">
+        <ul class="layui-tab-title">
+          {volist name="nav_list" id="nav"}
+          <li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+          {/volist}
+        </ul>
+		    <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+          <div class="layui-tab-item layui-field-box layui-show">
+          {volist name="dabase_list" id="vo" key="sort"}
+	        <blockquote class="layui-elem-quote">{$sort}、{$vo.comment} ： {$vo.name}</blockquote>
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>字段名</th>
+                  <th>数据类型</th>
+                  <th>默认值</th>
+                  <th>允许非空</th>
+                  <th>自动递增</th>
+                  <th>备注</th>
+                </tr>
+              </thead>
+              <tbody>
+                {volist name="vo.TABLE_COMMENT" id="v" key="K"}
+                <tr>
+                  <td>{$K}</td>
+                  <td>{$v.COLUMN_NAME}</td>
+                  <td>{$v.COLUMN_TYPE}</td>
+                  <td>{$v.COLUMN_DEFAULT}</td>
+                  <td>{$v.IS_NULLABLE}</td>
+                  <td>{$v.EXTRA=="auto_increment"?'是':''}</td>
+                  <td>{$v.COLUMN_COMMENT}</td>
+                </tr>
+                {/volist}                 
+              </tbody>
+          </table>
+          {/volist}
+			    </div>
+
+		    </div>
+		</div>
+	</div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+
+</body>
+</html>

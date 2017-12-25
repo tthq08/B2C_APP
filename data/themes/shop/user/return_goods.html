@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Return_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong>{$eBiz.lang.Return_page_title}</strong>
+				</div>
+				<!-- 收支明细 -->
+				<div class="j-user-section user-section plr20-section mt20">
+					<div class="user-tab-top">
+						<ul class="user-tab-box clearfix">
+							<li class="top-item {eq name='type' value=''}on{/eq}"><a href="{:U('shop/user/return_goods')}">{$eBiz.lang.Return_all_type}</a></li>
+							<li class="top-item {eq name='type' value='0'}on{/eq}"><a href="{:U('shop/user/return_goods',['type'=>0])}">{$eBiz.lang.Return_jtk_type}</a></li>
+							<li class="top-item {eq name='type' value='1'}on{/eq}"><a href="{:U('shop/user/return_goods',['type'=>1])}">{$eBiz.lang.Return_thtk_type}</a></li>
+							<li class="top-item {eq name='type' value='2'}on{/eq}"><a href="{:U('shop/user/return_goods',['type'=>2])}">{$eBiz.lang.Return_hh_type}</a></li>
+						</ul>
+					</div>
+					<div class="user-content pb30 mt20">
+						<div class="order-list-box">
+							<div class="order-list-table">
+								<table>
+									<thead>
+										<tr>
+											<th width="15%">{$eBiz.lang.Return_table_order}</th>
+											<th width="40%">{$eBiz.lang.Return_table_goods_info}</th>
+											<th width="10%">{$eBiz.lang.Return_table_serv_type}</th>
+											<th width="15%">{$eBiz.lang.Return_table_add_time}</th>
+											<th width="10%">{$eBiz.lang.Return_table_status}</th>
+											<th width="10%">{$eBiz.lang.Return_table_action}</th>
+										</tr>
+									</thead>
+									<tbody class="u-order-list">
+									{volist name="list" id="vo"}
+										<tr class="tr-bd">
+											<td>{$vo.delivery_sn}</td>
+											<td>
+												<div class="pic">
+													<a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['goods']['goods_id']])}" target="_blank"><img src="{$vo.goods_thumb|common_thumb_img=80,80}" title="{$vo.goods.goods_name}" /></a>
+												</div>
+												<div class="info">
+													<div class="na"><a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['goods']['goods_id']])}" target="_blank">{$vo.goods.goods_name}</a></div>
+													<div class="spec">{$vo.goods.spec_title}</div>
+												</div>
+											</td>
+											{assign name="types" value=":config('return_type')" /}
+											<td>{$types[$vo['serv_type']]}</td>
+											<td>{$vo.add_time}</td>
+											{assign name="status" value=":config('return_status')" /}
+											<td>{$status[$vo['status']]}</td>
+											<td><a href="javascript:;" onclick="openWin(this);" data-msg="{:lang('Return_table_detail')}" data-href="{:U('User/return_show',['id'=>$vo['id']])}" >{$eBiz.lang.Return_table_show}</a></td>
+										</tr>
+									{/volist}										
+									</tbody>
+								</table>
+							</div>
+						</div>
+						<div style="margin-top: 20px;">{$page}</div>							
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+	
+</body>
+	<script type="text/javascript">
+		function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1040px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+
+	</script>
+</html>

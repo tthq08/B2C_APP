@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>确认支付</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f0f2f5">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">确认支付</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="images/filter.png" width="24" alt="" />
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<form action="{:U('shop/Payment/getCode')}" method="post" name="cart4_form" id="cart4_form">
+	<main class="cmall-body fixed-body fixed-footer-body">
+		<div class="paywrap mt20">
+			<div class="pay-money">应付金额：<strong class="color--f23030 fs18">{$serial.payable_price}<small>元</small></strong></div>
+			<div class="pay-itembox">
+			{assign name="paylist" value=":getPayList();" /}
+			{volist name="paylist" id="v"}
+				<div class="pay-item">
+					<input type="radio" id="input-{$v.code}" value="pay_code={$v.code}" name="pay_radio" />
+					<label for="input-{$v.code}"><img src="{$v.icon}" alt=""><span>{$v.name}</span></label>
+				</div>
+			{/volist}
+				
+			</div>
+			<p class="note">重要提示：请在 <span>24 小时内</span>完成支付，超时订单将自动取消。  我们将在您完成支付后的 72 小时内发货。 </p>
+		</div>
+		<div class="btn-box pay-btnbox">
+			<input type="hidden" name="serial_id" value="{$serial.id}" />
+			<a href="javascript:;" onClick="goPay();" class="login-btn">现在支付</a>
+		</div>
+	</main>
+	</form>
+</body>
+	<script type="text/javascript">
+		function goPay() {
+			var pay_radio = $('input[name="pay_radio"]:checked').val();
+			if (!pay_radio) {
+				layer.msg('请选择支付方式');
+				return false;
+			}
+
+			// interval = setInterval(ajax_check_pay_status,3000);
+			$('#cart4_form').submit();
+		}
+
+		/**
+	     * 检查订单状态
+	     */
+	    function ajax_check_pay_status(){
+	        $.ajax({
+	            type: "post",
+	            url: "{:U('shop/Index/check_order_pay_status')}",
+	            data:{serial_id:"{$serial.id}"},
+	            dataType: 'json',
+	            success: function (data) {
+	                if (data.code == 1) {
+	                    clearInterval(interval);
+	                    location.href = "{:U('shop/Cart/cart4',array('serial_id'=>$serial['id']))}";
+	                }
+	            }
+	        });
+	    }
+
+	</script>
+</html>

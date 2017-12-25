@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style type="text/css">
+    .steps {
+        position: relative;
+        margin-bottom: 30px;
+        counter-reset: step; /*创建步骤数字计数器*/
+
+    }
+
+    /*步骤描述*/
+    .steps li {
+        list-style-type: none;
+        font-size: 12px;
+        text-align: center;
+        width: 25%;
+        position: relative;
+        float: left;
+    }
+
+    /*步骤数字*/
+    .steps li:before {
+        display: block;
+        content: counter(step); /*设定计数器内容*/
+        counter-increment: step; /*计数器值递增*/
+        width: 32px;
+        height: 32px;
+        background-color: #019875;
+        line-height: 32px;
+        border-radius: 32px;
+        font-size: 16px;
+        color: #fff;
+        text-align: center;
+        font-weight: 700;
+        /* margin: 0 auto 8px auto;*/
+        position: absolute;
+        left: 50%;
+        margin-left: -16px;
+        z-index: 20;
+    }
+
+    /*连接线*/
+    .steps li ~ li:after {
+        content: '';
+        width: 100%;
+        height: 2px;
+        background-color: #019875;
+        position: absolute;
+        left: -50%;
+        top: 15px;
+        z-index: 10; /*放置在数字后面*/
+    }
+
+    .steps li span {
+        display: block;
+        padding-top: 40px;
+
+    }
+
+    /*将当前/完成步骤之前的数字及连接线变绿*/
+    .steps li.active:before,
+    .steps li.active:after {
+        background-color: #019875;
+    }
+
+    /*将当前/完成步骤之后的数字及连接线变灰*/
+    .steps li.active ~ li:before,
+    .steps li.active ~ li:after {
+        background-color: #777;
+    }
+
+    .legend {
+        display: block;
+        width: auto;
+        padding: 0;
+        font-size: 21px;
+        line-height: inherit;
+        color: #333;
+        border: 0;
+    }
+
+    .btn_addPic {
+        display: block;
+        position: relative;
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        border: 1px solid #EBEBEB;
+        /*background: none repeat scroll 0 0 #F3F3F3; */
+        color: #999999;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .btn_addPic span {
+        display: block;
+        line-height: 39px;
+    }
+
+    .btn_addPic em {
+        background: url('{:tb_config(' resource_path ',1)}cust/images/plus.png') 0 0;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        overflow: hidden;
+        margin: 10px 5px 10px 0;
+        line-height: 20em;
+        vertical-align: middle;
+    }
+
+    .btn_addPic:hover em {
+        background-position: -19px 0;
+    }
+
+    .filePrew {
+        /*display: block; */
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        font-size: 100px; /* 增大不同浏览器的可点击区域 */
+        opacity: 0; /* 实现的关键点 */
+        filter: alpha(opacity=0); /* 兼容IE */
+    }
+</style>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        {notempty name="web_title"}
+        <header class="larry-personal-tit">
+            <span>{$web_title}</span>
+        </header>
+        {/notempty}
+        <div class="larry-personal-body clearfix">
+            <ul class="steps clearfix">
+
+                <li {eq name="step" value="2" }class="active" {/eq}>
+                <a href="{:url('Goods/edit',['goods_id'=>$id])}">
+                    <span>{:lang('content_form_step_title_2')}</span>
+                </a>
+                </li>
+                <li {eq name="step" value="3" }class="active" {/eq}>
+                <a href="{:url('Goods/addimgs',['id'=>$id])}">
+                    <span>{:lang('content_form_step_title_3')}</span>
+                </a>
+                </li>
+                <li {eq name="step" value="4" }class="active" {/eq}>
+                <span>{:lang('content_form_step_title_4')}</span>
+                </li>
+            </ul>
+            <hr>
+            {notempty name="form_tpis"}
+            <blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+            {/notempty}
+            <form class="layui-form" action="{$action}" method="post">
+                <input type="hidden" name="id" value="{$id}">
+
+                <fieldset class="layui-elem-field">
+                    <legend class="legend">{$eBiz.lang.spec_price_box_title_attri}</legend>
+                    <div class="layui-field-box" id="attri_box">
+                        {volist name="attr_temp" id="vo"}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">{$vo.attr_name}</label>
+                                <div class="layui-input-block">
+                                    {if condition="$vo.attr_input_type == 0"}
+                                    <input type="text" name="attr[{$vo.id}]" placeholder="请输入标题" autocomplete="off" class="layui-input" value="{if condition="!empty($goods_attr[$vo['id']][1])"}{$goods_attr[$vo['id']][1]}{/if}">
+                                    {elseif condition="$vo.attr_input_type == 1"/}
+
+                                    {volist name="$vo.options" id="v"}
+                                        <input type="{$vo.type}" name="attr[{$vo.id}]" title="{$v}" class="layui-input" value="{$v}" {if condition="!empty($goods_attr[$vo['id']][1]) && $goods_attr[$vo['id']][1] == $v"}checked{/if}>
+                                    {/volist}
+
+                                    {else/}
+
+                                    {volist name="$vo.options" id="v"}
+                                        <input type="{$vo.type}" name="attr[{$vo.id}][{$i}]" title="{$v}" class="layui-input" value="{$v}" {if condition="!empty($goods_attr[$vo['id']]) && in_array($v,$goods_attr[$vo['id']])"}checked{/if}>
+
+                                    {/volist}
+
+                                    {/if}
+
+                                </div>
+                            </div>
+                        {/volist}
+                    </div>
+                </fieldset>
+
+                <fieldset class="layui-elem-field">
+                    <legend class="legend">{$eBiz.lang.spec_price_box_title_spec}</legend>
+                    <div class="layui-field-box">
+                        <div class="layui-form-item">
+                            <input type="hidden" id="type_id" value="{$goods.cat_id}">
+                            <button type="button" class="layui-btn layui-form-label" style="margin-top:20px;"
+                                    onclick="openSpec();">
+                                {$eBiz.lang.spec_price_btn_open}
+                            </button>
+
+                            <div class="layui-input-block" id="area_spec" {empty name="spec_goods" }style="display:none;" {/empty}>
+                            <div class="layui-input-inline">
+                                <input id="samePrice" value="" class="layui-input"
+                                       placeholder="{$eBiz.lang.spec_price_table_title_price}">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input id="samePoints" value="" class="layui-input"
+                                       placeholder="{$eBiz.lang.spec_price_table_title_points}">
+                            </div>
+                            <div class="layui-input-inline">
+                                <input id="sameStock" value="" class="layui-input"
+                                       placeholder="{$eBiz.lang.spec_price_table_title_stock}">
+                            </div>
+                            <button onclick="setValue();" type="button" class='layui-btn'>
+                                {$eBiz.lang.spec_price_btn_set_value}
+                            </button>
+                            <div id="spec_box" style="margin-top:10px;">
+                                <div id="item2">
+
+                                </div>
+                                {notempty name="spec_goods"}
+                                <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+                                    <tread>
+                                    <tr class="left">
+                                        {volist name="spec_goods[0]['key_name_arr']" id="spec"}
+                                        <th style="width: 120px; text-align: center;">{$spec.spec}</th>
+                                        {/volist}
+                                        <th style="width:120px;">{$eBiz.lang.spec_price_table_title_sn}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_price}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_points}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_stock}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_pics}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_content}</th>
+                                        <th style="width:100px;">{$eBiz.lang.spec_price_table_title_attr}</th>
+                                        <th style="width:100px;">操作</th>
+                                    </tr>
+                                    </tread>
+                                    <tbody>
+                                    {volist name="spec_goods" id="vo" key="k"}
+                                    <tr id="spec_{$vo.id}">
+                                        {volist name="vo.key_name_arr" id="vv"}
+                                        <td style="text-align: center;">{$vv.item}</td>
+                                        {/volist}
+                                        <input type="hidden" name="spec_id[{$k}]" value="{$vo.key_sign}">
+                                        <input type="hidden" name="spec_name[{$vo.key_sign}]" value="{$vo.key_name}">
+                                        <td><input type="text" style="width:100px;" name="spec_sn[{$vo.key_sign}]"
+                                                   value="{$vo.key_sn}"></td>
+                                        <td><input type="text" style="width:100px;" name="spec_price[{$vo.key_sign}]"
+                                                   value="{$vo.price}"></td>
+                                        <td><input type="text" style="width:100px;" name="spec_points[{$vo.key_sign}]"
+                                                   value="{$vo.points}"></td>
+                                        <td><input type="text" style="width:100px;" name="spec_stock[{$vo.key_sign}]"
+                                                   value="{$vo.store_count}"></td>
+                                        <td>
+                                            <button type="button" style="width:80px;" onclick="upSpecPics(this);" data-sn="{$vo.key_sn}" data-spec="{$vo.key_sign}" class="layui-btn layui-btn-small">
+                                                {$eBiz.lang.spec_price_table_btn_pics}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" style="width:80px;" onclick="setSpecContent(this);" data-sn="{$vo.key_sn}" data-spec="{$vo.key_sign}" class="layui-btn layui-btn-small">
+                                                {$eBiz.lang.spec_price_table_btn_content}
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button type="button" style="width:80px;" onclick="setSpecAttr(this);" data-sn="{$vo.key_sn}" data-spec="{$vo.key_sign}" class="layui-btn layui-btn-small">
+                                                {$eBiz.lang.spec_price_table_btn_attr}
+                                            </button>
+                                        </td>
+                                        <td><button type="button" style="width:80px;" onclick="delTR({$vo.id});" class="layui-btn layui-btn-small">删除</button></td>
+                                    </tr>
+                                    {/volist}
+                                    </tbody>
+                                    {/notempty}
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+        </div>
+        </fieldset>
+
+
+        {:token()}
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-submit="" lay-filter="*">
+                    {$eBiz.lang.content_form_btn_next}
+                </button>
+            </div>
+        </div>
+        </form>
+    </div>
+    </div>
+</section>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/xxUploadImg.js"></script>
+<script type="text/javascript">
+    layui.use(['form', 'element'], function () {
+        var form = layui.form();
+
+        form.on('submit(*)', function (data) {
+            var url = $(data.form).attr('action');
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: data.field,
+                dataType: 'json',
+                success: function (data) {
+                    if( data.code == 1 ){
+                        layer.msg('保存成功');
+                        parent.location.href = data.url;
+                    }else{
+                        layer.alert(data.msg,{icon: 2});
+                    }
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    function openSpec() {
+        var type_id = $('#type_id').val();
+        if (type_id=="") {
+            layer.msg('{$eBiz.lang.spec_price_type_is_null}');
+            return false;
+        }
+        layer.open({
+            type: 2,
+            title: "{$eBiz.lang.spec_price_frame_title}",
+            shadeClose: false,
+            shade:  [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: "{:url('Spec/ajaxChoose')}?id="+type_id+"&goods_id={$id}"
+        });
+    }
+
+    function spec_callback(html,spec_callback) {
+        $.ajax({
+            type:'post',
+            url:'{:U("shop/Goods/update_key_sign_arr")}',
+            data:{data:spec_callback}
+        });
+        $('#item2').append(html);
+        $('#area_spec').css('display','block');
+
+        layer.closeAll();
+    }
+
+
+    function setValue() {
+        var price = $('#samePrice').val();
+        var points = $('#samePoints').val();
+        var stock = $('#sameStock').val();
+        $('input[name^="spec_points"]').val(points);
+        $('input[name^="spec_price"]').val(price);
+        $('input[name^="spec_stock"]').val(stock);
+    }
+
+    // 上传规格图标
+    function upSpecIcon(obj) {
+        var spec_sn = $(obj).attr('data-sn');
+        var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+        $(obj).xxUploadImg({
+            url: "{:U('sys/upload/upload')}",
+            max: 800,
+            callbackFun: function (ret, param) {
+                // layer.msg(ret.msg,{time:1000},function () {
+                if (ret.state == 'SUCCESS') {
+                    $('#icon_' + spec_sn).attr('src', ret.url);
+                    $('#icon_val_' + spec_sn).val(ret.url);
+                    layer.close(lay_index);
+                }
+                // });
+            }
+        })
+    }
+
+    // 上传规格图册
+    function upSpecPics(obj) {
+        var spec_id = $(obj).attr('data-spec');
+        var spec_sn = $(obj).attr('data-sn');
+        var data = 'spec_key=' + spec_id + '&spec_sn=' + spec_sn + '&goods_id={$id}';
+        layer.open({
+            type: 2,
+            title: "{$eBiz.lang.spec_price_table_window_pics}",
+            shadeClose: false,
+            shade: [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: "{:url('Goods/specimgs')}?" + data,
+            cancel: function () {
+                $(obj).addClass('layui-btn-normal');
+            }
+        });
+    }
+
+    // 清除规格项的图标
+    function removeICO(obj) {
+        var spec_sn = $(obj).attr('data-sn');
+        var index = layer.confirm('{$eBiz.lang.spec_price_tips_spec_is_del}', {
+            btn: ['Yes', 'No'] //按钮
+        }, function () {
+            $('#icon_' + spec_sn).attr('src', "{:tb_config('resource_path',1)}cust/picture/loadimg.png");
+            $('#icon_val_' + spec_sn).val('');
+            layer.close(index);
+        });
+    }
+
+    // 设置规格的自定义内容
+    function setSpecContent(obj) {
+        var spec_id = $(obj).attr('data-spec');
+        var spec_sn = $(obj).attr('data-sn');
+        var data = 'spec_key=' + spec_id + '&spec_sn=' + spec_sn + '&goods_id={$id}';
+        layer.open({
+            type: 2,
+            title: "{$eBiz.lang.spec_price_table_window_content}",
+            shadeClose: false,
+            shade: [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: "{:url('Goods/speccontent')}?" + data,
+            cancel: function () {
+                $(obj).addClass('layui-btn-normal');
+            }
+        });
+    }
+
+    // 设置规格的自定义属性
+    function setSpecAttr(obj) {
+        var type_id = $('#type_id').val();
+        var spec_id = $(obj).attr('data-spec');
+        var spec_sn = $(obj).attr('data-sn');
+        var data = 'spec_key=' + spec_id + '&spec_sn=' + spec_sn + '&goods_id={$id}&type_id=' + type_id;
+        layer.open({
+            type: 2,
+            title: "{$eBiz.lang.spec_price_table_window_attr}",
+            shadeClose: false,
+            shade: [0.8, '#393D49'],
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '90%'],
+            content: "{:url('Goods/specattr')}?" + data,
+            cancel: function () {
+                $(obj).addClass('layui-btn-normal');
+            }
+        });
+    }
+
+    function callback() {
+        layer.closeAll();
+    }
+
+    function delTR(spec_id) {
+        layer.confirm('您确定要去除该规格组合吗?', {
+            btn: ['确定', '算了'] //按钮
+        }, function () {
+            var id = '#spec_'+spec_id;
+            $(id).remove();
+            layer.alert('去除成功,保存后生效!');
+        })
+    }
+</script>
+</body>
+</html>

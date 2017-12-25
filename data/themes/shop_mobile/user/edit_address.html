@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{empty name="address.id"}新增{else/}编辑{/empty}收货地址</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+	<style type="text/css">
+	html,body { width: 100%;height: 100%; }
+	</style>
+</head>
+<body style="background: #fff;">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{empty name="address.id"}新增{else/}编辑{/empty}收货地址</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+	<form id="addrForm" method="post" action="{:U('user/save_address')}">
+		<div class="user-form">
+			<div class="user-f-block">
+				<div class="label">收货人：</div>
+				<div class="txt">
+					<input placeholder="输入收货人" name="consignee" value="{$address.consignee|default=''}" type="text" />
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">手机号码：</div>
+				<div class="txt">
+					<input placeholder="手机号码" name="mobile" value="{$address.mobile|default=''}" onpaste="this.value=this.value.replace(/[^\d-]/g,'')" onKeyUp="this.value=this.value.replace(/[^\d-]/g,'')" maxlength="15" type="text" />
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">邮箱地址：</div>
+				<div class="txt">
+					<input placeholder="邮箱地址" name="email" value="{$address.email|default=''}" type="text" />
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">固定电话：</div>
+				<div class="txt">
+					<input placeholder="固定电话" name="phone" value="{$address.phone|default=''}" type="text" />
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">邮编：</div>
+				<div class="txt clearfix">
+					<input type="text" id="sample3_postcode" name="zip" value="{$address.zip|default=''}"  placeholder="请输入邮政编码" class="input--50" maxlength="15"/>
+				</div>
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">所在地区：</div>
+				<div class="txt clearfix">
+					<select class="w30" style="margin-right: 4%;" name="province" id="province" onchange="get_city(this,'{:url('shop/user/getAddressList')}');">
+						<option value="0">省份</option>
+						{volist name="province" id="vo"}
+						<option value="{$vo.id}" {if condition="$vo['id'] == $address['province']"}selected{/if}>{$vo.name}</option>
+						{/volist}
+					</select>
+					<select class="w30" style="margin-right: 4%;" name="city" id="city" onchange="get_area(this,'{:url('shop/user/getAddressList')}');">
+						<option value="0">城市</option>
+						{volist name="city" id="vo"}
+						<option value="{$vo.id}" {if condition="$vo['id'] == $address['city']"}selected{/if}>{$vo.name}</option>
+						{/volist}
+					</select>
+					<select class="w30" name="district" id="district">
+						<option value="0">请选择区县</option>
+						{volist name="district" id="vo"}
+						<option value="{$vo.id}" {if condition="$vo['id'] == $address['district']"}selected{/if}>{$vo.name}</option>
+						{/volist}
+					</select>
+				</div>
+			</div>
+			<div class="user-f-block">
+				<div class="label">地址：</div>
+				<div class="txt">
+					<input placeholder="填写您的地址" id="sample3_address" name="address" value="{$address.address|default=''}" class="input--100" type="text" />
+				</div>
+			</div>
+		</div>
+		<div class="btn-box mt40 plr3">
+			<input type="hidden" name="id" value="{$address.id|default=''}">
+			<button type="button" id="submit_btn" onclick="saveForm()" class="block-btn w100">保存收货地址</button>
+		</div>
+	</form>
+	</main>
+
+</body>
+	<script type="text/javascript">
+		/**
+		 * 获取城市
+		 * @param t  省份select对象
+		 */
+		function get_city(t,url){
+		    var parent_id = $(t).val();
+		    if(!parent_id > 0){
+		        return;
+		    }
+		    $('#twon').empty().css('display','none');
+		    var url = url+'?parent_id='+ parent_id;
+		    $.ajax({
+		        type : "GET",
+		        url  : url,
+		        error: function(request) {
+		            return;
+		        },
+		        success: function(v) {
+		            v = '<option value="0">--城市--</option>'+ v;          
+		            $('#city').empty().html(v);
+		        }
+		    });
+		}
+
+		/**
+		 * 获取地区
+		 * @param t  城市select对象
+		 */
+		function get_area(t,url) {
+		    var parent_id = $(t).val();
+		    if (!parent_id > 0) {
+		        return;
+		    }
+		    var url = url+'?parent_id=' + parent_id;
+		    $.ajax({
+		        type: "GET",
+		        url: url,
+		        error: function (request) {
+		            return;
+		        },
+		        success: function (v) {
+		            v = '<option>--地区--</option>' + v;
+		            $('#district').empty().html(v);
+		        }
+		    });
+		}
+
+		function saveForm() {
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+			$('#submit_btn').attr('disabled',true);
+			$.ajax({
+			    type : "POST",
+			    url:$('#addrForm').attr('action'),
+			    data : $('#addrForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+			    	layer.msg(data.msg);
+					$('#submit_btn').attr('disabled',false);
+					if (data.code==1) {
+						location.href = "{:U('user/address_list')}";
+					}else{
+						layer.close(lay_index);
+					}
+			    },
+			    error: function (XMLHttpRequest, textStatus, errorThrown) {
+			    	layer.msg('网络失败，请刷新页面后重试');
+			    	layer.close(lay_index);
+			    }
+			});
+		}
+
+	</script>
+</html>

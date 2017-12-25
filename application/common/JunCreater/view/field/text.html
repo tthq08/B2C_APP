@@ -1,0 +1,18 @@
+<?php 
+if(!isset($line)){
+?>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<input type="text" name="{$name}" placeholder="{$placeholder}" autocomplete="off" class="layui-input" value="{$value}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+	</div>
+</div>
+<?php 
+}else{
+?>	
+	<div class="layui-input-inline">
+	<input type="text" name="{$name}" placeholder="{$placeholder}" autocomplete="off" class="layui-input" value="{$value}" >
+	</div>
+<?php 
+}
+?>

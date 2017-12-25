@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>订单支付-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<style type="text/css">
+	    *{ margin:0; padding:0}
+	    .wihe-ee{width:560px; height:420px; background:#FFF; padding:25px; color:#666; font-family:song,arial; font-size:14px; box-sizing:border-box; border-radius:6px; margin:0 auto; margin-top:10%}
+	    .wihe-ee p{text-align:center}
+	    .co999{color:#999}
+	    .fo-si-18{font-size:18px}
+	    .fail-fasu{float:left; width:200px; height:180px; padding-top:100px; background:url({:tb_config('resource_path',1)}shop/images/icon-pay.png) 50px 0 no-repeat; text-align:center}
+	    .success-fasu{float:right; width:200px; height:180px; padding-top:100px; background:url({:tb_config('resource_path',1)}shop/images/icon-pay.png) -220px 0 no-repeat; text-align:center}
+	    .fail-fasu a:hover{ background-color:#ee9775}
+	    .fail-fasu a{padding:8px 24px; background-color:#f8a584; display:table; margin:0 auto; color:#fff; text-decoration:none; margin-top:10px}
+	    .re-qtzfgg a,.success-fasu a{padding:8px 24px; background-color:#eee; display:table; margin:0 auto; color:#999; text-decoration:none; margin-top:10px}
+	    .re-qtzfgg a{padding:8px 140px}
+	    .re-qtzfgg a:hover,.success-fasu a:hover{background-color:#ddd;}
+	    .fail-success{overflow:hidden; height:185px}
+	</style>
+</head>
+<body style="background: #fff;">
+
+	<!-- top -->
+	{include file="common/top_header"}
+	<!-- 导航 -->
+	<header class="header bus_header">
+		<div class="container w1200 clearfix">
+			<a href="{:U('/')}" class="logo fl"><img src="{:tb_config('web_site_logo',1)}" alt="" /></a>
+			<div class="header-intr fl">
+				<h1 class="color--d81c1d" style="font-size: 24px;">结算</h1>
+				<a href="{:U('/')}" class="topback">
+					<img src="{:tb_config('resource_path',1)}shop/picture/back.png" alt="" />
+					<span>返回首页</span>
+				</a>
+			</div>
+			<div class="header-right fr">
+				<div class="user-step w600 mt10">
+					<div class="step-item old w33">
+						<span class="num">1</span>
+						<p class="msg">1.我的购物车</p>
+					</div>
+					<div class="step-item old w33">
+						<span class="num">2</span>
+						<p class="msg">2.填写核对订单信息</p>
+					</div>
+					<div class="step-item on w33">
+						<span class="num">3</span>
+						<p class="msg">3.成功提交订单</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<main class="main cart-main">
+		<!-- 当前位置 -->
+		<div class="c-location-section background-location">
+			<div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="{:U('shop/index/index')}">首页</a></li>
+					<li class="location-item has"><span>购物车</span></li>
+					<li class="location-item has"><span>结算订单</span></li>
+					<li class="location-item"><span>订单支付</span></li>
+				</ul>
+			</div>
+		</div>
+		<div class="container w1100 clearfix mt30 pb50">
+			<div class="settlement-wrap">
+				<div class="settlement-box">
+					<!-- 订单提交成功 -->
+					<div class="order-success-intr">
+						<div class="img">
+							<span class="imgb"><img src="{:tb_config('resource_path',1)}shop/picture/g-check.png" alt="" /></span>
+						</div>
+						<div class="s-msg">
+							<h4>您的订单已提交成功！付款咯~</h4>
+							<h5>付款后我们会在7-15个工作日内给您发货！</h5>
+							{if condition=" count($order) gt 1" }
+				                <p class="succ-serial">
+				                    流水号：&nbsp;&nbsp;{$serial.serial_sn}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				                    总付款金额：&nbsp;&nbsp;<b style="font-size:22px;">{:web_currency()}{$serial.payable_price}</b>&nbsp;&nbsp;&nbsp; 包含以下订单：
+				                </p>
+
+				            {/if}
+				            {volist name="order" id="D"}
+				                <p class="succ-p">
+				                    订单号：&nbsp;&nbsp;{$D['order_sn']}&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+				                    付款金额：&nbsp;&nbsp;<b>{:web_currency()}{$D['payable_price']}</b>&nbsp;&nbsp;&nbsp;&nbsp;<a style='color:#7baa61;' data-href="{:U('shop/User/order_detail',array('id'=>$D['id']))}" data-msg='订单详情' onclick="openWin(this);" href="javascript:;">
+				                    [订单详情]
+				                </a>
+				                </p>
+				            {/volist}
+				            <br>
+				            <span>
+				                <input type="hidden" name="needpay" id="needPay" value="{$serial.payable_price}">
+				                <input type="hidden" name="balance_payed" id="balancePayed" value="{$serial.balance_price}">
+				                <input type="hidden" name="points_payed" id="pointsPayed" value="{$serial.points_price}">
+				                <input type="hidden" name="coupon_payed" id="couponPayed" value="{$serial.coupon_price}">
+				                <h3>付款详情[还需支付<b id="needPay_tip" style="color:#e01d20;">{:web_currency()}{$serial.payable_price}</b>]</h3>
+				                <p>
+				                  积分抵扣：<b id="pointsPayed_tip">{:web_currency()}{$serial.points_price}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|
+				                    &nbsp;&nbsp;&nbsp;&nbsp;余额支付：<b id="balancePayed_tip">{:web_currency()}{$serial.balance_price}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				                    | &nbsp;&nbsp;&nbsp;&nbsp;优惠券优惠：<b id="couponPayed_tip">{:web_currency()}{$serial.coupon_price}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				                    | &nbsp;&nbsp;&nbsp;&nbsp;赠送积分：<b id="points_tip">0</b></p>
+				            </span>
+				            <div class="succ-tip">
+				            	请您在&nbsp;&nbsp;<b>{$serial.last_pay_time}</b>&nbsp;之前完成支付，否则订单将自动取消
+				            </div>
+						</div>
+					</div>
+					<form action="{:U('shop/Payment/getCode')}" target="_blank" method="post" name="cart4_form" id="cart4_form">
+					<!-- 支付方式 -->
+					<div class="pay-block mt30">
+						<div class="set-top"><h5><strong>请选择支付方式</strong></h5></div>
+						<div class="content">
+							<div class="pay-type">
+							{volist name="payList" id="v"}
+							<?php
+								$config = $v['config'];
+								$configs = [];
+								foreach ($config as $con){
+									$configs[$con['name']] = $con;
+								}
+								$payMethod= [];
+								if(!empty($configs['payMethod'])){
+									$methods = explode(',',$configs['payMethod']['value']);
+									foreach ($methods as $key => $method) {
+										$md = explode(':',$method);
+										$payMethod[$md[0]] = $md[1];
+									}
+								}
+							?>
+								<div class="pay-item">
+									<input type="radio" id="input-{$v.code}" value="pay_code={$v.code}" class="radio vam" name="pay_radio" >
+									<label for="input-{$v.code}"><img src="{$v.icon}" data-code="{$v.code}" alt="" style="width: 80px; height: 30px; margin-top: 5px;" onClick="change_pay(this);" /></label>
+									{notempty name="payMethod"}
+									<div style="display:none;" id="sub_{$v.code}">
+										{volist name="payMethod" id="vo"}
+											<input type="radio" id="method-{$key}" value="{$key}" class="radio vam" name="pay_method" >
+											<label for="method-{$key}">{$vo}</label>
+										{/volist}
+									</div>
+									{/notempty}
+								</div>
+							{/volist}
+
+							</div>
+							<div class="btn-box mt20 center">
+								<input type="hidden" name="serial_id" value="{$serial.id}" />
+								<a href="javascript:;" class="cmall-su-btn" onClick="goPay();">立即支付</a>
+								<!-- <a href="javascript:;" class="cmall-btn-f" onClick="moniPay();">模拟支付成功</a> -->
+							</div>
+						</div>
+					</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+	<div class="tac-sd hide" id="pay_hide" style="margin-top: -40px;">
+    	<div class="wihe-ee">
+        	<p>
+            	<span class="fo-si-18">请您在新打开的页面上完成付款!</span>
+                <br>
+                <span class="co999">付款完成前请不要关闭此窗口。完成付款后请根据您的情况点击下面的按钮。</span>
+            </p>
+            <br>
+            <br>
+            <div class="fail-success">
+            	<div class="fail-fasu">
+                	支付完成
+                    <br>
+                    <a href="javascript:;" onclick="pay_succ();">支付成功</a>
+                </div>
+
+            	<div class="success-fasu">
+                	支付遇到问题
+                    <br>
+                    <a href="javascript:;" onclick="pay_fail();">支付失败</a>
+                </div>
+            </div>
+            <div class="re-qtzfgg">
+            	<a href="javascript:;" onclick="close_win();">返回选择其他支付方式</a>
+            </div>
+        </div>
+    </div>
+</body>
+	<script type="text/javascript">
+		var interval;
+		var show_index;
+		function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1040px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+
+		function goPay() {
+			var pay_radio = $('input[name="pay_radio"]:checked').val();
+			if (!pay_radio) {
+				layer.msg('请选择支付方式');
+				return false;
+			}
+			show_index = layer.open({
+			  type: 1,
+			  shade: 0.6,
+			  closeBtn: 0,
+			  title: false, //不显示标题
+			  area:['700px','450px'],
+			  content: $('#pay_hide'), 
+			});
+			interval = setInterval(ajax_check_pay_status,3000);
+			$('#cart4_form').submit();
+		}
+
+		function pay_succ() {
+			location.reload();
+		}
+
+		function pay_fail() {
+			clearInterval(interval);
+			layer.close(show_index);
+		}
+
+		function close_win() {
+			pay_fail();
+		}
+
+		function change_pay(obj) {
+			var id = $(obj).attr('data-code');
+			$('#sub_'+id).show();
+		}
+
+		// 模拟支付成功
+		function moniPay() {
+			var pay_radio = $('input[name="pay_radio"]:checked').val();
+			if (!pay_radio) {
+				layer.msg('请选择支付方式');
+				return false;
+			}
+			$.ajax({
+			    type : "POST",
+			    url:"{:U('payment/simulation')}",
+			    data : $('#cart4_form').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					if (typeof(data.msg) == 'undefined') {
+						layer.msg(data);
+					}else{
+						layer.msg(data.msg,{time:1000},function () {
+							if (data.code==1) {
+								location.href = data.url;
+							}
+						})
+					}
+			    }
+			});
+		}
+
+		/**
+	     * 检查订单状态
+	     */
+	    function ajax_check_pay_status(){
+	        $.ajax({
+	            type: "post",
+	            url: "{:U('shop/Index/check_order_pay_status')}",
+	            data:{serial_id:"{$serial.id}"},
+	            dataType: 'json',
+	            success: function (data) {
+	                if (data.code == 1) {
+	                    clearInterval(interval);
+	                    location.href = "{:U('shop/Cart/cart4',array('serial_id'=>$serial['id']))}";
+	                }
+	            }
+	        });
+	    }
+	    
+	</script>
+</html>

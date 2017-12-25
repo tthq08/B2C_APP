@@ -1,0 +1,114 @@
+<style type="text/css">
+	.enter-number .op {
+	    display: inline-block;
+	    width: 28px;
+	    height: 28px;
+	    line-height: 26px;
+	    text-align: center;
+	    font-size: 12px;
+	    vertical-align: top;
+	    background: #ededed;
+	    color: #333;
+	    font-size: 15px;
+	    cursor: pointer;
+	}
+	.enter-number .in {
+	    display: inline-block;
+	    vertical-align: top;
+	    width: 38px;
+	    height: 28px;
+	    line-height: 28px;
+	    text-align: center;
+	    border-top: 1px solid #ededed;
+	    border-bottom: 1px solid #ededed;
+	    font-size: 14px;
+	    color: #333;
+	}
+	.enter-number .in input{
+		width:40px;
+		height: 28px;
+		text-align: center;
+	}
+</style>
+{volist name="cartList" id="C"}
+{eq name="C.shop_id" value="0"}{assign name="shop_name" value="平台自营" /}{else/}{assign name="shop_name" value=":getTableValue('cust',['id'=>$C.shop_id],'cust_name')"}{/eq}
+<div class="stlment-block mt10">
+	<div class="stl-shop"><span>{$shop_name}</span></div>
+	{volist name="C.list" id="vo"}
+	<div class="stl-prd-item clearfix" style="border-bottom: solid 1px #fff;">
+		<div class="pic">
+			<img src="{:common_thumb_img(getTableValue('shop_goods','id='.$vo['goods'],'thumb'),100,100)}" alt="" />
+			<div class="mt20" style="font-size:.5rem;">
+				<button type="button" style="width: 100%;" onclick="delBuy('{$vo.id}');">删除商品</button>
+			</div>
+		</div>
+		<div class="info">
+			<div class="name">{$vo.goods_name}</div>
+			<div class="summary">
+				{assign name="true_price" value=":compute()->promGoodsPrice($vo['goods'],$vo['spec_key'])" /}
+				<p>
+					<strong class="price mr10">{$true_price}</strong><small>元</small>
+					<span>
+						<div class="enter-number" style="vertical-align: middle;">
+							数量： <span class="op reduce" onclick="nums_reduce(this);" data-id='{$vo.id}'>-</span>
+							<spna class="in"><input type="text" id="goods_num_{$vo.id}" value="{$vo.goods_num}" /></spna>
+							<span class="op add" onclick="nums_add(this);" data-id='{$vo.id}' data-max="1000">+</span>
+						</div>
+					</span>
+				</p>						
+				{assign name="$goods_tariff" value="$true_price*$vo['tariff']/100*$vo['goods_num']" /}
+			</div>
+			<div class="spec">
+				{$vo.shipping_txt|default=''}
+			</div>
+		</div>
+	</div>
+	{/volist}
+	<div class="otherstl-content">
+
+		<div class="cmall-item">
+			<div class="left">留言：</div>
+			<div class="right"><input type="text" style="width:300px;" name="user_remark[{$C.shop_id}]" placeholder="选填,对交易的附加留言" /></div>
+		</div>
+		<div class="cmall-item">
+			<div class="right">
+				<div class="subtotal">
+					<!-- <span class="mr10">共1件商品</span> -->
+				</div>
+			</div>
+		</div>
+		<div class="cmall-item">
+			<div class="right">
+				<div class="subtotal">
+					<!-- <span class="mr10">共1件商品</span> -->
+					<span>小计：<strong class="price">{$shopOrder[$C['shop_id']]['payable_price']}<small>元</small></strong></span>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{/volist}
+
+{empty name="user_id"}
+<div class="stlment-block mt10">
+	<div class="otherstl-content">
+		<div class="cmall-item">
+			<div class="left">订单密码：</div>
+			<div class="right"><input type="text" style="width:280px;" name="ord_pwd" id="ord_pwd" placeholder="请设置订单密码，查询时需要验证" /></div>
+		</div>
+		<div class="cmall-item">
+			<div class="left">确认密码：</div>
+			<div class="right"><input type="text" style="width:280px;" name="ord_repwd" id="ord_repwd" placeholder="请再输入一次密码" /></div>
+		</div>
+	</div>
+</div>
+{/empty}
+
+
+<!-- 提交订单 -->
+<div class="cart-statements">
+	<div class="fr s-right">
+		<span><!-- 共<i class="color--f23030">2</i>件商品， -->总金额：<i class="color--f23030 fs18">{$total_price}<small>元</small></i></span>
+		<button type="button" onclick="submit_order();" class="sett-btn">立即下单</button>
+	</div>
+</div>

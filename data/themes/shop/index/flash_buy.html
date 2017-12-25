@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Flash_page_title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+</head>
+<body class="has-right">
+
+	<!-- 广告 -->
+	{include file="common/ad_top"}
+	<!-- top -->
+	{include file="common/top_header"}
+	<!-- header -->
+	{include file="common/header"}
+	<!-- nav -->
+	{include file="common/nav"}
+
+{ad_list cid="26" item="v" limit=1}
+	<div class="seckill-banner">
+		<a href="{$v.ad_link}" {if condition="$v['target'] eq 1"}target="_blank"{/if}><img width="100%" src="{$v['ad_pic']}" alt="" /></a>
+	</div>
+{/ad_list}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 抢购 -->
+			<div class="mall-section panic-buying-section c-floor-section" data-floor="{$eBiz.lang.Index_Text_flashbuy}">
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>TB MALL TIME LIMIT BUY</p>
+					</div>
+					<!-- 抢购时间 -->
+					<div class="panic-time-block">
+						<ul class="clearfix">
+
+							{volist name="time_slot" id="vo"}
+							<li class="item" data-id="{$key}" onclick="getTimsFlash(this);" >
+								<a href="javascript:;">
+									
+									<!-- 已过期 -->
+									{eq name="vo.status" value="0"}
+									<div class="l"><span class="t {eq name='$selected_time_slot.item' value='$key'}now{/eq}">{$vo.time}</span></div>
+									<div class="r">
+										<p>{$eBiz.lang.Index_Text_flash_started}</p>
+									</div>
+									{/eq}
+									<!-- 抢购进行中 -->
+									{eq name="vo.status" value="1"}
+
+									<div class="l"><span class="t {eq name='$selected_time_slot.item' value='$key'}now{/eq}">{$vo.time}</span></div>
+									<div class="r">
+										<p>{$eBiz.lang.Index_Text_flash_ing}</p>
+										<p>{$eBiz.lang.Index_Text_end_time}：
+											<span class="color--eb1a16 time countdown">
+												<span class="hours">00</span>
+												<span>:</span>
+												<span class="minutes">00</span>
+												<span>:</span>
+												<span class="seconds">00</span>
+											</span>
+										</p>
+									</div>
+									{/eq}
+									<!-- 抢购未开始 -->
+									{eq name="vo.status" value="2"}
+									<div class="l"><span class="t {eq name='$selected_time_slot.item' value='$key'}now{/eq}">{$vo.time}</span></div>
+									<div class="r">
+										<p>{$eBiz.lang.Index_Text_ready_start}</p>
+									</div>
+									{/eq}
+								</a>
+							</li>
+							{/volist}
+
+						</ul>
+					</div>
+					<!-- 列表 -->
+					<div class="section-content mt20" id="flash_list" >
+						<div class="box">
+
+							<ul class="clearfix">
+							{volist name="list" id="vo"}
+								<li class="shop-list-b">
+									<div class="pic">
+										<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}"><img src="{$vo['goods']['thumb']}" width="100%" alt="" /></a>
+									</div>
+									<div class="info">
+										<p class="info-title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}">{$vo.goods.title}</a></p>
+										<div class="msg mt10">
+											<p style="text-align: right;"><del>{:web_currency()}{$vo.goods.shop_price}</del></p>
+											<p>
+												<!-- <span style="line-height: 22px;font-size: 13px;"><span class="color--c16a00">售07</span>/10件</span> -->
+												<span class="color--9b1b33 price fr">{:web_currency()}{$vo.goods.price}</span>
+											</p>
+										</div>
+									</div>
+								</li>
+							{/volist}
+
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- 下期秒杀 -->
+			<div class="mall-section mt20 c-floor-section">
+				<div class="container w1200">
+					<div class="index-topTitle">
+						<p>{$eBiz.lang.Flash_next_show}</p>
+					</div>
+					<!-- 抢购时间 -->
+					<div class="panic-time-block">
+						<ul class="clearfix">
+
+							{volist name="time_slot" id="vo" key="a"}
+							<li class="item {eq name='a' value='1'}on{/eq}" data-id="{$a-1}" onclick="getNextTimsFlash(this);">
+								<a href="javascript:;">
+									<div class="l"><span class="t">{$vo.time}</span></div>
+									<div class="r">
+										<p>{$eBiz.lang.Flash_please_wait}</p>
+									</div>
+								</a>
+							</li>
+							{/volist}
+
+						</ul>
+					</div>
+					<!-- 列表 -->
+					<div class="section-content mt20" id="next_flash">
+						<div class="box">
+
+							<ul class="clearfix">
+								{volist name="next_list" id="vo"}
+								<li class="shop-list-b">
+									<div class="pic">
+										<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}"><img src="{$vo['goods']['thumb']}" width="100%" alt="" /></a>
+									</div>
+									<div class="info">
+										<p class="info-title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}">{$vo.goods.title}</a></p>
+										<div class="msg mt10">
+											<p style="text-align: right;"><del>{:web_currency()}{$vo.goods.shop_price}</del></p
+											<p>
+												<!-- <span style="line-height: 22px;font-size: 13px;"><span class="color--c16a00">售07</span>/10件</span> -->
+												<span class="color--9b1b33 price fr">{:web_currency()}{$vo.goods.price}</span>
+											</p>
+										</div>
+									</div>
+								</li>
+								{/volist}
+
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="common/footer"}
+
+</body>
+<script type="text/javascript">
+	$(function () {
+		getNextTimsFlash();
+	});
+	// 获取不同时期的抢购活动
+	function getTimsFlash(obj) {
+		var me = $(obj);
+		var time_id = me.attr('data-id');
+		$.ajax({
+			url:"{:U('Index/flash_buy')}",
+			data:{
+				type:time_id,
+				nums:10,
+			},
+			success: function(data){									
+				$('#flash_list').html(data);
+				me.addClass('on').siblings().removeClass('on');
+				$('.now').removeClass('now');
+				me.children().find('.t').addClass('now');
+			}
+		});	
+	}
+</script>
+<script src="{:tb_config('resource_path',1)}shop/js/jquery.downCount.js"></script>
+<script type="text/javascript">
+
+	$('.countdown').downCount({
+        date: '{$now_end_time|date="Y-m-d H:i:s",###}',
+        offset: +8
+    }, function () {
+    	var times = '{$now_end_time|date="Y-m-d H:i:s",###}';
+    	if (times<4) {
+        	location.reload();
+    	}
+    });
+</script>
+</html>

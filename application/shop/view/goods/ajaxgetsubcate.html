@@ -1,0 +1,34 @@
+{volist name="cates" id="v"}
+<tr id="cat_{$v.id}" data-pid="{$v.id}" class="{$v.pid}">
+  <td><input type="checkbox" value="{$v.id}" name="id[{$v.id}]" ></td>
+  <td class="layui-form">{$v.id}</td>
+  <td class="layui-form">
+    <input name="sort[{$v.id}]" data-href="{:url('goods/cate_set_value',['id'=>$v['id']])}" data-field="sort" value="{$v.sort}" style="width:40px;" onblur="ajaxInput(this);">
+  </td> 
+  <td class="layui-form" style="text-align:left;" >
+  <span class="prev_span">
+    {for start="1" end="$v.level"}
+      <span class="default_node default_vertline"></span>
+    {/for}
+  </span>
+  {gt name='v.subs' value='0'}
+  <span arrow="true" onclick="getSub(this);" data-id="{$v.id}" class="default_active_node default_shut"></span>
+  {/gt}
+    <span class="v_span v_name_span{$v.id}" data-val="{$v.id}" onclick="showVname(this);">{$v.name}</span>
+    <input class="v_name v_name{$v.id}" name="name[{$v.id}]" data-href="{:url('goods/cate_set_value',['id'=>$v['id']])}" data-val="{$v.id}" data-field="name" value="{$v.name}" style="width:180px; display: none;" onblur="ajaxInput(this);"></td>
+  <td class="layui-form">
+    <input type="checkbox" name="is_hot" data-href="{:url('goods/cate_switch',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="{$v.is_hot}" {eq name="v.is_hot" value="1"}checked{/eq}>
+  </td>
+  <td class="layui-form">
+    <input type="checkbox" name="is_show" data-href="{:url('goods/cate_switch',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="{$v.is_show}" {eq name="v.is_show" value="1"}checked{/eq}>
+  </td>
+  <td>
+    <div class="layui-btn-group">
+      <button type="button" onclick="showFrame(this);" data-msg="{:lang('cate_btn_add_ad')}" data-href="{:url('goods/cate_adv',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-success" title="{:lang('cate_btn_add_ad')}"><i class="fa fa-fw fa-flag"></i></button>
+      <button type="button" onclick="showFrame(this);" data-msg="{:lang('cate_btn_add_sub')}" data-href="{:url('goods/cate_add',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-success" title="{:lang('cate_btn_add_sub')}"><i class="fa fa-fw fa-plus"></i></button>
+      <button type="button" onclick="showFrame(this);" data-msg="{:lang('comm_btn_edit')}" data-href="{:url('goods/cate_edit',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-normal" title="{:lang('comm_btn_edit')}"><i class="fa fa-fw fa-pencil-square-o"></i></button>
+      <button type="button" onclick="showConfirm(this);" data-msg="{:lang('comm_del_confirm_msg')}" data-href="{:url('goods/cate_del',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-danger" title="{:lang('comm_btn_del')}"><i class="fa fa-fw fa-trash-o"></i></button>
+    </div>
+  </td>
+</tr> 
+{/volist}

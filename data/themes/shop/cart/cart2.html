@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>订单结算-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/bizPay.js"></script>
+	<script>
+		// 价格组
+		var priceGroup = {:json_encode($shopOrder)};
+		// 优惠券组
+		var couponList = {:json_encode($couponList)};
+
+		var pee = new bizPay();
+		pee.SetPrice(priceGroup,{$discount_price},{$payable_price});
+		pee.SetCouponList(couponList);
+	</script>
+
+	<style type="text/css">
+	.label-intr {
+		display: inline-block;
+		width: 120px;
+		text-align: right;
+		vertical-align: middle;
+	}
+	.cart-shop-table .other-shop-intr td {
+		text-align: left;
+	}
+	.cart-shop-table .other-shop-intr input {
+		vertical-align: middle;
+	}
+	.cart-shop-table .other-shop-intr .btn {
+		vertical-align: middle;
+	}
+	.settl-address {
+	    height: auto;
+	}
+	.settl-address .s-address {
+	    width: 300px;
+	    height: 150px;
+	}
+	 .couponWrap {
+		 position: relative;
+		 text-align: left;
+	 }
+	.showCoupon {
+		position: absolute;
+		right: -30px;
+		top: 10px;
+	}
+	.couponHide {
+		height: 108px;
+		overflow: hidden;
+
+	}
+	</style>
+</head>
+<body style="background: #fff;">
+
+	<!-- top -->
+	{include file="common/top_header"}
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+	<!-- 导航 -->
+	<header class="header bus_header">
+		<div class="container w1200 clearfix">
+			<a href="{:U('/')}" class="logo fl"><img src="{:tb_config('web_site_logo',1)}" alt="" /></a>
+			<div class="header-intr fl">
+				<h1 class="color--d81c1d" style="font-size: 24px;">结算</h1>
+				<a href="{:U('/')}" class="topback">
+					<img src="{:tb_config('resource_path',1)}shop/picture/back.png" alt="" />
+					<span>返回首页</span>
+				</a>
+			</div>
+			<div class="header-right fr">
+				<div class="user-step w600 mt10">
+					<div class="step-item old w33">
+					<a href="{:U('Cart/cart')}">
+						<span class="num">1</span>
+						<p class="msg">1.我的购物车</p>
+					</a>
+					</div>
+					<div class="step-item on w33">
+						<span class="num">2</span>
+						<p class="msg">2.填写核对订单信息</p>
+					</div>
+					<div class="step-item w33">
+						<span class="num">3</span>
+						<p class="msg">3.成功提交订单</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+
+	<main class="main cart-main">
+		<!-- 当前位置 -->
+		<div class="c-location-section background-location">
+			<div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="{:U('/')}">首页</a></li>
+					<li class="location-item has"><span>购物车</span></li>
+					<li class="location-item"><span>结算订单</span></li>
+				</ul>
+			</div>
+		</div>
+		<form name="cart2_form" id="cart2_form" method="post">
+		<div class="container w1100 clearfix mt30 pb50">
+			<div class="settlement-wrap">
+				<div class="settlement-box">
+					<div class="settl-item" id="ajax_address">
+						<!-- ajax加载用户收货地址列表 -->
+					</div>
+
+					<!-- 确认订单信息 -->
+					<div class="settl-item settl-shop-intr" style="border-bottom: 0px;">
+						<div class="set-top"><strong>确认订单信息</strong></div>
+						<div class="cart-shop-table">
+							<table>
+								<thead>
+									<tr>
+										<th width="40%" style="text-align: left;">店铺宝贝</th>
+										<th width="10%">单价</th>
+										<th width="15%">数量</th>
+										<th width="10%">邮费</th>
+										<th width="10%">小计</th>
+									</tr>
+								</thead>
+
+								<tbody class="cart-shop-list">
+									<tr class="sep-tr"><td colspan="6"></td></tr>
+									{volist name="cartList.list" id="vo"}
+									<tr>
+										<td class="borleft" style="text-align: left;">
+											<div class="c-pic"><img src="{:common_thumb_img(getTableValue('shop_goods','id='.$vo['goods_id'],'thumb'),100,100)}" alt="" /></div>
+											<div class="c-info">
+												<div class="c-name">{$vo.goods_name}</div>
+												<div class="c-spec mt10">
+													<span class="ml10">{$vo.spec_title}</span>
+												</div>
+												<div class="c-spec mt10">
+													<span>包邮</span>
+												</div>
+											</div>
+										</td>
+										<td>{:web_currency()}{$vo.shop_price}</td>
+										<td>
+											<div class="enter-number" style="vertical-align: middle;">{$vo.goods_num}
+												<!-- <span class="op reduce">-</span> -->
+												<spna class="in"><input type="text" value="{$vo.goods_num}" readonly="" /></spna>
+												<!-- <span class="op add" data-max="10">+</span> -->
+											</div>
+										</td>
+										<td>
+											{:web_currency()}{$vo['postage']}
+										</td>
+										<td class="borright">
+											<strong class="color--e4393c fs14">{:web_currency()}{$vo['shop_price']*$vo['goods_num']+$vo['postage']}</strong>
+										</td>
+									</tr>
+									{/volist}
+									<tr class="other-shop-intr">
+										<td colspan="2" class="borleft borright">
+											<span class="label-intr">给卖家留言：</span>
+											<input type="text" class="input-400" name="user_remark" placeholder="选填：对本次交易的说明" />
+										</td>
+
+										<td colspan="6" class="borright" style="text-align: left;">
+											<span class="label" >物流资费</span>
+											<!-- <span>普通配送 快递 免邮</span> -->
+											<strong class="fr color--e4393c fs14">{:web_currency()}{$postage}</strong>
+										</td>
+									</tr>
+									<tr class="block-tr">
+										{if condition="!empty($couponList)"}
+										<td colspan="5" style="background-color: #ffffff">
+
+											<div class="couponWrap" >
+												<a class="showCoupon" href="javascript:;" style="color: #e70005">您有红包可以使用</a>
+												<div class="coupon-box couponHide clearfix couponShop" style="height: 30px;">
+													<div class="odrcpn-item" style="height: 60px; width: 83%; color: red; line-height: 30px;">
+														<p></p>
+
+													</div>
+
+													<div class="odrcpn-items">
+
+														<div class="odrcpn-item">
+															<input type="radio" name="coupon[1][]" id="no_use">
+															<label for="no_use" class="c-detail" onclick="pee.nowUseCoupon();">
+																<div class="c-msg c-dong" style="height: 55px;">
+																	<div class="c-top-dong"></div>
+																	<div class="item-selected-cancel hide">取消勾选</div>
+																	<div class="c-price" style="display: block;">
+																		<em>不使用优惠券</em>
+																	</div>
+																</div>
+																<div class="c-type c-type-dong">
+																</div>
+
+															</label>
+														</div>
+														{volist name="couponList" id="coupon"}
+														<div class="odrcpn-item coupon{$coupon.id}_top">
+															<input id="coupon{$vo.shop_id}_{$coupon.id}" type="{eq name='$coupon["type"]' value='1'}radio{else/}checkbox{/eq}" name="coupon[{$coupon.type}][]"  onchange="pee.GetPrice({$coupon.id});" value="{$coupon['id']}">
+															<label for="coupon{$vo.shop_id}_{$coupon.id}" class="c-detail">
+																<div class="c-msg c-dong{eq name='$coupon.coupon_level' value='1'}2{/eq}" style="height: 55px;">
+																	<div class="c-top-dong"></div>
+																	<div class="item-selected-cancel hide">取消勾选</div>
+																	<div class="c-price" style="display: block;">
+																		<em>{$coupon['quota_text']}</em>
+																	</div>
+																	<div class="c-limit" style="display: block; line-height: 30px; margin-left: 20px;">
+																		<span>
+																			{php}
+																			if( mb_strlen($coupon['coupon_name']) > 10 ){
+                    															$coupon['coupon_name'] = mb_substr($coupon['coupon_name'],0,8).'...';
+                															}
+																			{/php}
+																			{$coupon.coupon_name}
+																		</span>
+																	</div>
+																</div>
+																<div class="c-type c-type-dong{eq name='$coupon.coupon_level' value='1'}2{/eq}">
+																	<span>有效期至{:date('Y-m-d',$coupon.end_time)}</span>
+																</div>
+															</label>
+														</div>
+														{/volist}
+													</div>
+												</div>
+											</div>
+										</td>
+										{/if}
+
+									</tr>
+								</tbody>
+							</table>
+						</div>
+						<div id="one_level_coupon">
+						</div>
+
+						<div class="order-summary mt30">
+							<p>
+								<span class="mr50" style="color: #333;">订单总额</span>
+								<span class="fs18">
+									<strong class="color--999999"></strong>
+									<strong class="color--e4393c">{:web_currency()}{$total_price}</strong>
+								</span>
+							</p>
+							<p>
+								<span class="mr50" style="color: #333;">总邮费</span>
+								<span class="fs18">
+									<strong class="color--999999"></strong>
+									<strong class="color--e4393c">{:web_currency()}{$postage}</strong>
+								</span>
+							</p>
+							<p>
+								<span class="mr50" style="color: #333;">优惠金额</span>
+								<span class="fs18">
+									<strong class="color--999999"></strong>
+									<strong class="color--e4393c total_discount_price">{:web_currency()}{$discount_price}</strong>
+								</span>
+							</p>
+							<p>
+								<span class="mr50" style="color: #333;">应付总额</span>
+								<span class="fs18">
+									<strong class="color--999999"></strong>
+									<strong class="color--e4393c total_price">{:web_currency()}{$payable_price}</strong>
+								</span>
+							</p>
+							
+						</div>
+						<div class="btn-box right mt30">
+							<a class="cmall-su-btn" href="javascript:;" onclick="submit_order();"><strong>提交订单</strong></a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+	</main>
+
+	{include file="common/footer" /}
+
+
+	<script type="text/javascript">
+
+		//优惠券展开收起
+		$('.showCoupon').click(function(){
+			var val = $(this).attr('data-val');
+			var couponShop = '.couponShop'+val;
+			if(!$(this).hasClass('on')){
+				$('.coupon-box').parent().children('.showCoupon').removeClass('on').html('更多优惠券');
+				$(this).addClass('on').html('收起优惠券');
+				$('.coupon-box').addClass('couponHide');
+				$(couponShop).removeClass('couponHide');
+			}else{
+				$(this).removeClass('on').html('更多优惠券');
+				$(couponShop).addClass('couponHide');
+			}
+		});
+
+		// 优惠信息选择
+		$('.c-tab').on('click','.list',function() {
+			var me = $(this);
+			var the = me.attr('cpn-for');
+			me.addClass('on').siblings('.list').removeClass('on');
+			me.parent().siblings('.content').find('.tab-list[cpn-for="' + the + '"]').addClass("on").siblings('.tab-list').removeClass('on');
+		});
+
+
+		$(document).ready(function() {			
+			ajax_address(); // 获取用户收货地址列表
+		});
+
+
+		// 添加修改收货地址回调函数 
+		function call_back_fun(v){	 
+			layer.closeAll(); // 关闭窗口
+			ajax_address(); // 刷新收货地址
+		}
+
+		// 删除收货地址
+		function del_address(id)
+		{
+		    if(!confirm("确定要删除吗?"))
+			  return false;
+			  $.ajax({
+				     url:"/index.php?m=Home&c=User&a=del_address&id="+id,
+		  			 success: function(data){
+						ajax_address(); // 刷新收货地址
+						// $('#ajax_pickup .order-address-list').removeClass('address_current');
+					 }
+			  });
+		}
+
+
+		/**
+		* 新增修改收货地址
+		* id 为零 则为新增, 否则是修改
+		*  使用 公共的 layer 弹窗插件  参考官方手册 http://layer.layui.com/
+		*/
+		function add_edit_address(id)
+		{
+			if(id > 0) 
+				var url = "{:U('shop/user/edit_address')}?id="+id; // 修改地址
+			else
+				var url = "{:U('shop/user/add_address')}";	// 新增地址
+			layer.open({
+				type: 2,
+				title: '添加收货地址',
+				shadeClose: true,
+				shade: 0.8,
+				area: ['880px', '580px'],
+				content: url,
+			}); 	
+		} 
+		 
+		/*
+		* ajax 获取当前用户的收货地址列表
+		*/
+		function ajax_address(){
+			$.ajax({
+				url:"{:U('shop/Cart/ajaxAddress')}",//+tab,
+				success: function(data){
+					$("#ajax_address").html('');
+					$("#ajax_address").append(data);
+				}
+			});
+		}
+		 
+		// 切换收货地址
+		function swidth_address(obj)
+		{
+			var me = $(obj);
+			me.addClass('on').siblings('.s-address').removeClass('on');
+			me.find('input').prop('checked',true);
+			me.siblings('.s-address').find('input').prop('checked',false);
+			var province_id = $(obj).attr('data-province-id');
+			var city_id = $(obj).attr('data-city-id');
+			var district_id = $(obj).attr('data-district-id');
+			// if (typeof($(obj).attr('data-province-id')) != 'undefined') {
+			// 	ajax_pickup(province_id,city_id,district_id,0);
+			// }
+			$(".order-address-list").removeClass('address_current');
+			$(obj).parent().parent().parent().parent().parent().addClass('address_current');
+		}
+
+
+		// 提交订单
+		ajax_return_status = 1; // 标识ajax 请求是否已经回来 可以进行下一次请求
+		function submit_order()
+		{
+//			if(ajax_return_status == 0)
+//				return false;
+				
+			ajax_return_status = 0;
+			
+			$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/cart3')}",//+tab,
+				data : $('#cart2_form').serialize()+"&act=submit_order",// 你的formid
+		        dataType: "json",
+				success: function(data){
+												
+					if(data.code != '1')
+					{
+						// alert(data.msg); //执行有误
+						layer.alert(data.msg, {icon: 2});				
+						
+						// 登录超时
+						if(data.status == -100) 
+							location.href ="{:U('Home/User/login')}";
+						
+						ajax_return_status = 1; // 上一次ajax 已经返回, 可以进行下一次 ajax请求		
+						
+						return false;
+					}
+		            // console.log(data);
+		//			$("#postFee").text(data.msg.postFee); // 物流费
+					//layer.alert('订单提交成功，跳转支付页面!', {icon: 1}); //alert('订单提交成功，跳转支付页面!');
+
+					layer.msg('订单提交成功，跳转支付页面!', {
+					  icon: 1,   // 成功图标
+					  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+					}, function(){ // 关闭后执行的函数
+							location.href = "{:U('shop/Cart/cart4')}?serial_id="+data.msg.order_id; // 跳转到结算页
+					});
+				}
+			});	
+		}
+
+
+	</script>
+	
+</body>
+</html>

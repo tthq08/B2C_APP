@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>编辑个人信息</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+	<style type="text/css">
+		.udata-item .right{background: #fff;}
+		input{border: 0px!important;}
+		select{border: 0px!important;}
+
+		*{margin:0;padding:0;} 
+		a{text-decoration:none;} 
+		.btn_addPic{ 
+			display: block; 
+			position: relative; 
+			width: 140px; 
+			height: 39px; 
+			overflow: hidden; 
+			border: 1px solid #EBEBEB; 
+			background: none repeat scroll 0 0 #F3F3F3; 
+			color: #999999; 
+			cursor: pointer; 
+			text-align: center; 
+		} 
+		.btn_addPic span{display: block;line-height: 39px;} 
+		.btn_addPic em { 
+			background:url("{:tb_config('resource_path',1)}cust/images/plus.png") 0 0; 
+			display: inline-block; 
+			width: 18px; 
+			height: 18px; 
+			overflow: hidden; 
+			margin: 10px 5px 10px 0; 
+			line-height: 20em; 
+			vertical-align: middle; 
+		} 
+		.btn_addPic:hover em{background-position:-19px 0;} 
+		.filePrew { 
+			/*display: block; */
+			position: absolute; 
+			top: 0; 
+			left: 0; 
+			width: 140px; 
+			height: 39px; 
+			font-size: 100px; /* 增大不同浏览器的可点击区域 */ 
+			opacity: 0; /* 实现的关键点 */ 
+			filter:alpha(opacity=0);/* 兼容IE */ 
+		}
+		.release-img {
+			width: 94%;
+			margin: auto;
+		}
+		.release-img.videos input {
+			width: 100%;
+			border: 1px solid #eee;
+			height: 1.4rem;
+			padding: 0 .3rem;
+		}
+		.release-img.goodss select {
+			width: 100%;
+			border: 1px solid #eee;
+			height: 1.4rem;
+		}
+
+		.release-note-spec {
+			padding: .5rem 0;
+			border-bottom: 1px solid #b2b2b2;
+		}
+		.release-note-spec:first-child {
+			border-top: 1px solid #b2b2b2;
+		}
+		.m-spec-section .release-note-spec .spec-item {
+			background: #e5e5e5;
+			border-radius: .7rem;
+			border: none;
+		}
+		.m-spec-section .release-note-spec .spec-item.on {
+			background: #ff98b3;
+			color: #fff;
+		}
+		.m-spec-check {
+			padding-right: 1.5rem;
+			line-height: 1rem;
+			font-size: .65rem!important;
+			height: 2rem;
+			overflow: hidden;
+			color: #000;
+		}
+		.m-attribute-message .bottom .btn {
+			background: #ff98b3;
+		}
+		.udata-item .loadimg { position: relative; }
+	</style>
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('User/manager')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">编辑个人信息</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+	<form id="userForm" method="post" action="{:U('user/save_info')}">
+		<div class="user-form">
+			<div class="udata-item">
+				<div class="box">
+					<div class="left">头像</div>
+					<div class="right">
+						<span class="loadimg" id="face">
+						<input type="hidden" name="head_pic" id="pics" value="{$user.head_pic|default=''}">
+						<a class="add-img" style="border: none;" href="javascript:void(0);">
+							{notempty name="user.head_pic"}
+								<img id="face_pic" src="{$user.head_pic}" alt="" />
+							{else/}
+								<img id="face_pic" src="{:tb_config('resource_path',1)}mshop/picture/user.jpg">
+							{/notempty}
+							<input class="filePrew" tabIndex="3" type="file" id="xxfile"  onchange="upImg();" size="3" name="pic">
+						</a>
+						</span>
+					</div>
+				</div>
+			</div>
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">用户名</div>
+					<div class="right"><input type="text" name="mobile" value="{$user.username}" disabled=""></div>
+				</div>
+			</a>
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">手机号</div>
+					<div class="right"><input type="text" name="mobile" value="{$user.mobile|hidetel}"></div>
+				</div>
+			</a>
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">邮箱</div>
+					<div class="right"><input type="text" name="email" value="{$user.email|hidemail}"></div>
+				</div>
+			</a>
+			
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">昵称</div>
+					<div class="right"><input type="text" name="nickname" value="{$user.nickname}"></div>
+				</div>
+			</a>
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">性别</div>
+					{assign name="sex" value=":config('sex')" /}
+					<div class="right">
+						<select name="sex">
+							{volist name="sex" id="vo" key="k"}
+							<option value="{$k-1}" {eq name='user.sex' value="$k-1" }selected{/eq}>{$vo}</option>
+							{/volist}
+						</select>
+						<!-- <input type="text" name="" value="{$sex[$user['sex']]}"> -->
+					</div>
+				</div>
+			</a>
+			<a href="javascript:;" class="udata-item">
+				<div class="box">
+					<div class="left">出生日期</div>
+					<div class="right"><input type="text" name="birthday" value="{$user.birthday}"></div>
+				</div>
+			</a>
+		</div>
+	</form>
+		<div class="btn-box mt40 plr3">
+			<button type="button" id="submit_btn" onclick="saveForm();" class="block-btn w100">保存信息</button>
+		</div>
+	</main>
+
+</body>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/xxUploadImg.js"></script>
+	<script type="text/javascript">
+		function saveForm() {
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+			$('#submit_btn').attr('disabled',true);
+			$.ajax({
+			    type : "POST",
+			    url:$('#userForm').attr('action'),
+			    data : $('#userForm').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function () {
+						$('#submit_btn').attr('disabled',false);
+						layer.close(lay_index);
+					})
+			    },
+			    error: function (XMLHttpRequest, textStatus, errorThrown) {
+			    	layer.msg('网络失败，请刷新页面后重试');
+			    	layer.close(lay_index);
+			    }
+			});
+		}
+
+		function upImg() {
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+	        $("#xxfile").xxUploadImg({
+	            url: "{:U('sys/upload/upload',['img_tp'=>'face'])}",
+	            max: 800,
+	            callbackFun: function (ret, param) {
+	            	if (ret.state=='SUCCESS') {
+            			$('#face_pic').attr('src',ret.url);
+	                	$("#pics").val(ret.url);
+            			layer.close(lay_index);
+	            	};
+	            }
+	        })
+			layer.close(lay_index);
+	    }
+	</script>
+</html>

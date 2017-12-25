@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>注册</title>
+	{include file="public/static" /}
+</head>
+<body>
+
+	<header class="header login-header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">注册</h5>
+			</div>
+			<div class="header-right"></div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body">
+		<div class="sign-form-wrap">
+		
+		   <div class="sign-email-confirm">
+				<h3 class="sign-email-confirm-tit">为了您安全的使用TBMALL平台<br>创建的帐户需要电子邮件激活</h3>
+				<div class="sign-email-confirm-msg">
+					<p class="confirm-msg-1">认证邮箱已发送请您在有效期间内完成激活</p>
+					<p class="confirm-msg-2">ID : <span class="email_address">{$email|hidemail}</span></p>
+					<p class="confirm-msg-3">激活有效期截止时间：{$enable_time|date="Y-m-d H:i:s",###}</p>
+				</div>
+				<div class="sign-email-btn">
+					{php}
+						$mail_item = explode('@',$email);
+						$mail_login = 'http://www.'.$mail_item[1];
+					{/php}
+					<a class="email-btn-link" href="{$mail_login}" target="_blank">马上去激活</a>
+				</div>
+			</div>
+		</div>
+	</main>
+	
+	<script type="text/javascript">
+		function reSend() {
+			$.ajax({
+				url:"{:U('member/login/reSend')}",			
+				success: function(data){									
+					layer.msg(data.msg);
+				}
+			});	
+		}
+
+		window.setInterval(check_act,5000);
+
+		// ajax定时查询账户激活状态
+		function check_act() {
+			$.ajax({
+				url:"{:U('member/login/check_act')}",			
+				success: function(data){
+					if (data.code==1) {
+						location.href="{:U('user/signup_3')}";
+					}
+				}
+			});	
+		}
+	</script>
+
+</body>
+</html>

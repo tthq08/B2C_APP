@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>跳转提示</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/mall.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/list.css" />
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+
+	<style type="text/css">
+	.ctag-wrap {
+	}
+	.ctag-box {
+		padding: 50px 100px;
+		width: 700px;
+		margin: auto;
+		background: #fff;
+		text-align: center;
+		color: #777;
+		border-top: 2px solid #eb1a16;
+	}
+	.ctag-box .top {
+		color: #333;
+		font-size: 15px;
+		margin-bottom: 20px;
+	}
+	.ctag-box .txt {
+		font-size: 24px;
+	}
+	.ctag-box .txt .on {
+		color: #3BBE05;
+	}
+	.ctag-box .txt img {
+		margin-right: 10px;
+		vertical-align: middle;
+		margin-top: -2px;
+	}
+	.ctag-box .txt .error {
+		color: #999;
+	}
+	.ctag-box .other {
+		font-size: 12px;
+		color: #000;
+		text-align: left;
+		padding-top: 20px;
+		border-top: 1px solid #f4f4f4;
+	}
+	.ctag-box .other h5 {
+		font-size: 12px;
+	}
+	.ctag-box .other ul {
+		margin-top: 5px;
+	}
+	.ctag-box .other li a {
+		color: #005ea7;
+		font-size: 10px;
+	}
+	</style>
+</head>
+<body>
+
+	{include file="../shop/common/header" /}
+
+	<main class="main cart-main">
+		<!-- 当前位置 -->
+		<!-- <div class="c-location-section background-location">
+			<div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="index.html">首页</a></li>
+					<li class="location-item"><span>提示</span></li>
+				</ul>
+			</div>
+		</div> -->
+		<!-- 提示box -->
+		<div class="container w1200">
+			<div class="ctag-wrap mt30 mb30">
+				<div class="ctag-box">
+					<div class="top">TB MALL商城提示您</div>
+					<div class="txt">
+				<?php switch ($code) {?>
+            		<?php case 1:?>
+						<div class="on">
+							<img src="{:tb_config('resource_path',1)}shop/picture/a-check.png" alt="" />
+							<span class="fs20"><?php echo(strip_tags($msg));?></span>
+						</div>
+					<?php break;?>
+					<?php case 0:?>
+						<div class="error">
+							<img src="{:tb_config('resource_path',1)}shop/picture/g-no.png" alt="" />
+							<span class="fs20"><?php echo(strip_tags($msg));?></span>
+						</div>
+					<?php break;?>
+        		<?php } ?>
+					</div>
+					<div class="mt20">
+						<p class="jump">
+				            页面自动 <a id="href" class="cmall-btn-a" href="<?php echo($url);?>">跳转</a> 等待时间： <b id="wait"><?php echo($wait);?></b>
+				        </p>
+					</div>
+					<!-- <div class="msg mt30">
+						<p>
+							<a class="cmall-btn-a" href="javscript:;">返回首页</a>
+							<a class="cmall-btn-c" href="javscript:;">帮助中心</a>
+						</p>
+					</div> -->
+					<div class="other mt40">
+						<h5>说明：<?php echo(strip_tags($msg));?></h5>
+						<!-- <p class="mt10">常见问题</p>
+						<ul>
+							<li><a href="javascript:;">1、优惠券类型有哪些？</a></li>
+							<li><a href="javascript:;"/>2、如何查看优惠券？</a></li>
+						</ul> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="../shop/common/footer" /}
+
+	<script class="source" type="text/javascript">
+        (function(){
+            var wait = document.getElementById('wait'),
+                href = document.getElementById('href').href;
+            var interval = setInterval(function(){
+                var time = --wait.innerHTML;
+                if(time <= 0) {
+                    location.href = href;
+                    clearInterval(interval);
+                };
+            }, 1000);
+        })();
+    </script>
+	
+</body>
+</html>

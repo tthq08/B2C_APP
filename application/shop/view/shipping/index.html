@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+            <form action="" class="layui-form">
+                <!--<div style=" padding-bottom: 10px;">-->
+                    <!--<button type="button" class="layui-btn layui-btn-warm" onclick="add();">添加物流公司</button>-->
+                <!--</div>-->
+                <div class="layui-form-item" style="margin-top: 20px;">
+                    {volist name="shippingCompany1" id="vo"}
+                    <div style="float: left; margin: 10px;">
+                        <button id="shipping{$vo.id}" onclick="updateEnabled({$vo.id})" type="button" class="layui-btn layui-btn-normal">{$vo.name}</button>
+                    </div>
+                    {/volist}
+                    {volist name="shippingCompany0" id="vo"}
+                    <div style="float: left; margin: 10px;">
+                        <button id="shipping{$vo.id}" onclick="updateEnabled({$vo.id})" type="button" class="layui-btn layui-btn-primary">{$vo.name}</button>
+                    </div>
+                    {/volist}
+                </div>
+            </form>
+
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+//    function add() {
+//        layui.use('layer', function(){
+//            var layer = layui.layer;
+//            layer.open({
+//                type: 1,
+//                area:['900px','260px'],
+//                content: $('#add').html() //这里content是一个普通的String
+//            });
+//        });
+//    }
+    function updateEnabled(id){
+        //修改状态
+        $.ajax({
+            type:'post',
+            url:"{:U('shop/Shipping/updateEnabled')}",
+            data:{id:id},
+            success:function (data) {
+                if( data.code == 1 ){
+                    var shiping_id = "#shipping"+id;
+                    //layer.msg(data.msg.info);
+                    if( data.msg.enabled == 0 ){
+                        $(shiping_id).attr('class','layui-btn layui-btn-primary');
+                    }else{
+                        $(shiping_id).attr('class','layui-btn layui-btn-normal');
+                    }
+                }else{
+                    //layer.msg(data.msg);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>

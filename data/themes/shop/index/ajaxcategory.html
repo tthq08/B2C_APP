@@ -1,0 +1,15 @@
+<div class="box clearfix">
+    <div class="sub-shop fl">
+        <div class="c-item clearfix">
+            {volist name="list" id="cate"}
+            <div class="name"><a href="{if condition='empty($cate["url"])'}{:url('shop/goods/goodslist',['id'=>$cate.id])}{else/}{$cate.url}{/if}">{$cate.name}</a></div>
+            <div class="msg">
+                {volist name="cate.list" id="chcate"}
+                <a href="{if condition='empty($chcate["url"])'}{:url('shop/goods/goodslist',['id'=>$chcate.id])}{else/}{$chcate.url}{/if}" class="cs-items">{$chcate.name}</a>
+                {/volist}
+            </div>
+            {/volist}
+        </div>
+
+    </div>
+</div>

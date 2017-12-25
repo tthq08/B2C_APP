@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{include file="../shop/common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+<style type="text/css">
+	.he130 {
+	    height: 130px;
+	}
+
+	.wi457 {
+	    width: 457px;
+	}
+
+	.ov-hi {
+	    overflow: hidden;
+	}
+
+	img {
+	    border: 0;
+	}
+
+	.ev-img {
+	    width: 60px;
+	    height: 60px;
+	    background-color: #f5f5f5;
+	    cursor: pointer;
+	    overflow: hidden;
+	    color: #ca151e;
+	    margin-top: 10px;
+	    margin-left: 5px;
+	}
+
+	.ev-img img {
+	    width: 60px;
+	    height: 60px;
+	    position: absolute;
+	    z-index: 2;
+	    border-width: 0;
+	}
+
+	.ev-img:after {
+	    content: "+";
+	    font-size: 60px;
+	    font-weight: bold;
+	    position: absolute;
+	    left: 5px;
+	    line-height: 1;
+	    top: -5px;
+	    z-index: 1;
+        box-sizing: border-box;
+	}
+	.po-re {
+	    position: relative;
+	}
+
+	.fl {
+	    float: left;
+	}
+
+	.pro-user-score {
+	    padding: 14px 19px 0 14px;
+	}
+
+	.cu-po {
+	    cursor: pointer;
+	}
+
+	.ma-le-7 {
+	    margin-left: 7px;
+	}
+
+	.ma-to-40 {
+	    margin-top: 40px;
+	}
+
+	.merge {
+	    padding: 10px 0 10px 7px;
+	}
+
+	.hb-merge {
+	    width: 118px;
+	    height: 28px;
+	    line-height: 28px;
+	    font-size: 14px;
+	    background-color: #ca151e;
+	    color: #fff !important;
+	    text-align: center;
+	    border: 1px solid #ca151e;
+	}
+
+	.di-in-bl {
+	    display: inline-block;
+	}
+
+	.sf {
+	    display: block;
+	    width: 110px;
+	    float: left;
+	    vertical-align: middle;
+	}
+	.filePrew{
+		position: absolute;
+	    left: 0;
+	    right: 0;
+	    bottom: 0;
+	    top: 0;
+	    opacity: 0;
+	    z-index: 100;
+	    cursor: pointer;
+	}
+</style>
+</head>
+<body>
+	<main class="main bus-main" style="margin-top: 0px;margin-bottom: 0px;margin-left: 10px;">
+		<div class="container clearfix">
+			<div class="bus-right" style="float:left;">
+				<!-- 订单商品信息 -->
+				<div class="j-user-section user-section mt20">
+					<div class="order-com-table">
+						<table>
+							<thead>
+								<tr>
+									<th width="65%">商品</th>
+									<th width="15%">规格</th>
+									<th width="10%">状态</th>
+									<th width="10%">操作</th>
+								</tr>
+							</thead>
+							<tbody>
+							{volist name="orderGoods" id="goods"}
+								<tr>
+									<td align="left"><div class="pic"><img src="{:common_thumb_img(getTableValue('shop_goods','id='.$goods['goods_id'],'thumb'),80,80)}" alt=""></div><div class="info"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$goods['goods_id']))}" target="_blank">{$goods.goods_name}</a></div></td>
+									<td align="center">{$goods.spec_title}</td>
+									<td align="center">{$goods.is_comment?'已评':'待评'}</td>
+									<td align="center">
+										{if condition="($order.status eq 5) and ($goods['is_comment'] eq 0)"}
+										<p class="mt10"><a href="javascript:;" onclick="comment('{$goods.order_id}','{$goods.goods_id}','{$goods.spec_key}');"><span style="color:#36c;">评价</span></a></p>
+										{/if}
+										{if condition="($order.status egt 5) and ($goods['is_comment'] eq 1)"}
+										<p class="mt10"><a href="javascript:;" onclick="comm_show('{$goods.order_id}','{$goods.goods_id}','{$goods.spec_key}');"><span style="color:#36c;">查看评价</span></a></p>
+										{/if}
+									</td>
+								</tr>
+								<tr>
+									<td colspan="4" id="div_{$order.id}_{$goods.goods_id}_{$goods.spec_key}" style="display: none;">
+									<div class="eval-pj pa-to-20 ov-hi">
+				                        <form action="{:U('Home/User/add_comment')}" data-test="formtest" method="post">
+				                            <input type="hidden" name="order_id" value="{$order.id}">
+				                            <input type="hidden" name="goods_id" value="{$goods.goods_id}">
+				                            <input type="hidden" name="spec_key" value="{$goods.spec_key}">
+				                            <input type="hidden" name="spec_item" value="{$goods.spec_title}">
+				                            <div class="fwypj"><p>评价与晒图</p></div>
+				                            <div class="fl">
+				                                <div class="bd-fuwo pa-to-10">
+				                                    <textarea placeholder="可输入1-200字符" name="content" id="content" cols="70" rows="12"></textarea>
+				                                </div>
+				                                <input type="hidden" name="img" id="img_val" value="">
+				                                <div class="eval-img ov-hi wi457 he130" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}">
+				                                    <div class="ev-img po-re fl">
+				                                       <img src="" border="0" alt="">
+				                                       <input class="filePrew" type="file" id="xxfiles" onchange="upImgs('#img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}');" size="3" name="pics">
+				                                    </div>
+				                                </div>
+				                            </div>
+				                            <div class="fl pa-le-30">
+				                                <div class="pro-user-score cu-po">
+				                                    <span class="sf">综合评价：</span>
+						                            <span>
+						                                <span class="starRating-area">
+						                                	<input id="good_comm" type="radio" name="goods_rank" value="5">
+						                                    <label for="good_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/good.png" style="width: 15px;height: 18px;" title="好评"></label>
+						                                	<input style="margin-left: 15px;" id="mid_comm" type="radio" name="goods_rank" value="3">
+						                                    <label for="mid_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/mid.png" style="width: 15px;height: 18px;" title="中评"></label>
+						                                	<input style="margin-left: 15px;" id="bad_comm" type="radio" name="goods_rank" value="1">
+						                                    <label for="bad_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/bad.png" style="width: 15px;height: 18px;" title="差评"></label>
+						                                </span>
+						                            </span>
+				                                </div>
+				                                <div class="pro-user-score cu-po">
+				                                    <span class="sf">商品与描述相符：</span>
+						                            <span>
+						                                <span class="starRating-area">
+						                                    <img onMouseMove="c(this,event)" src="{:tb_config('resource_path',1)}shop/images/start/stars0.gif" alt="">
+						                                    <input type="hidden" id="desc_rank" name="desc_rank" value="0">
+						                                </span>
+						                            </span>
+				                                </div>
+				                                <div class="pro-user-score cu-po">
+				                                    <span class="sf">客服服务质量：</span>
+						                            <span>
+						                                <span class="starRating-area">
+						                                    <img onMouseMove="c(this,event)" src="{:tb_config('resource_path',1)}shop/images/start/stars0.gif" alt="">
+						                                    <input type="hidden" id="service_rank" name="service_rank" value="0">
+						                                </span>
+						                            </span>
+				                                </div>
+				                                <div class="pro-user-score cu-po">
+				                                    <span class="sf">物流服务质量：</span>
+						                            <span>
+						                                <span class="starRating-area">
+						                                   <img onMouseMove="c(this,event)" src="{:tb_config('resource_path',1)}shop/images/start/stars0.gif" alt="">
+						                                    <input type="hidden" id="deliver_rank" name="deliver_rank" value="0">
+						                                </span>
+						                            </span>
+				                                </div>
+				                                <div class="merge ma-to-40 ma-le-7">
+				                                    <a class=" di-in-bl hb-merge" onClick="comment_submit(this)" style="cursor: pointer;">提交</a>
+				                                </div>
+				                            </div>
+				                        </form>
+				                    </div>
+									</td>
+								</tr>
+							{/volist}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/layer/layer.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/xxUploadImg.js"></script>
+	<script type="text/javascript">
+		function c(obj,event){
+	        //var obj = $(obj);
+	        var objTop = getOffsetTop(obj);//对象x位置
+	        var objLeft = getOffsetLeft(obj);//对象y位置
+
+	        var mouseX = event.clientX+document.body.scrollLeft;//鼠标x位置
+	        var mouseY = event.clientY+document.body.scrollTop;//鼠标y位置
+	        //计算点击的相对位置
+	        var objX = mouseX-objLeft;
+	        var objY = mouseY-objTop;
+	        clickObjPosition = objX + "," + objY;
+	        if(objX < 13 && objX > 0){
+	            $(obj).attr('src','{:tb_config('resource_path',1)}shop/images/start/stars1.gif');
+	            $(obj).next().val(1);
+	        }
+	        if(objX < 28 && objX > 13){
+	            $(obj).attr('src','{:tb_config('resource_path',1)}shop/images/start/stars2.gif');
+	            $(obj).next().val(2);
+	        }
+	        if(objX < 43 && objX > 28){
+	            $(obj).attr('src','{:tb_config('resource_path',1)}shop/images/start/stars3.gif');
+	            $(obj).next().val(3);
+	        }
+	        if(objX < 58 && objX > 43){
+	            $(obj).attr('src','{:tb_config('resource_path',1)}shop/images/start/stars4.gif');
+	            $(obj).next().val(4);
+	        }
+	        if(objX < 74 && objX > 58){
+	            $(obj).attr('src','{:tb_config('resource_path',1)}shop/images/start/stars5.gif');
+	            $(obj).next().val(5);
+	        }
+	        //alert(clickObjPosition);
+	    }
+
+	    function getOffsetTop(obj){
+	        var tmp = obj.offsetTop;
+	        var val = obj.offsetParent;
+	        while(val != null){
+	            tmp += val.offsetTop;
+	            val = val.offsetParent;
+	        }
+	        return tmp;
+	    }
+
+	    function getOffsetLeft(obj){
+	        var tmp = obj.offsetLeft;
+	        var val = obj.offsetParent;
+	        while(val != null){
+	            tmp += val.offsetLeft;
+	            val = val.offsetParent;
+	        }
+	        return tmp;
+	    }
+
+	    function comm_show(order_id,goods_id,spec_key) {
+	    	var url = "{:U('user/comm_show')}?order_id="+order_id+"&goods_id="+goods_id+"&spec_key="+spec_key;
+	    	var index = layer.open({
+			  type: 2,
+			  title: '评价详情',
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['90%', '90%'],
+			  content: url
+			});
+	    	return;
+	    }
+
+	    function comment(order_id,goods_id,spec_key){
+	        var div = "#div_"+order_id+"_"+goods_id+"_"+spec_key;
+	        $(div).toggle();
+	    }
+
+	    function comment_submit(t){
+	        //表单对象
+	        var form = $(t).parent().parent().parent();
+
+	        var goods_rank = parseInt($(form).find('input[name="goods_rank"]:checked').val());
+	        var service_rank = parseInt($(form).find('#service_rank').val());
+	        var deliver_rank = parseInt($(form).find('#deliver_rank').val());
+	        var desc_rank = parseInt($(form).find('#desc_rank').val());
+
+	        if(!goods_rank> 0){
+				layer.msg('请选择综合评价', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+	            return false;
+	        }
+	        if(!desc_rank> 0){
+				layer.msg('请为商品描述评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+	            return false;
+	        }
+	        if(!service_rank> 0){
+				layer.msg('请为商家服务评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+	            return false;
+	        }
+	        if(!deliver_rank> 0){
+				layer.msg('请为物流评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+	            return false;
+	        }
+
+			 
+	        var data = $(form).serialize();
+	        $.ajax({
+	            type : "POST",
+	            url:"{:U('user/add_comment')}",
+	            data :data,// 你的formid 搜索表单 序列化提交
+	            success: function(data){
+	                if(data.code == 1){
+	                    //评论成功
+	                     //alert('评论成功');
+						layer.msg('评论成功', {
+						  icon: 1,
+						  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+						}, function(){
+			                   location.reload();
+						});
+	 
+	                }else{
+	                    $(form).parent().remove();
+	                    layer.msg(data.msg);
+	                }
+	            }
+	        });
+	    }
+	</script>
+
+	<!--上传图片JS-->
+	<script>
+	    var now_access;
+
+	    function upImgs(obj) {
+	    	var nums = $(obj).children('.iimg').length;
+	    	if (nums>=5) {
+	    		layer.msg('商品评价晒图请不要超过5张');
+	    		return false;
+	    	}
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+	        $(obj+" #xxfiles").xxUploadImg({
+	            url: "{:U('sys/upload/upload',['img_tp'=>'comment'])}",
+	            max: 800,
+	            callbackFun: function (ret, param) {
+	            	if (ret.state=='SUCCESS') {
+	            		var Html = '<div class="ev-img po-re fl iimg"><img src="'+ret.url+'" border="0" alt=""></div>';
+	            		$(obj).prepend(Html);
+	                	$("#img_val").val($("#img_val").val()+','+ret.url);
+	                	layer.close(lay_index);
+	            	};
+	            }
+	        })
+	    }
+	</script>
+	<!--上传图片JS结束-->
+</body>
+</html>

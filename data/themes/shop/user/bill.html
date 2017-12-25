@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>发票</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+</head>
+<body>
+
+	<div class="invoice-wrap">
+		<div class="invoice-box">
+			<div class="top"><span>구매영수증(SALES SLIP)</span></div>
+			<div class="content">
+				<table>
+					<tr>
+						<td width="33.3%">
+							<p class="name">처리일련번호 / SEQ NO, </p>
+							<p class="desc">{:date('YmdHis',strtotime($order['add_time']))}{$order.id} </p>
+						</td>
+						<td width="33.3%">
+							<p class="name">주문번호 / CON NO, </p>
+							<p class="desc">{$order.order_sn} </p>
+						</td>
+						<td width="33.3%">
+							<p class="name">거래일시 / TRANS DATE </p>
+							<p class="desc">{$order.add_time} </p>
+						</td>
+					</tr>
+					<tr class="max">
+						<td class="name">
+							<p>품명 / DESCRIPTIOIN </p>
+						</td>
+						<td colspan="2">
+							<p class="desc">{$goods}</p>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<p class="name">합계 / TOTAL </p>
+						</td>
+						<td colspan="2">
+							<div class="price clearfix" data-price="{$order.payable_price+$order.postage}"></div>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<p class="name">회사명 / COMPANY NAME</p>
+							<p class="desc">(주) 쿼크미디어 [ TB MALL ] </p>
+						</td>
+						<td>
+							<p class="name">대표자 / MASTER </p>
+							<p class="desc">박성철 </p>
+						</td>
+						<td>
+							<p class="name">사업자등록번호 / BUSINESS NO, </p>
+							<p class="desc">572-87-00262 </p>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<p class="name">회사주소 / ADDRESS </p>
+						</td>
+						<td colspan="2">
+							<p class="desc">서울시 구로구 구로동 197-5 삼성IT밸리 1007호 </p>
+						</td>
+					</tr>
+
+					<tr>
+						<td colspan="3">
+							<p class="desc">※ 이 영수증은 세금계산서 등 증빙서류로 사용할 수 없습니다.</p>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<p class="name">문의 전화 / 국번없이 </p>
+							<p class="desc">1522-1817 </p>
+						</td>
+						<td>
+							<p class="name">문의 메일 </p>
+							<p class="desc">cs@TB MALL.kr </p>
+						</td>
+						<td>
+							<p class="name">서명 / SIGNATURE </p>
+							<p class="desc">ZHENGYUELIN </p>
+						</td>
+					</tr>
+				</table>
+				<!-- <div class="btnbox mt40 tcenter">
+					<a href="javascript:;" class="invoice-btn">출력하기</a>
+				</div> -->
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	$(document).ready(function() {
+		var ele = $('.price');
+		var price = ele.attr('data-price');
+		var len = price.length;
+		var pArr = price.split('');
+		for( var i = 0; i < 10; i++ ) {
+			if(pArr[i]) {
+				ele.append('<span class="p">' + pArr[i] + '</span>');
+			} else {
+				if(i == 9) {
+					ele.prepend('<span class="p"></span>');
+				} else {
+					ele.prepend('<span class="p"></span>');
+				}
+			}
+		}
+	});
+	</script>
+	
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Safe_title_account_safe}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="j-user-section user-section user-safety-section mt10 plr20-section">
+					<div class="user-title-2">
+						<span>{$eBiz.lang.Safe_title_account_safe}</span>
+					</div>
+					<div class="block-tag mt20">
+						<span>{$eBiz.lang.Safe_safety_tips}</span>
+					</div>
+					<div class="safety-item-box mt20 pb20">
+						<div class="safety-item">
+							<div class="sa-name">
+								<img src="{:tb_config('resource_path',1)}shop/picture/g-check.png" alt="" />
+								<strong>{$eBiz.lang.Safe_login_pwd}</strong>
+							</div>
+							<div class="sa-msg">
+								<p>{$eBiz.lang.Safe_login_pwd_tips}</p>
+							</div>
+							<div class="sa-right">
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/change_pass')}" data-msg="{$eBiz.lang.Safe_login_pwd_title}" class="cmall-btn-g">{$eBiz.lang.Safe_btn_change}</a>
+							</div>
+						</div>
+						<div class="safety-item">
+							<div class="sa-name">
+							{eq name="user.email_validated" value='1'}
+								<img src="{:tb_config('resource_path',1)}shop/picture/g-check.png" alt="" />
+							{else/}
+								<img src="{:tb_config('resource_path',1)}shop/picture/g-no.png" alt="" />
+							{/eq}
+								<strong>{$eBiz.lang.Safe_mail_vali}</strong>
+							</div>
+							<div class="sa-msg">
+								<p>{$eBiz.lang.Safe_mail_vali_tips}</p>
+							</div>
+							<div class="sa-right">
+							{eq name="user.email_validated" value='1'}
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/change_email')}" data-msg="{$eBiz.lang.Safe_mail_chg_title}" class="cmall-btn-g">{$eBiz.lang.Safe_btn_change}</a>
+							{else/}
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/validate_email')}" data-msg="{$eBiz.lang.Safe_mial_vali_title}" class="cmall-btn-g">{$eBiz.lang.Safe_btn_go_vali}</a>
+							{/eq}
+							</div>
+						</div>
+						<!-- <div class="safety-item">
+							<div class="sa-name">
+							{eq name="user.mobile_validated" value='1'}
+								<img src="{:tb_config('resource_path',1)}shop/picture/g-check.png" alt="" />
+							{else/}
+								<img src="{:tb_config('resource_path',1)}shop/picture/g-no.png" alt="" />
+							{/eq}
+								<strong>{$eBiz.lang.Safe_mobile_vali}</strong>
+							</div>
+							<div class="sa-msg">
+								<p>{:lang('Safe_mobile_vali_tips',[hidetel($user['mobile'])])}<span class="color--e4393c">{$eBiz.lang.Safe_mobile_vali_warn}</span></p>
+							</div>
+							<div class="sa-right">
+							{eq name="user.mobile_validated" value='1'}
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/change_mobile')}" data-msg="{$eBiz.lang.Safe_mobile_chg_title}" class="cmall-btn-g">{$eBiz.lang.Safe_btn_change}</a>
+							{else/}
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/validate_mobile')}" data-msg="{$eBiz.lang.Safe_mobile_vali_title}" class="cmall-btn-g">{$eBiz.lang.Safe_btn_go_vali}</a>
+							{/eq}
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<!-- 提示 -->
+				<div class="user-block-2 mt20">
+					<h5 class="mb10">{$eBiz.lang.Safe_safety_warn}</h5>
+					<p>{$eBiz.lang.Safe_safety_warn_a}</p>
+					<p>{$eBiz.lang.Safe_safety_warn_b}</p>
+				</div>
+			</div>
+		</div>
+	</main>
+	{include file='common/footer'/}
+	
+</body>
+	<script type="text/javascript">
+		function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1020px', '600px;'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+	</script>
+</html>

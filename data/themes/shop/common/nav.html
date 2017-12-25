@@ -1,0 +1,17 @@
+<nav class="mall-nav">
+    <div class="container w1200">
+        <!-- open类为默认展开下拉分类菜单 -->
+        {include file="common/category"}
+        <!-- 导航 -->
+        <div class="j-nav">
+            <ul>
+                {nav_list item="nav"}
+                <li class="item"><a href="{$nav.url}">{$nav.name}</a></li>
+                {/nav_list}
+            </ul>
+        </div>
+        <!--<div class="fr">-->
+            <!--<a href="javascript:;"><img src="picture/nr.png" alt="" /></a>-->
+        <!--</div>-->
+    </div>
+</nav>

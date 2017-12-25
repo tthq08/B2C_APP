@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>我的订单</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('user/index')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">我的订单</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<div class="user-bar">
+			<ul class="clearfix">
+				<li class="bar-item w25 {if condition='$status eq 0'}on{/if}"><a href="{:U('shop/user/order_list')}">全部订单</a></li>
+				<li class="bar-item w25 {if condition='$status eq 1'}on{/if}"><a href="{:U('shop/user/order_list',array('type'=>'1'))}">待付款</a></li>
+				<li class="bar-item w25 {if condition='$status eq 4'}on{/if}"><a href="{:U('shop/user/order_list',array('type'=>'4'))}">待收货</a></li>
+				<li class="bar-item w25 {if condition='$status eq 5'}on{/if}"><a href="{:U('shop/user/order_list',array('type'=>'5'))}">待评价</a></li>
+			</ul>
+		</div>
+		<div class="order-itembox" id="order_list">
+		{volist name="orderList" id="list"}
+			<div class="order-item">
+				<a href="{:U('shop/User/order_detail',['id'=>$list['id']])}">
+				<div class="mt clearfix">
+					<div class="ofl">
+						<span class="">订单编号：{$list.order_sn}</span>
+					</div>
+					<div class="ofr">
+						<span class="state">{:getOrderStatusName($list['status'])}</span>
+					</div>
+				</div>
+				</a>
+				<div class="mc">
+				{volist name="list.goods_list" id="good" key="k" offset='0' lenght='1'}
+					<a href="{:U('shop/User/order_detail',['id'=>$list['id']])}" class="mitem clearfix">
+						<div class="pic"><img src="{$good.goods_id|goods_thum_images=200,200}" alt="{$good.goods_name}" />
+						</div>
+						<div class="info">
+							<div class="tit">{$good.goods_name}</div>
+							<!-- <div class="price"><span>{:web_currency()}{$list['payable_price']}</span></div> -->
+						</div>
+					</a>
+				{/volist}
+				</div>
+				<div class="mn tright">
+					<span>共{:count($list.goods_list)}件商品</span>
+					<span>实付款：{$list.payable_price+$list.postage}元</span>
+				</div>
+				<div class="mb">
+				{neq name="list.status" value="0"}
+					{eq name="list.is_pay" value="0"}
+						<a href="{:U('Cart/cart4',['order_id'=>$list['id']])}" class="btn buy-btn mr10">付款</a>
+						<a href="{:U('User/cancel_order',['id'=>$list['id']])}" class="btn cmt-btn mr10">取消</a>
+					{/eq}
+					{eq name="list.status" value="4"}
+						<a href="javascript:;" onclick="if(confirm('{$eBiz.lang.Order_receive_msg}?')) location.href='{:U('User/order_confirm',['id'=>$list['id']])}'" class="btn buy-btn mr10">确认收货</a>
+					{/eq}
+				{else/}
+					<a data-href="{:U('User/del_order',['id'=>$list['id']])}" data-msg="{$eBiz.lang.Order_delete}" href="javascript:;" onclick="actOrd(this);" class="btn del-btn">删除</a>
+				{/neq}
+				{egt name="list.status" value="5"}
+					<a href="{:U('User/comment',['id'=>$list['id']])}" class="btn cmt-btn mr10">评价</a>
+					<a href="{:U('User/return_goods',['order_id'=>$list['id'],'order_sn'=>$list['order_sn'],'goods_id'=>$good['goods_id']])}" class="btn cmt-btn mr10">申请售后</a>
+				{/egt}
+				</div>
+			</div>
+		{/volist}
+		</div>
+		<div class="order-itembox clearfix" style="text-align: center;margin-top: 20px;">
+			<button type="button" id="more_order_btn" style="border: 0px;" onclick="loadMoreOrders();">查看更多></button>
+		</div>
+	</main>
+
+</body>
+	<script type="text/javascript">
+		var goods_page = 2;
+    	// 加载更多商品
+    	function loadMoreOrders() {
+    		$('#more_order_btn').attr('disable',true);
+    		if (goods_page>0) {
+    			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2				
+    		}
+    		$.ajax({
+    			url:"{:get_url(false)}",
+    			data:{
+    				page:goods_page
+    			},
+    			success: function(data){
+    				$('#order_list').append(data);
+    				layer.close(index);
+    				$('#more_order_btn').attr('disable',false);
+    				if (data!='') {
+    					goods_page ++;    					
+    				}
+    			}
+    		});	
+    	}
+		function actOrd(obj) {
+	    	layer.confirm("{:lang('Order_cancle_confirm')}",{btn:['Yes','No']},function () {
+	    		$.ajax({
+	    			url:$(obj).attr('data-href'),
+	    			success: function(data){
+	    				layer.msg(data.msg,{time:1000},function () {
+	    					if (data.code==1) {
+	    						location.reload();
+	    					}
+	    				})
+	    			}
+	    		});	
+	    	})
+	    }
+	</script>
+</html>

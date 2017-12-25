@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="Base/table_header" /}
+<body>
+<style type="text/css">
+  .pannel{
+    width: 24%;
+    display: inline-block;
+    margin: 0px 7px 20px 0px;
+    box-sizing: border-box;
+    position: relative;
+    min-height: 1px;
+  }
+  
+  .block.block-rounded {
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border: 1px solid #e2e2e2;
+  }
+  .block.block-rounded > .block-content:first-child {
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+  }
+  .block-content.block-content-full {
+      padding-bottom: 20px;
+  }
+  .ribbon {
+      position: relative;
+      min-height: 56px;
+  }
+  .block-content {
+      margin: 0 auto;
+      padding: 20px 20px 1px;
+      max-width: 100%;
+      overflow-x: visible;
+      -webkit-transition: opacity 0.2s ease-out;
+      transition: opacity 0.2s ease-out;
+  }
+  .bg-success {
+      background-color: #46c37b;
+  }
+  .bg-info {
+      background-color: #70b9eb;
+  }
+  .bg-warning {
+    background-color: #f3b760;
+  }
+  .text-center {
+      text-align: center;
+  }
+
+  .ribbon-crystal .ribbon-box {
+    background-color: rgba(255, 255, 255, 0.35);
+  }
+  .ribbon-bookmark .ribbon-box {
+      padding-left: 0;
+  }
+  .ribbon-box {
+      position: absolute;
+      top: 10px;
+      right: 0;
+      padding: 0 15px;
+      height: 36px;
+      line-height: 36px;
+      color: #fff;
+      z-index: 500;
+  }
+  .font-w600 {
+      font-weight: 600 !important;
+  }
+  .text-white-op {
+      color: rgba(255, 255, 255, 0.85);
+  }
+  .text-white {
+      color: #fff;
+  }
+  .item.item-2x {
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+  }
+  .item.item-circle {
+      border-radius: 50%;
+  }
+  .fadeIn {
+      -webkit-animation-name: fadeIn;
+      animation-name: fadeIn;
+  }
+  .animated {
+      -webkit-animation-duration: 1s;
+      animation-duration: 1s;
+      -webkit-animation-fill-mode: both;
+      animation-fill-mode: both;
+  }
+  .item {
+      display: inline-block;
+      width: 60px;
+      height: 60px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 60px;
+  }
+  .push-20-t {
+      margin-top: 20px !important;
+  }
+  .push-20 {
+      margin-bottom: 20px !important;
+  }
+  .bg-crystal-op {
+      background-color: rgba(255, 255, 255, 0.15);
+  }
+  .module-list h3 {
+      font-weight: 300;
+      font-size: 24px;
+  }
+  .block.block-rounded > .block-content:last-child {
+      border-bottom-right-radius: 3px;
+      border-bottom-left-radius: 3px;
+  }
+  .block-content {
+      margin: 0 auto;
+      padding: 20px 20px 1px;
+      max-width: 100%;
+      overflow-x: visible;
+      -webkit-transition: opacity 0.2s ease-out;
+      transition: opacity 0.2s ease-out;
+  }
+
+  .bg-gray-lighter {
+      background-color: #f9f9f9;
+  }
+
+  .text-success {
+      color: #46c37b;
+  }
+  .pull-right {
+      float: right!important;
+  }
+  .push-10 {
+      margin-bottom: 10px !important;
+  }
+  .mheight-100 {
+      min-height: 100px;
+  }
+  .block-content .push{
+    margin-bottom: 20px;
+  }
+  .ribbon-crystal.ribbon-bookmark .ribbon-box:before {
+    border-color: rgba(255, 255, 255, 0.35);
+    border-left-color: transparent;
+}
+
+  .ribbon-box:before {
+    position: absolute;
+    display: block;
+    width: 0;
+    height: 0;
+    content: "";
+  }
+  .ribbon-box:before {
+    top: 0;
+    right: 100%;
+    border: 18px solid;
+    border-left-width: 10px;
+  }
+
+  .pagination {margin:0px;}
+  }
+</style>
+<section class="layui-larry-box">
+	<div class="larry-personal">
+    <div class="layui-tab layui-tab-card">
+      <!-- <div class="larry-separate"></div> -->
+	    <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+        <div class="layui-tab-item layui-field-box layui-show">
+          <div class="row module-list push-20">
+          {volist name="modules" id="vo"}
+          {switch name="vo.status"}
+          {case value="1"}
+            {assign name="pannel_bg" value="bg-success" /}
+            {assign name="status_show" value='<div class="text-success pull-right push-10-l"><i class="fa fa-check"></i> 已启用</div>' /}
+          {/case}
+          {case value="0"}
+            {assign name="pannel_bg" value="bg-warning" /}
+            {assign name="status_show" value='<div class="text-warning pull-right push-10-l"><i class="fa fa-ban"></i> 已禁用</div>' /}
+          {/case}
+          {case value="-1"}
+            {assign name="pannel_bg" value="bg-info" /}
+            {assign name="status_show" value='<div class="text-info pull-right push-10-l"><i class="fa fa-fw fa-th-large"></i> 未安装</div>' /}
+          {/case}
+          {/switch}
+            <div class="pannel">
+              <div class="block block-rounded">
+                <div class="block-content block-content-full text-center {$pannel_bg} ribbon ribbon-bookmark ribbon-crystal">
+                  <div class="ribbon-box font-w600">{$vo.version}</div>
+                  <div class="item item-2x item-circle bg-crystal-op push-20-t push-20 visibility-hidden" data-toggle="appear" data-offset="50" data-class="animated fadeIn">
+                    <i class="{$vo.icon} text-white-op"></i>
+                  </div>
+                  <h3 class="h4 text-white">{$vo.title}</h3>
+                  <div class="text-white-op">
+                    <em>{$vo.name}</em>
+                  </div>
+                </div>
+                <div class="block-content bg-gray-lighter">
+                  {$status_show}
+                  <div class="push-10">
+                    {$vo.author}
+                  </div>
+                  <div class="push-10 mheight-100">
+                    <div data-toggle="slimscroll" data-height="110px">
+                      <p class="text-gray-dark">{$vo.description}</p>
+                    </div>
+                  </div>
+                  <div class="text-center push">
+                  {eq name="vo.system_module" value="1"}
+                    <button class="btn btn-sm btn-noborder btn-danger" type="button" disabled="">不可操作</button> 
+                  {else/}
+                  {switch name="vo.status"}
+                  {case value="1"}
+                    <a onclick="showFrame(this);" class="btn btn-sm btn-primary" data-href="{:url('module/config',['module'=>$vo['id']])}">配置</a>
+
+                    <a onclick="goUrl(this);" class="btn btn-sm btn-noborder btn-warning" data-href="{:url('module/disable',['id'=>$vo['id']])}">禁用</a>
+                    <a class="btn btn-sm btn-noborder btn-primary" href="{:url('module/export',['name'=>$vo['name']])}">导出</a>
+                    <a onclick="goUrl(this);" class="btn btn-sm btn-noborder btn-danger" data-href="{:url('module/unstall',['id'=>$vo['id']])}">卸载</a>
+                  {/case}
+                  {case value="0"}
+                    <a onclick="goUrl(this);" class="btn btn-sm btn-noborder btn-success" data-href="{:url('module/enable',['id'=>$vo['id']])}">启用</a> <a class="btn btn-sm btn-noborder btn-primary" href="{:url('module/export',['name'=>$vo['name']])}">导出</a> <a onclick="goUrl(this);" class="btn btn-sm btn-noborder btn-danger" data-href="{:url('module/unstall',['id'=>$vo['id']])}">卸载</a>
+                  {/case}
+                  {case value="-1"}
+                    <a onclick="goUrl(this);" class="btn btn-sm btn-noborder btn-success" data-href="{:url('module/install',['name'=>$vo['name']])}">安装</a>
+                  {/case}
+                  {/switch}
+                  {/eq}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/volist}
+          </div>
+        </div>
+		  </div>
+    </div>
+  </div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script type="text/javascript">
+	layui.use(['jquery','form','layer','element','laypage'],function(){
+    var form = layui.form();
+    window.jQuery = window.$ = layui.jquery;
+    window.layer = layui.layer;
+    var element = layui.element(),
+      laypage = layui.laypage;
+    form.on('switch(switch)', function(data){
+      var url = $(data.elem).attr('data-href');
+      var val = data.elem.checked?1:0;
+      $.ajax({
+        type : "POST",
+        url:url,
+        data : {
+          'val':val
+        },
+        dataType : 'json',
+        success: function(data){
+          layer.msg(data.msg,{time:1000});
+        }
+      });
+    });  
+  });
+  $('#checkall').click(function () {
+    $("input[name^='id']").prop("checked",$(this).prop("checked"));
+  });
+  
+  function showFrame (obj) {
+    var index = layer.open({
+      type: 2,
+      title: $(obj).attr('data-msg'),
+      shadeClose: false,
+      shade:  [0.8, '#393D49'],
+      maxmin: true, //开启最大化最小化按钮
+      area: ['90%', '90%'],
+      content: $(obj).attr('data-href')
+    });
+    layer.full(index);
+  }
+
+  function goUrl (obj) {
+    var url = $(obj).attr('data-href');
+    $.ajax({
+      url:url,      
+      success: function(data){                  
+        layer.msg(data.msg,{time:1000},function () {
+          if (data.code==1) {
+            location.reload();
+          };
+        });
+      }
+    });  
+  }
+
+  function showConfirm (obj) {
+    layer.confirm($(obj).attr('data-msg'), {
+      btn: ['Yes','No'] //按钮
+    }, function(){
+        $.ajax({
+          url:$(obj).attr('data-href'),      
+          success: function(data){                  
+            layer.msg(data.msg,{time:1000},function () {
+              if (data.code==1) {
+                location.reload();
+              }
+            })
+          }
+        });  
+    });
+  }
+  function callback () {
+    layer.closeAll();
+    location.reload();
+  }
+  function ajaxInput (obj) {
+    var url = $(obj).attr('data-href');
+    var field = $(obj).attr('data-field');
+    var value = $(obj).val();
+    $.ajax({
+      type : "POST",
+      url:url,
+      data : {
+        field : value
+      },
+      dataType : 'json',
+      success: function(data){
+        layer.msg(data.msg,{time:1000},function () {
+          if (data.code==1) {
+            location.reload();
+          };
+        });
+      }
+    });
+  }
+
+  function showConfirm_form (obj) {
+    layer.confirm($(obj).attr('data-msg'), {
+      btn: ['Yes','No'] //按钮
+    }, function(){
+      $.ajax({
+        type : "POST",
+        url:$(obj).attr('data-href'),
+        data :$('#listFrom').serialize(),
+        dataType : 'json',
+        success: function(data){
+          layer.msg(data.msg,{time:1000},function () {
+            if (data.code==1) {
+              location.reload();
+            };
+          });
+        }
+      });
+    })
+  }
+</script>
+</body>
+</html>

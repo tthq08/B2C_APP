@@ -1,0 +1,45 @@
+<?php 
+if(!isset($line)){
+?>
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<select name="{$name}" id="select_{$name}" lay-filter="{$name}" lay-search>
+			<option value=""></option>
+
+		</select><i>{$tips}</i>
+	</div>
+</div>
+<?php
+}else{
+?>
+	<div class="layui-input-inline">
+		<select name="{$name}" id="select_{$name}" lay-filter="{$name}" lay-search>
+			<option value=""></option>
+
+		</select><i>{$tips}</i>
+	</div>
+<?php
+}
+?>
+<script type="text/javascript">
+	layui.use(['jquery','form','layer','element','laypage'],function(){
+   		var form = layui.form();
+		$.ajax({
+			url:"{:url($option)}",
+			success: function(data){									
+				if (data.code==1) {
+					var options = data.data;
+					var Html = '<option value="0">{if condition="empty($title)"}{$eBiz.lang.comm_form_select_default}{else/}{$title}{/if}</option>';
+					for(var i in options) {
+						var val = "{$value}";
+						var select = val==i?'selected="selected"':'';
+						Html += '<option value="'+i+'" '+select+'>'+options[i]+'</option>';
+					}
+					$('#select_{$name}').html(Html);
+					form.render('select');
+				};
+			}
+		});
+	})
+</script>

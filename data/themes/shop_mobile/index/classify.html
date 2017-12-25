@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Classfiy_page_title} - {:tb_config('web_site_title',1)}</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/index.css" />
+</head>
+<body>
+
+<header class="header idx-header header-fixed">
+	<div class="box clearfix">
+		<div class="header-left">
+			<a href="{:U('Index/classify')}" class="top-classify">
+				<img src="{:tb_config('resource_path',1)}mshop/images/idx_06.png" alt="" />
+			</a>
+		</div>
+		<div class="header-middle idx-header-search">
+			<form id="searchForm" action="{:U('goods/search')}" method="get">
+				<div class="idx-search-box">
+					<div class="sah-img"><img src="{:tb_config('resource_path',1)}mshop/images/idx_09.png" alt=""></div>
+					<div class="search-btn" onclick="$('#searchForm').submit()"><img src="{:tb_config('resource_path',1)}mshop/images/idx_12.png" alt="" /></div>
+					<input type="text" name="key" placeholder="{$eBiz.lang.Index_search_tips}" style="border:0px;">
+					<!-- <a href="search.html" class="input">{$eBiz.lang.Index_search_tips}</a> -->
+				</div>
+			</form>
+		</div>
+		<div class="header-right">
+			<div class="top-cart">
+				<a href="{:U('cart/cart')}">
+					<img src="{:tb_config('resource_path',1)}mshop/images/idx_03.png" width="24" alt="" />
+				</a>
+			</div>
+		</div>
+	</div>
+</header>
+<!-- body -->
+<main class="cmall-body">
+	<!-- banner -->
+	<section class="idx-slide">
+		<div class="slidebox">
+			<div class="swiper-container banner-container">
+				<div class="swiper-wrapper">
+					{ad_list cid='24' item='ad' limit='5'}
+					<div class="swiper-slide"><a href="{$ad.ad_link}" {eq name="ad.target" value="1"}target="_blank"{/eq} ><img src="{$ad.ad_pic}" alt="{$ad.ad_title}"></a></div>
+					{/ad_list}
+				</div>
+				<div class="swiper-pagination"></div>
+			</div>
+		</div>
+	</section>
+	<!-- 分类 -->
+	<div class="idx-section">
+		<div class="classify-t">
+			<h5>全部分类展示</h5>
+		</div>
+		<div class="classify-level">
+			<div class="level-one">
+				{category_list pid="0" item="vo"}
+				<div class="one-item">
+					<div class="txt">
+						<div class="txt-thumb"><img src="{$vo.image}" alt="" /></div>
+						<p>{$vo.mobile_name|default=$vo.name}</p>
+					</div>
+					<div class="level-two">
+						<div class="ltwo-itembox sub-category-{$vo.id}">
+							{category_list pid="$vo['id']" item="vv"}
+							<div class="ltwo-item">
+								<div class="ltwo-title">
+									<a href="{$vv.url}">{$vv.mobile_name|default=$vv.name}</a>
+								</div>
+								<div class="ltwo-block clearfix sub-category-{$vo.id}">
+									{category_list pid="$vv['id']" item="v"}
+									<a href="{$v.url}" class="ltwo">{$v.mobile_name|default=$v.name}</a>
+									{/category_list}
+								</div>
+							</div>
+							{/category_list}
+						</div>
+					</div>
+				</div>
+				{/category_list}
+				<script>
+					function ajaxCategory() {
+
+					}
+					function ajaxCategory2() {
+
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+	<!-- 最近浏览 -->
+	<div class="idx-section">
+		<div class="classify-t clearfix">
+			<h5>最近浏览</h5>
+			<div class="fr"><a href="javascript:;" class="ct-more">more</a></div>
+		</div>
+		<div class="recent-browse">
+			<div class="clearfix">
+				<div class="swiper-container recent-container">
+					<div class="swiper-wrapper">
+						{volist name="goods_log" id="vo" offset="0" length="10"}
+						<a href="{:U('shop/goods/goodsinfo',['id'=>$vo['id']])}" class="rb-item swiper-slide">
+							<div class="pic"><img src="{$vo.id|goods_thum_images=200,200}" alt="" /></div>
+							<div class="info">
+								<div class="re-n">{$vo.title}</div>
+								<div class="re-price">{$vo.shop_price}</div>
+							</div>
+						</a>
+						{/volist}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 服务中心 -->
+	<div class="idx-section">
+		<div class="classify-t clearfix">
+			<h5>服务中心</h5>
+		</div>
+		<div class="service-center">
+			<div class="clearfix">
+				<a href="javascript:;" class="sve-item">热门活动</a>
+				<a href="javascript:;" class="sve-item">互动中心</a>
+				<a href="javascript:;" class="sve-item">店铺街道</a>
+				<a href="javascript:;" class="sve-item">物流查询</a>
+				<a href="javascript:;" class="sve-item">商家入驻</a>
+				<a href="javascript:;" class="sve-item">客服中心</a>
+				<a href="javascript:;" class="sve-item">客服中心</a>
+			</div>
+		</div>
+	</div>
+</main>
+
+{include file="public/footbar" /}
+
+<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/swiper.min.js"></script>
+<script type="text/javascript">
+	var banner = new Swiper('.banner-container', {
+		autoplay: 5000,//可选选项，自动滑动
+		pagination : '.swiper-pagination'
+	})
+	var recent = new Swiper('.recent-container', {
+		slidesPerView: 'auto',
+		paginationClickable: true,
+		spaceBetween: 0
+	});
+
+	var wW = $(window).width();
+	$('.level-two').css('width',wW + 'px');
+	$('.classify-level').on('click','.one-item .txt',function() {
+		var me = $(this);
+		var mew = me.parent().width();
+		var num = me.parent().index()%4;
+		console.log(num);
+		me.parent().toggleClass('on');
+		me.siblings('.level-two').css('margin-left',-mew*num + 'px').slideToggle(400);
+		me.parent().siblings('.one-item').find('.level-two').hide();
+		me.parent().siblings('.one-item.on').removeClass('on');
+	})
+
+	// header固定
+	var win = $(window);
+	$(document).ready(function() {
+		var header = $('.header');
+		var hTop = $('.idx-slide').outerHeight();
+		var top = 0;
+		win.scroll(function() {
+			top = $(document).scrollTop();
+			if(top > hTop/2) {
+				header.css('background','#c10923');
+			} else {
+				header.css('background','transparent');
+			}
+		})
+	})
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+
+        {:token()}
+        <form class="layui-form" id="user_filter" method="get" action="#">
+            <div class="layui-form-item">
+            <div class="layui-input-inline">
+            <select name="level" id="select_level" lay-filter="level" lay-search="">
+                <option value="0">--请选择等级--</option>
+                {volist name="user_level" id="vo"}
+                <option value="{$vo.id}" {if condition=" !empty($level) && $level == $vo.id"}selected{/if}>{$vo.level_name}</option>
+                {/volist}
+            </select>
+            </div>
+            <script type="text/javascript">
+                layui.use(['jquery','form','layer','element','laypage'],function(){
+                    var form = layui.form();
+                })
+            </script>
+            <div style="float: left; margin-left: 10px; margin-right: 10px; font-size: 16px; line-height: 30px; color: #AAAAAA">|</div>
+            <div class="layui-input-inline" style="width: auto;">
+                <label class="layui-form-label" style="display: inline-block;width:auto;padding: 5px 0px;">年龄范围:</label>
+                <input style="display: inline-block;width: 50px;" type="number" name="old[]" id="old_start" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" value="{if condition=" !empty($old[0])"}{$old[0]}{/if}">
+                ~
+                <input style="display: inline-block;width: 50px;" type="number" name="old[]" id="old_end" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" value="{if condition=" !empty($old[1])"}{$old[1]}{/if}">
+            </div>
+            <style type="text/css">
+                .layui-form-radio {
+                    line-height: 22px;
+                    margin:0;
+                    padding-right: 0;
+                    cursor: pointer;
+                    font-size: 0;
+                }
+            </style>
+            <div style="float: left; margin-left: 10px; margin-right: 10px; font-size: 16px; line-height: 30px; color: #AAAAAA">|</div>
+            <div class="layui-input-inline" style="width: auto;">
+                <label class="layui-form-label" style="display: inline-block;width:auto;padding: 4px 0px;">性别筛选:</label>
+                <input type="radio" name="sex" value="0" title="全部" checked="">
+                <input type="radio" name="sex" value="1" title="男" {if condition=" !empty($sex) && $sex == 1"}checked=""{/if}>
+                <input type="radio" name="sex" value="2" title="女" {if condition=" !empty($sex) && $sex == 2"}checked=""{/if}>
+            </div>
+            <div style="float: left; margin-left: 10px; margin-right: 10px; font-size: 16px; line-height: 30px; color: #AAAAAA">|</div>
+            <div class="layui-input-inline" style="width: auto;">
+                <label class="layui-form-label" style="display: inline-block;width:auto;padding: 5px 0px;">
+                    注册时间:
+                </label>
+                <input style="display: inline-block;width: 38%;" type="text" name="reg_time[]" id="reg_time_start" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{if condition="!empty($reg_time[0])"}{$reg_time[0]}{/if}"><i></i>
+                ~
+                <input style="display: inline-block;width: 38%;" type="text" name="reg_time[]" id="reg_time_end" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{if condition="!empty($reg_time[1])"}{$reg_time[1]}{/if}"><i></i>
+            </div>
+
+            <div style="float: left; margin-left: 10px; margin-right: 10px; font-size: 16px; line-height: 30px; color: #AAAAAA">|</div>
+            <script>
+                layui.use('laydate', function(){
+                    var laydate = layui.laydate;
+                })
+            </script>
+            <div class="layui-input-inline" style="width: auto;">
+                <label class="layui-form-label" style="display: inline-block;width:auto;padding: 5px 0px;">近期登录:</label>
+                <input style="display: inline-block;width: 38%;" type="text" name="last_login[]" id="last_login_start" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{if condition="!empty($last_login[0])"}{$last_login[0]}{/if}"><i></i>
+                ~
+                <input style="display: inline-block;width: 38%;" type="text" name="last_login[]" id="last_login_end" lay-verify="date" placeholder="" autocomplete="off" class="layui-input" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" value="{if condition="!empty($last_login[1])"}{$last_login[1]}{/if}"><i></i>
+            </div>
+
+            <div style="clear: both;">
+
+            </div>
+
+            <script>
+                layui.use('laydate', function(){
+                    var laydate = layui.laydate;
+                })
+            </script>
+            <div class="layui-input-inline">
+                <select name="condition" lay-filter="condition" lay-search="">
+                    <option value="0">--请选择搜索条件--</option>
+                    <option value="username" {if condition="!empty($condition) && $condition == 'username'"}selected{/if}>账户ID</option>
+                    <option value="nickname" {if condition="!empty($condition) && $condition == 'nickname'"}selected{/if}>昵称</option>
+                    <option value="truename" {if condition="!empty($condition) && $condition == 'truename'"}selected{/if}>姓名(认证)</option>
+                    <option value="email" {if condition="!empty($condition) && $condition == 'email'"}selected{/if}>邮箱</option>
+                    <option value="mobile" {if condition="!empty($condition) && $condition == 'mobile'"}selected{/if}>手机</option>
+                </select>
+                </div>
+
+                <div class="layui-input-inline">
+                    <input type="text" name="keyword" placeholder="输入要搜索的内容" autocomplete="off" style="width:150px;" class="layui-input" value="{if condition="!empty($keyword)"}{$keyword}{/if}">
+                </div>
+                <div class="layui-input-inline">
+                    <button type="button" id="search" class="layui-btn" style="float: left"  onclick="$('#user_filter').submit();">{$eBiz.lang.search}</button>
+                </div>
+            </div>
+        </form>
+
+        <button type="button" id="sendAll" class="layui-btn" style="float: right; margin-bottom: 10px;" onclick="sendAll();">发放给当前条件下的所有用户</button>
+    <div id="user_list">
+        {include file="coupon/select_user"}
+    </div>
+
+</section>
+
+<script type="text/javascript">
+    // 关闭窗口
+    function closeIndex() {
+        var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+        parent.layer.close(index);
+    }
+    function delUser(id){
+        $('#user'+id).remove();
+    }
+</script>
+</body>
+</html>

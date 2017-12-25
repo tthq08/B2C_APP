@@ -1,0 +1,152 @@
+{empty name="cartList"}
+	<div style="text-align: center;">
+		<h1>{$eBiz.lang.Cart_is_null}</h1>
+		<a href="{:U('/')}" class="cmall-cart-btn">{$eBiz.lang.Cart_going_shopping}</a>
+	</div>
+{else/}
+
+<div class="cart-shop-table">
+	<table>
+		<thead>
+			<tr>
+				<th width="7%" style="text-align: left;">
+					<label for="cart-allcheck">
+						<input type="checkbox" class="cart-check cart-allcheck" {gt name="selected_num" value="0" }checked{/gt} />
+						<span>{$eBiz.lang.comm_btn_select}</span>
+					</label>
+				</th>
+				<th width="40%">{$eBiz.lang.Cart_goods}</th>
+				<th width="15%">{$eBiz.lang.Cart_unit_price}</th>
+				<th width="10%">{$eBiz.lang.Cart_num}</th>
+				<th width="10%">{$eBiz.lang.Cart_subtotal}</th>
+				<th width="15%">{$eBiz.lang.comm_list_action}</th>
+			</tr>
+		</thead>
+		<tbody class="cart-shop-list">
+
+			<tr class="sep-tr"><td colspan="6"></td></tr>
+			{volist name="$cartList" id="vo"}
+			<tr>
+				<td class="borleft">
+					<input type="checkbox" class="shop-check cart-check" name="cart_select[{$vo.id}]" value="{$vo.id}" {eq name="$vo.selected" value="1"}checked{/eq} />
+				</td>
+				{assign name="goods_key" value="$vo['goods'].'--'.$vo['spec_key']"}
+				<td style="text-align: left;">
+					<div class="c-pic"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}" target="_blank"><img src="{$vo.goods|goods_thum_images=200,200}" alt="{$vo.goods_name}" /></a></div>
+					<div class="c-info">
+						<div class="c-name"><a href="{:U('shop/Goods/goodsInfo',['id'=>$goods_key])}" target="_blank">{$vo.goods_name}</a></div>
+						<div class="c-spec mt10">
+							<span>{$vo.spec_text}</span>
+						</div>
+						<div class="c-spec mt10">
+							<span>{$vo.shipping_txt|default=''}</span>
+						</div>
+					</div>
+				</td>
+				{assign name="truePrice" value=":compute()->promGoodsPrice($vo.goods,$vo.spec_key)" /}
+				<td>{:web_currency()}{$truePrice}</td>
+				<td>
+					<div class="enter-number">
+						<span class="op reduce" onClick="switch_num(-1,{$vo.id},200);">-</span>
+						<spna class="in"><input type="text" name="goods_num[{$vo.id}]" id="goods_num[{$vo.id}]" value="{$vo.goods_num}" maxlength="8" /></spna>
+						<span class="op add" data-max="1000" onClick="switch_num(1,{$vo.id},200);">+</span>
+					</div>
+					<!-- <p class="mt5">有货</p> -->
+				</td>
+				<td>{:web_currency()}{$truePrice*$vo.goods_num}</td>
+				<td class="borright">
+					<p><a href="javascript:;" onclick="del_cart({$vo.id});">{$eBiz.lang.comm_btn_del}</a></p>
+					<!-- <p><a href="javascript:;">移到我的关注</a></p> -->
+					<p><a href="javascript:;" onclick="focusGoods({$vo.id});">{$eBiz.lang.Cart_add_collect}</a></p>
+				</td>
+			</tr>
+			{/volist}
+
+		</tbody>
+	</table>
+</div>
+<div class="options-cart mt50">
+	<div class="options-left">
+		<label for="cart-allcheck">
+			<input type="checkbox" class="cart-check cart-allcheck" {gt name="selected_num" value="0" }checked{/gt}/>
+			<span>{$eBiz.lang.comm_btn_select}</span>
+		</label>
+		<a class="ml15 b" href="javascript:;" onclick="del_carts();">{$eBiz.lang.Cart_delete_selected_goods}</a>
+	</div>
+	<div class="options-right">
+		<div class="cart-num">{$eBiz.lang.Cart_selected}<span class="color--df3133">{$selected_num}</span>{$eBiz.lang.Cart_piece_goods}</div>
+		<div class="cart-price">
+			<p>{$eBiz.lang.Cart_total_price}：<span class="color--df3133 p">{:web_currency()}{$total_price}</span></p>
+		</div>
+		<a href="{:U('Cart/cart2')}" class="cmall-cart-btn">{$eBiz.lang.Cart_settlement}</a>
+	</div>
+</div>
+<script type="text/javascript">
+
+		function focusGoods(id) {
+			$.ajax({
+    			type:'post',
+    			dataType:'json',
+    			data:{goods_id:id},
+    			url:"{:U('Goods/goods_collect')}",
+    			success:function(res){
+    				layer.msg(res.msg,{time:1000});
+    			}
+    		});
+		}
+
+		function del_carts() {
+			$.ajax({
+			    type : "POST",
+			    url:"{:U('cart/ajaxDelCart')}",
+			    data : $('#cart_form').serialize(),
+			    dataType : 'json',
+			    success: function(data){
+					layer.msg(data.msg,{time:1000},function () {
+						ajax_cart_list();
+					});
+			    }
+			});
+		}
+
+		// 选择按钮操作
+		// 全选
+		$('.cart-allcheck').change(function() {
+			if($(this).prop('checked')) {
+				// console.log('f')
+				$('.cart-check').prop('checked',true);
+			} else {
+				$('.cart-check').prop('checked',false);
+			}
+			ajax_cart_list(); //ajax刷新购物车列表
+		})
+		// 店铺选框
+		$('.store-check').change(function() {
+			var me = $(this);
+			var shop = me.parent().parent().parent().find('.shop-check');
+			// console.log(shop);
+			if(me.prop('checked')) {
+				shop.prop('checked',true);
+			} else {
+				shop.prop('checked',false);
+			}
+			ajax_cart_list(); //ajax刷新购物车列表
+		});
+		// 商品选框操作
+		$('.shop-check').change(function() {
+			var me = $(this);
+			var aParent = me.parent().parent().parent();
+			var shops = aParent.find('.shop-check');
+			var shoped = aParent.find('.shop-check:checked');
+			var lened = shoped.length;
+			var len = shops.length;
+			// console.log(len);
+			if(len == lened) {
+				aParent.find('.store-check').prop('checked',true)
+			} else {
+				aParent.find('.store-check').prop('checked',false);
+			}
+			ajax_cart_list(); //ajax刷新购物车列表
+		});
+</script>
+{/empty}

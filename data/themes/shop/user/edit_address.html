@@ -1,0 +1,147 @@
+{include file="common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+<!-- 弹出新增收货地址 -->
+<div class="c-mask"></div>
+	<div class="layer-content mt20">
+		<div class="editor-address-box">
+			<form action="{:url('shop/user/save_address')}" id="addrForm">
+
+				<div class="address-form">
+					<div class="address-form-row clearfix mb20">
+						<div class="form-item-v1 w48 fl">
+							<p class="f-name mb5"><span class="impor">*</span>收货人名字</p>
+							<input type="text" name="consignee" placeholder="收货人名字" class="input--100" value="{$address.consignee}" />
+							<input type="hidden" name="id" value="{$address.id}">
+						</div>
+						<div class="form-item-v1 w48 fr">
+							<p class="f-name mb5">邮箱地址</p>
+							<input type="text" name="email" placeholder="邮箱地址" class="input--100" value="{$address.email}" />
+						</div>
+					</div>
+					<div class="address-form-row clearfix mb20">
+						<div class="form-item-v1 w48 fl">
+							<p class="f-name mb5"><span class="impor">*</span>手机号码</p>
+							<input type="text" name="mobile" placeholder="手机号码" class="input--100" value="{$address.mobile}" />
+						</div>
+						<div class="form-item-v1 w48 fr">
+							<p class="f-name mb5">邮编</p>
+							<input type="text" name="zip" placeholder="邮政编码" value="{$address.zip}" />
+						</div>
+					</div>
+					<div class="address-form-row clearfix mb20">
+						<p class="f-name mb5"><span class="impor">*</span>收货地址</p>
+						<div class="form-item-v1 w33 fl">
+							<select name="province" id="province" onchange="get_city(this,'{:url('shop/user/getAddressList')}');" class="province input--90">
+								<option value="0">请选择省份</option>
+								{volist name="province" id="vo"}
+								<option value="{$vo.id}" {if condition="$vo['id'] == $address['province']"}selected{/if}>{$vo.name}</option>
+								{/volist}
+
+							</select>
+						</div>
+						<div class="form-item-v1 w33 fl">
+							<select name="city" id="city" onchange="get_area(this,'{:url('shop/user/getAddressList')}');" class="province input--90">
+								<option value="0">请选择城市</option>
+								{volist name="city" id="vo"}
+								<option value="{$vo.id}" {if condition="$vo['id'] == $address['city']"}selected{/if}>{$vo.name}</option>
+								{/volist}
+
+							</select>
+						</div>
+						<div class="form-item-v1 w33 fl">
+							<select name="district" id="district" class="province input--90">
+								<option value="0">请选择区县</option>
+								{volist name="district" id="vo"}
+								<option value="{$vo.id}" {if condition="$vo['id'] == $address['district']"}selected{/if}>{$vo.name}</option>
+								{/volist}
+
+							</select>
+						</div>
+					</div>
+					<div class="address-form-row clearfix">
+						<p class="f-name mb5"><span class="impor">*</span>详细地址</p>
+						<div class="form-item-v1">
+							<input type="text" name="address" placeholder="详细地址" class="input--100" value="{$address.address}" />
+						</div>
+					</div>
+					<div class="block mt20">
+						<div class="cmall-reset-check">
+							<input id="aCheck" name="is_default" type="checkbox" {if condition="$address['is_default'] == 1"}checked{/checked} />
+							<!-- <span class="check-bg"></span> -->
+							<label for="aCheck">保存为默认收货地址</label>
+						</div>
+					</div>
+					<div class="address-form-row btn-box center mt40">
+						<a href="javascript:;" class="address-btn w70" onclick="postForm();">保存收货地址</a>
+					</div>
+				</div>
+
+			</form>
+
+		</div>
+	</div>
+<script type="text/javascript">		
+	/**
+	 * 获取城市
+	 * @param t  省份select对象
+	 */
+	function get_city(t,url){
+	    var parent_id = $(t).val();
+	    if(!parent_id > 0){
+	        return;
+	    }
+	    $('#twon').empty().css('display','none');
+	    var url = url+'?parent_id='+ parent_id;
+	    $.ajax({
+	        type : "GET",
+	        url  : url,
+	        error: function(request) {
+	            return;
+	        },
+	        success: function(v) {
+	            v = '<option value="0">{$eBiz.lang.Addr_form_city}</option>'+ v;
+	            $('#city').empty().html(v);
+	        }
+	    });
+	}
+
+	/**
+	 * 获取地区
+	 * @param t  城市select对象
+	 */
+	function get_area(t,url) {
+	    var parent_id = $(t).val();
+	    if (!parent_id > 0) {
+	        return;
+	    }
+	    var url = url+'?parent_id=' + parent_id;
+	    $.ajax({
+	        type: "GET",
+	        url: url,
+	        error: function (request) {
+	            return;
+	        },
+	        success: function (v) {
+	            v = '<option>{$eBiz.lang.Addr_form_distri}</option>' + v;
+	            $('#district').empty().html(v);
+	        }
+	    });
+	}
+
+	function postForm() {
+    	$.ajax({
+    	    type : "POST",
+    	    url:$('#addrForm').attr('action'),
+    	    data :$('#addrForm').serialize(),
+    	    dataType : 'json',
+    	    success: function(data){
+    			parent.layer.msg(data.msg,{time:1000},function () {
+    				if (data.code==1) {
+    					parent.location.reload();
+    				}
+    			})
+    	    }
+    	});
+    }
+</script>

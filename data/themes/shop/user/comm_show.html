@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{include file="common/static" /}
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+	<main class="main bus-main" style="margin-top: 0px;margin-bottom: 0px;margin-left: 10px;">
+		<div class="container clearfix">
+			<div class="bus-right" style="float:left;">
+				<div class="j-user-section user-section plr20-section">
+					<div class="user-content pb30 pt30">
+						<div class="block tcenter">
+							<h4>{$eBiz.lang.CommDetail_page_title}</h4>
+							<p class="color--999999">{$eBiz.lang.CommDetail_page_desc}</p>
+						</div>
+						<div class="user-comment-message mt20">
+							<div class="comment-shop">
+								<div class="shop-pic"><img src="{$goods.thumb|common_thumb_img=200,200}" alt="" /></div>
+								<div class="shop-info">
+									<div class="s-name">{$goods.title}</div>
+									<div class="block">
+										<!-- <span class="s-price mt10">{:web_currency()}99.00</span> -->
+										<span class="s-spec ml30">{$comm.spec_item}</span>
+									</div>
+									<div class="s-score mt10">
+										<span class="score">
+											{$eBiz.lang.Comment_comm_time}：
+										</span>
+										<span class="s-time">{$comm.add_time}</span>
+									</div>
+									<div class="s-score mt10">
+										<span class="score">
+											{$eBiz.lang.CommDetail_goods_rank}：
+
+											{php}
+												$commentString = [1=>'差评',2=>'中评',3=>'好评'];
+											{/php}
+											<span class="score-txt">{$commentString[$comm['goods_rank']]}</span>
+										</span>
+										<!-- <span class="s-time">2017-03-19 20:37:55</span> -->
+									</div>
+									<div class="s-score mt10">
+										<span class="score">
+											{$eBiz.lang.CommDetail_desc_rank}：
+											<span class="com-score">
+											{for start="1" end="6"}
+												<i class="score-item {elt name='i' value='$comm.description_rank'}on{/elt}"></i>
+											{/for}
+											</span>
+											<span class="score-txt">{$comm.description_rank}分</span>
+										</span>
+										<!-- <span class="s-time">2017-03-19 20:37:55</span> -->
+									</div>
+									<div class="s-score mt10">
+										<span class="score">
+											{$eBiz.lang.CommDetail_serv_rank}：
+											<span class="com-score">
+											{for start="1" end="6"}
+												<i class="score-item {elt name='i' value='$comm.service_rank'}on{/elt}"></i>
+											{/for}
+											</span>
+											<span class="score-txt">{$comm.service_rank}分</span>
+										</span>
+										<!-- <span class="s-time">2017-03-19 20:37:55</span> -->
+									</div>
+									<div class="s-score mt10">
+										<span class="score">
+											{$eBiz.lang.CommDetail_deliver_rank}：
+											<span class="com-score">
+											{for start="1" end="6"}
+												<i class="score-item {elt name='i' value='$comm.deliver_rank'}on{/elt}"></i>
+											{/for}
+											</span>
+											<span class="score-txt">{$comm.deliver_rank}分</span>
+										</span>
+										<!-- <span class="s-time">2017-03-19 20:37:55</span> -->
+									</div>
+									<div class="s-msg mt5">
+										{$eBiz.lang.CommDetail_comm_content}：
+										<p>{$comm.content}</p>
+									</div>
+								</div>
+							</div>
+							{notempty name="comm.img"}
+							{assign name="imgs" value=":explode(',',$comm['img']);" /}
+							<div class="shop-imgs">
+								{volist name="imgs" id="vo"}
+								<img src="{$vo}" alt="" />
+								{/volist}
+							</div>
+							{/notempty}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<script type="text/javascript">
+		
+	</script>
+</body>
+</html>

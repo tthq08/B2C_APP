@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,maximum-scale=1.0,user-scalable=no,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>跳转提示</title>
+	<link rel="stylesheet" href="{:tb_config('resource_path',1,1)}mshop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1,1)}mshop/css/style.css" />
+	<style type="text/css">
+	.tig-message {
+		width: 94%;
+		margin: auto;
+		background: #fff;
+		padding: 1rem 0;
+		text-align: center;
+		line-height: 1rem;
+		font-size: .5rem;
+		color: #666;
+	}
+	.tig-message .t-title {
+		font-size: .8rem;
+		color: #ef92ab;
+		margin-bottom: 1rem;
+	}
+	.tig-message .t-title img {
+		width: 1.2rem;
+		vertical-align: middle;
+		margin-right: .3rem;
+	}
+	.tig-message .t-title span {
+		display: inline-block;
+		vertical-align: middle;
+		line-height: 1.2rem;
+		padding-top: .1rem;
+	}
+	.countNum {margin: 0 .2rem;color: #ef92ab;}
+	</style>
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1,1)}mshop/js/fontsize.js"></script>
+</head>
+<body style="background: #f1f1f1;">
+
+	<!-- 内容 -->
+	<main class="container pt20">
+		<div class="tig-message">
+			<h2 class="t-title">
+			<?php if($code == 1){
+			?>
+				<img src="{:tb_config('resource_path',1,1)}mshop/images/success.png" alt="" />
+			<?php }else{ ?>
+				<img src="{:tb_config('resource_path',1,1)}mshop/images/error.png" alt="" />
+			<?php } ?>
+			<?php echo(strip_tags($msg));?></h2>
+			<!-- <p>提示内容</p> -->
+			<p><span class="countNum" rel-url="<?php echo($url);?>"><?php echo($wait);?></span>秒后自动跳转</p>
+		</div>
+	</main>
+
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.js"></script>
+	<script type="text/javascript">
+		(function() {
+			var count = $('.countNum');
+			var val = Number(count.text());
+			setInterval(function() {
+				if(val <= 1) {
+				    var hr = count.attr('rel-url');
+                    val = 1;
+				    if(val.length == 0) {
+				        location.go(-1);
+				        clearInterval();
+					} else {
+				        location.href = hr;
+                    }
+				}
+				count.text(--val);
+			},1000);
+		})();
+	</script>
+	
+</body>
+</html>

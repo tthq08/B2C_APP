@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        <header class="larry-personal-tit">
+            <span>
+                缓存清理
+                <button class="layui-btn layui-btn-small layui-btn-danger" style="margin-left: 10px;">
+                    清空所有缓存
+                </button>
+            </span>
+        </header>
+        <style>
+            .clearItem{
+                padding: 5px 10px ;
+                border: 1px solid #DDDDDD;
+                border-radius: 4px;
+                display: inline-block;
+                margin: 0 5px;
+            }
+            .clearItem>a>i{
+                margin-left: 5px;
+            }
+            .clearItem>a:hover{
+                color: #a70000;
+            }
+        </style>
+        <div class="larry-personal-body clearfix">
+            <div style="margin-left: 20px;">
+                <div style="font-size: 14px;">
+                    系统
+                    <button class="layui-btn layui-btn-small layui-btn-warm" style="margin-left: 10px;">
+                        清空系统模块缓存
+                    </button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <ul>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="system-config">
+                                <span>系统配置</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="system-nav">
+                                <span>导航</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="system-region">
+                                <span>地址</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div style="margin-left: 20px;">
+                <div style="font-size: 14px;">
+                    商城
+                    <button class="layui-btn layui-btn-small layui-btn-warm" style="margin-left: 10px;">
+                        清空商城模块缓存
+                    </button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <ul>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-goodsComment">
+                                <span>商品评价</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-recommend">
+                                <span>推荐商品</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-category">
+                                <span>商品分类</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-coupon">
+                                <span>优惠券</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-promotion">
+                                <span>促销</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-goods">
+                                <span>商品</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-brand">
+                                <span>品牌</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-attribute">
+                                <span>商品属性</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-spec">
+                                <span>商品规格</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="shop-goodsImagesList">
+                                <span>商品图片</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <hr>
+            <div style="margin-left: 20px;">
+                <div style="font-size: 14px;">
+                    门户
+                    <button class="layui-btn layui-btn-small layui-btn-warm" style="margin-left: 10px;">
+                        清空门户模块缓存
+                    </button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <ul>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="web-column">
+                                <span>栏目</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                        <li class="clearItem">
+                            <a href="javascript:;" data-act="web-content">
+                                <span>内容</span>
+                                <i class="layui-icon">&#x1002;</i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    layui.use(['layer']);
+
+    $('.clearItem>a').on('click',function(){
+        var act = $(this).attr('data-act');
+        $.ajax({
+            type:'post',
+            url:'{:url("sys/Clear/tagCache")}',
+            data:{tag:act},
+            success:function(data){
+                layer.msg(data.msg);
+            }
+        })
+    })
+
+</script>
+</body>
+</html>

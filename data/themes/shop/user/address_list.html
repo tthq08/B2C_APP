@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Addr_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<style type="text/css">
+	.u-order-list .tr-bd td { padding-left: 5px;padding-right: 5px; }
+	</style>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<!-- 收货地址 -->
+				<div class="j-user-section user-order plr20-section">
+					<div class="user-top">
+						<div class="user-title">
+							<span class="t">{$eBiz.lang.Addr_page_my_address}<i class="t-note ml10"></i></span>
+							<div class="fr">
+								<a class="cmall-btn-f" href="javascript:;" data-href="{:U('user/add_address')}" data-msg="{$eBiz.lang.Addr_add_address}" onclick="showAddress(this)">{$eBiz.lang.Addr_add_address}</a>
+							</div>
+						</div>
+					</div>
+					<div class="user-content pb30 mt20">
+						<div class="block-tag">{:lang('Addr_list_tips',[$addr_nums ])}</div>
+						<div class="order-list-table mt20">
+						<form method="post" id="addrForm">
+							<table>
+								<thead>
+									<tr>
+										<th width="3%">
+											<input type="checkbox" id="checkAll" onchange="switchCheck(this);"></th>
+										<th width="10%">收件人</th>
+										<th width="40%">地址</th>
+										<th width="10%">邮编</th>
+										<th width="15%">手机/座机</th>
+										<th width="10%">操作</th>
+									</tr>
+								</thead>
+								<tbody class="u-order-list">
+									{volist name="lists" id="vo"}
+									<tr class="tr-bd" {eq name="vo.is_default" value='1'}style="background:#f1b063;color:#fff;"{/eq}>
+										<td><input type="checkbox" class="addresscheck" name="id[]" value="{$vo.id}"></td>
+
+										<td>{$vo.consignee}</td>
+										<td>{$vo.address}</td>
+										<td>{$vo.zip}</td>
+										<td>{$vo.mobile}<p>{$vo.phone|default=''}</p></td>
+										<td>
+											{neq name="vo.is_default" value='1'}
+											<a href="javascript:;" onclick="set_default('{$vo.id}');">设为默认</a>
+											{/neq}
+											<p>
+											<a href="javascript:;" data-href="{:U('user/edit_address',['id'=>$vo['id']])}" data-msg="{$eBiz.lang.Addr_edit_address}" onclick="showAddress(this)">{$eBiz.lang.Addr_edit_address}</a>
+												|
+											<a href="javascript:;" data-href="{:U('user/del_address',['id'=>$vo['id']])}" data-msg="删除地址" onclick="del_addr({$vo.id})">删除</a>
+											</p>
+										</td>
+									</tr>
+									{/volist}
+								</tbody>
+							</table>
+						</form>
+						</div>
+						{$page}
+					</div>
+					<div class="fl mt10">
+						<a class="cmall-btn-f" href="javascript:;" data-msg="{$eBiz.lang.Addr_is_del_confirm}" onclick="delAddr(this)">删除所选</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+
+	<script type="text/javascript">
+		function showAddress(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['600px', '630px'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+		function set_default(id) {
+			$.ajax({
+				url:"{:U('User/set_default')}",	
+				data:{id:id},	
+				success: function(data){									
+					layer.msg(data.msg,{time:1000},function () {
+						if (data.code==1) {
+							location.reload();
+						}
+					})
+				}
+			});	
+		}
+
+		// 批量删除选中地址
+		function delAddr() {
+			layer.confirm('{$eBiz.lang.Addr_is_del_confirm}', {
+		      	btn: ['Yes','No'] //按钮
+		    }, function(){
+		    	$.ajax({
+		          url:"{:U('User/dels_address')}",
+		          data:$('#addrForm').serialize(),      
+		          success: function(data){                  
+		            layer.msg(data.msg,{time:1000},function () {
+		              if (data.code==1) {
+		                location.reload();
+		              }
+		            })
+		          }
+		        }); 
+		    })
+		}
+
+		// 删除单条地址
+		function del_addr(id) {
+			layer.confirm('{$eBiz.lang.Addr_is_del_confirm}', {
+		      btn: ['是','否'] //按钮
+		    }, function(){
+		    	$.ajax({
+		          url:"{:U('User/del_address')}",
+		          data:{
+		          	id:id
+		          },      
+		          success: function(data){                  
+		            layer.msg(data.msg,{time:1000},function () {
+		              if (data.code==1) {
+		                location.reload();
+		              }
+		            })
+		          }
+		        }); 
+		    })
+		}
+
+		function switchCheck(obj) {
+			var ced = $(obj).prop('checked');
+			var addCheck = $('.addresscheck');
+			console.log(ced)
+			if(ced) {
+				addCheck.prop('checked',true)
+			} else {
+				addCheck.prop('checked',false)
+			}
+		}
+		$('.addresscheck').change(function() {
+			var nocheck = $('.addresscheck');
+			var yescheck = $('.addresscheck:checked');
+			if(nocheck.length == yescheck.length) {
+				$('#checkAll').prop('checked',true)
+			} else {
+				$('#checkAll').prop('checked',false)
+			}
+		})
+	</script>
+	
+</body>
+</html>

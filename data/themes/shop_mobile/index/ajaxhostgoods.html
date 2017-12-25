@@ -1,0 +1,12 @@
+{volist name="goods_list" id="vo"}
+<a href="{:U('shop/Goods/goodsinfo',['id'=>$vo['id']])}" class="guess-list">
+	<div class="pic"><img src="{$vo.id|goods_thum_images=220,220}" alt="" /></div>
+	<div class="info">
+		<div class="g-name">{$vo.title}</div>
+		<div class="g-price">
+			<span class="price">{$vo.shop_price}<small>元</small></span>
+			<p><del>{$vo.market_price}元</del></p>
+		</div>
+	</div>
+</a>
+{/volist}

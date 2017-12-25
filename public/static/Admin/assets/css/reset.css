@@ -1,0 +1,62 @@
+body, div, dl, dt, dd, ul, ol, li,
+h1, h2, h3, h4, h5, h6, 
+form, input, button, textarea, p, th, td {
+   margin: 0;padding: 0;
+}
+
+table { 
+    border-collapse: collapse; 
+    border-spacing: 0; 
+}
+
+.clearfix { 
+  *zoom: 1; 
+}
+
+.clearfix:before,
+.clearfix:after { 
+  display: table; 
+  line-height: 0; 
+  content: ""; 
+} 
+
+.clearfix:after { 
+  clear: both; 
+}
+
+
+
+/*common*/
+
+body{
+	color: #fff;
+	font-size: 12px;
+	font-family: "Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+	-webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6{
+	font-weight: normal;
+}
+
+li{
+	list-style: none;
+}
+a,a:hover,a:focus{
+	color: #fff;
+	text-decoration: none;
+}
+
+img{
+	border: none;
+	vertical-align: top;
+}
+
+.fl{
+	float: left;
+} 
+.fr{
+	float: right;
+}
+

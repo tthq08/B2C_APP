@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>订单详情</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('user/index')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">订单详情</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body fixed-footer-body">
+		<div class="order-tooltop">
+			<h5>订单{$order_status[$order_info['status']]}</h5>
+		</div>
+		<div class="odrmsg-address">
+			<div class="block">
+				<span>收件人：{$order_info.consignee}</span>
+				<span class="fr">{$order_info.phone|hidetel}</span>
+			</div>
+			<div class="block mt5">
+				收货地址：{$order_info.province|getAddressName} {$order_info.city|getAddressName} {$order_info.district|getAddressName} {$order_info.address}
+			</div>
+		</div>
+		<!-- 商品信息 -->
+		<div class="order-item">
+			<div class="mt clearfix">
+				<div class="ofl">
+					<span class="">订单编号：{$order_info.order_sn}</span>
+				</div>
+			</div>
+			<div class="mc">
+			{volist name="order_info.goods_list" id="good" key="k" offset='0' lenght='1'}
+				<div class="msgitem clearfix">
+					<div class="pic"><img src="{$good.goods_id|goods_thum_images=200,200}" alt="" /></div>
+					<div class="info">
+						<div class="tit">{$good.goods_name}</div>
+						<div class="msg">{$good.spec_title}</div>
+						<div class="mm"><span class="price mr10">{$good.payable_price}元</span><span>x{$good.goods_num}</span></div>
+					</div>
+				</div>
+			{/volist}
+			</div>
+		</div>
+		<!-- 其他信息 -->
+		<div class="odrmsg-block mt10">
+			<div class="omb-item clearfix">
+				<div class="label">支付方式</div>
+				<div class="txt">{$order_info.pay_code}</div>
+			</div>
+			<div class="omb-item clearfix">
+				<div class="label">配送信息</div>
+				<div class="txt">{$order_info.shipping_name}[{$order_info.shipping_sn}]</div>
+			</div>
+			<div class="omb-item clearfix">
+				<div class="label">
+					<p>发票信息</p>
+					<p>发票抬头：{$order_info.invoice_title}</p>
+					<p>发票内容：明细</p>
+				</div>
+			</div>
+		</div>
+		<!-- 金额信息 -->
+		<div class="odrmsg-block mt10">
+			<div class="omb-item clearfix">
+				<div class="clearfix">
+					<div class="label">商品总额</div>
+					<div class="txt fc">{$order_info.total_price}元</div>
+				</div>
+				<div class="clearfix">
+					<div class="label">+运费</div>
+					<div class="txt fc">{$order_info.postage}元</div>
+				</div>
+				<div class="clearfix">
+					<div class="label">-订单优惠</div>
+					<div class="txt fc">{$order_info.discount_price}元</div>
+				</div>
+				<div class="clearfix">
+					<div class="label">-优惠券金额</div>
+					<div class="txt fc">{$order_info.coupon_price}元</div>
+				</div>
+				<div class="clearfix">
+					<div class="label">-使用余额</div>
+					<div class="txt fc">{$order_info.balance_price}元</div>
+				</div>
+				<div class="clearfix">
+					<div class="label">-积分抵扣金额</div>
+					<div class="txt fc">{$order_info.points_price}元</div>
+				</div>
+			</div>
+			<div class="omb-item clearfix">
+				<div class="txt">
+					<span>实付款：</span>
+					<span class="price">{$order_info.payable_price+$order_info.postage}元</span>
+					<p class="note">下单时间：{$order_info.add_time}</p>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<footer class="footer footer-fixed odr-footer">
+		<div class="odr-ctr">
+		{assign name="status" value="$order_info.status" /}
+
+		{if condition="$status neq 0"}
+			{if condition="$order_info['is_pay'] eq 0"}
+				<a href="javascript:;" onClick="cancel_order({$order_info.id})" class="btn del-btn">取消订单</a>
+				<a href="{:U('shop/Cart/cart4',['order_id'=>$order_info['id']])}" class="btn buy-btn">立即付款</a>
+			{/if}
+			{if condition="$status eq 4"}
+				<a href="javascript:;"  onClick="if(confirm('你确定收到货了吗?')) location.href='{:U('shop/User/order_confirm',['id'=>$order_info['id']])}'" class="btn cts-btn">确认收货</a>
+			{/if}
+			{if condition="$status eq 5"}
+				<a href="{:U('User/comment',['id'=>$order_info['id']])}" class="btn cmt-btn">评价</a>
+			{/if}
+		{else/}
+			<a data-href="{:U('User/del_order',['id'=>$order_info['id']])}" data-msg="删除订单" href="javascript:;" onclick="actOrd(this);" class="btn del-btn">删除</a>
+		{/if}
+			<!-- <a href="javascript:;" class="btn buy-btn">再次购买</a> -->
+		</div>
+	</footer>
+
+</body>
+	<script type="text/javascript">
+		//取消订单
+	    function cancel_order(id){
+	      if(!confirm("确定取消订单?"))
+	          return false;
+	      location.href = "{:U('shop/User/cancel_order')}?id="+id;
+	    }
+
+	    function actOrd(obj) {
+	    	layer.confirm("订单取消(删除)后无法恢复，是否确认取消？",{btn:['Yes','No']},function () {
+	    		$.ajax({
+	    			url:$(obj).attr('data-href'),
+	    			success: function(data){
+	    				layer.msg(data.msg,{time:1000},function () {
+	    					if (data.code==1) {
+	    						location.reload();
+	    					}
+	    				})
+	    			}
+	    		});	
+	    	})
+	    }
+	</script>
+</html>

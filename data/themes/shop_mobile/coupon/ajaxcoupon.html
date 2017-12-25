@@ -1,0 +1,51 @@
+<div id="coupon-{$vo.id}" class="coupon-item {if condition="$vo.num == $vo.send_num || $vo['is_receive'] == true"}nothing{/if}">
+<span class="bg"></span>
+<div class="c-type">
+    <div class="price clearfix">
+        <div class="txt">
+            <p>{$vo.title}</p>
+        </div>
+        <div class="summ" style="width: 100%; display: block">
+            <span class="num"><small>{$vo.discount_type_id}</small>{$vo.quota}</span>
+        </div>
+    </div>
+    <div class="range">
+        <div class="range-item"><p>满{$vo.money}元可用</p></div>
+        <!--<div class="range-item"><p>全平台可用</p></div>-->
+        <div class="range-item"><p>{:date('y.m.d H:i',$vo['send_start_time'])} - {:date('y.m.d H:i',$vo['send_end_time'])}</p></div>
+    </div>
+</div>
+<div class="c-opbtns">
+    <div class="box">
+        <a href="javascript:;" id="coupon-{$vo.id}-str" onclick="codeReceive('{$vo.code}',{$vo.id});">{if condition="$vo.is_receive == true"}已领取{else/}立即领取{/if}</a>
+    </div>
+</div>
+{if condition="$vo.num == $vo.send_num"}<div class="state"></div>{/if}
+</div>
+<script>
+    function codeReceive(code,coupon_id)
+    {
+        if( code == null || code == undefined){
+            alert('请选择您需要领取的优惠券');
+        }
+        $.ajax({
+            type:'post',
+            url:"{:U('shop/coupon/code_receive')}",
+            data:{code:code},
+            success:function (data) {
+                if( data.code == 0 ){
+                    alert(data.msg);
+                }else{
+                    alert(data.msg);
+                    var cid = '#coupon-'+coupon_id;
+                    var cidStr = '#coupon-'+coupon_id+'-str';
+                    $(cid).addClass('nothing');
+                    $(cidStr).html('已领取');
+                }
+            }
+        });
+
+    }
+</script>
+
+</div>

@@ -1,0 +1,51 @@
+{volist name="coupon_list" id="vo"}
+<div class="voucher-item clearfix">
+	<div class="circle t"></div>
+	<div class="left" {if condition="$vo['info']['use_end_time'] lt time() || $vo['is_use'] == 1"}style="background-color: #aaaaaa"{/if}>
+		{switch name="$vo.info.discount_type" }
+		{case value="1"}
+		<span class="price">{$vo.info.quota/10}</span><small>{$eBiz.lang.Coupon_rebate_unit}</small>
+		{/case}
+		{case value="2"}
+		<small class="price"></small><span class="price">{$vo.info.quota}</span>
+		{/case}
+		{case value="3"}
+		<span class="price">{$vo.info.quota}</span><small>{$eBiz.lang.Coupon_point_unit}</small>
+		{/case}
+		{case value="4"}
+		<span class="price">{$vo.info.quota}</span><small>元</small>
+		{/case}
+		{default /}
+		{/switch}
+		<p>满{$vo['info']['money']}元可用</p>
+		<div class="pepper">
+			<div class="pepper-list">
+				<span class="label">限购品类：</span>
+				{php}$cate = $vo['info']['goods_category']==0?lang('Coupon_all_cates'):getTableValue('goods_category',['id'=>$vo['info']['goods_category']],'name');{/php}
+				<span class="txt">{$cate}</span>
+			</div>
+			<div class="pepper-list">
+				<span class="label">使用范围：</span>
+				{php}$shop = $vo['info']['shop_id']==0?lang('Coupon_all_platform'):getTableValue('cust_shop',['id'=>$vo['info']['shop_id']],'shop_name');{/php}
+				<span class="txt">{$shop}</span>
+			</div>
+		</div>
+	</div>
+	<div class="right">
+		<p>{:date('Y-m-d H:i',$vo['start_time'])}</p>
+		<p>-</p>
+		<p>{:date('Y-m-d H:i',$vo['end_time'])}</p>
+		{eq name="vo.is_use" value="1"}
+		<a href="javascript:;" class="use-btn" style="background-color: #aaaaaa">已使用</a>
+		{else/}
+		{if condition="$vo['info']['use_end_time'] lt time()"}
+		<a href="javascript:;" class="use-btn" style="background-color: #aaaaaa">已过期</a>
+		{else/}
+		<a href="javascript:;" class="use-btn">去使用</a>
+		{/if}
+		{/eq}
+
+	</div>
+	<div class="circle b"></div>
+</div>
+{/volist}

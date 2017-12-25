@@ -1,0 +1,60 @@
+
+<div class="layui-form-item">
+    <div class="layui-input-block">
+        <blockquote class="layui-elem-quote  layui-quote-nm" style="color: #666;font-size: 12px;">{$levelInfo.explain}</blockquote>
+    </div>
+</div>
+
+<hr>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">优惠券发放类型</label>
+    <div class="layui-input-block">
+        {foreach name="payment_type" item="v"}
+        <input type="radio" name="send_type" lay-filter="send_type" value="{$v.id}" title="{$v.name}">
+        {/foreach}
+        <br><br>
+        {foreach name="payment_type" item="v"}
+        <blockquote id="explain-{$v.id}" class="layui-elem-quote layui-quote-nm send-type-explain" style="font-size: 12px; display: none;">{$v.explain}</blockquote>
+        {/foreach}
+    </div>
+</div>
+
+<div id="code_select" style="display: none;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">优惠码类型</label>
+        <div class="layui-input-block">
+            <input type="radio" name="code_type" class="layui-input" value="1" title="一券一码" checked>
+            <input type="radio" name="code_type" class="layui-input" value="2" title="通用码">
+        </div>
+    </div>
+</div>
+
+<hr>
+
+<div id="hierarchy">
+
+</div>
+
+<div id="quota">
+    <div class="layui-form-item">
+        <label class="layui-form-label">额度</label>
+        <div class="layui-input-block">
+            <input type="number" name="quota"  style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">发放数量</label>
+    <div class="layui-input-block">
+        <input type="number" name="num" style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input">
+    </div>
+</div>
+
+<div class="layui-form-item">
+    <label class="layui-form-label">单张使用次数</label>
+    <div class="layui-input-block">
+        <input type="number" name="one_use_num"   style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input" value="1">
+    </div>
+</div>

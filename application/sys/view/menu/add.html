@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="Base:table_header" /}
+<body>
+<section class="layui-larry-box">
+	<div class="larry-personal">
+		<header class="larry-personal-tit">
+			<span>{$eBiz.lang.menu_action_title}</span>
+		</header><!-- /header -->
+		<div class="larry-personal-body clearfix">
+			<form class="layui-form" action="{:url('Menu/save')}" method="post">
+				{empty name="parent"}
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_modeule}</label>
+					<div class="layui-input-block">
+						<select name="module" id="module" lay-filter="module" lay-verify='required'>
+							<option value="">{$eBiz.lang.menu_form_modeule_tip}</option>
+							{volist name=	"module_menu" id="vo"}
+							<option value="{$vo.name}">{$vo.title}</option>
+							{/volist}
+						</select>
+					</div>
+				</div>
+				{/empty}
+				<div {empty name="parent"}style="display:none;"{/empty} id="form_area">
+				{empty name="parent"}
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_pid}</label>
+					<div class="layui-input-block">
+						<select name="pid" id="pid">
+							<option value="">{$eBiz.lang.menu_form_pid_tip}</option>
+						</select>
+					</div>
+				</div>
+				{else/}
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_modeule}</label>
+					<div class="layui-input-block">
+						<input type="hidden" name="module" id="module" value="{$parent.module}">
+						<input type="text" autocomplete="off" class="layui-input layui-disabled" value="{$parent.module}" disabled="">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_pid}</label>
+					<div class="layui-input-block">
+						<input type="hidden" id="pid" name="pid" value="{$parent.id}">
+						<input type="text" autocomplete="off" class="layui-input layui-disabled" value="{$parent.title}" disabled="">
+					</div>
+				</div>	
+				{/empty}
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_title}</label>
+					<div class="layui-input-block">
+						{volist name="lang" id="l"}
+						<input type="text" name="title[{$l.lang}]" class="layui-input" style="display:inline-block;width:30%;" placeholder="{:lang('menu_form_title_holder',[$l.title])}" value="" lay-verify='required'>
+						{/volist}
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_type}</label>
+					<div class="layui-input-block">
+						<input type="radio" name="type" value="1" title="{$eBiz.lang.menu_form_type_op1}" checked=""  lay-filter="type"><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon"></i><span>{$eBiz.lang.menu_form_type_op1}</span></div>
+						<input type="radio" name="type" value="2" title="{$eBiz.lang.menu_form_type_op2}"  lay-filter="type"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><span>{$eBiz.lang.menu_form_type_op2}</span></div>
+					</div>
+				</div>
+				<div class="layui-form-item" id="menu_blind">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_blind}</label>
+					<div class="layui-input-block layui-inline" style="margin-left:40px;">
+						<select name="controller" id="controller" lay-filter="controller" lay-verify='type'>
+							<option value="">{$eBiz.lang.menu_form_blind_controller}</option>
+							{volist name="controller" id="na"}
+							<option value="{$na}">{$na}</option>
+							{/volist}
+						</select>
+					</div>
+					<div class="layui-inline">
+						<select name="action" id="action" lay-filter="action" lay-verify='type'>
+							<option value="">{$eBiz.lang.menu_form_blind_action}</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item" id="menu_name" style="display:none;">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_name}</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" id="menu_name" autocomplete="off" class="layui-input" value="" placeholder="{$eBiz.lang.menu_form_name_holder}"><i>{$eBiz.lang.menu_form_name_tip}</i>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_icon}</label>
+					<div class="layui-input-block">
+						<label style="display: inline;border: 1px solid #e5e5e5;padding: 2px;padding-bottom: 8px;background: #e5e5e5;border-radius: 3px;font-size:20px;"><i id='ico_show' onclick="showIcons();" class="fa fa-fw fa-plus-circle"></i></label>
+						<input type="text" name="icon" onclick="showIcons();" class="layui-input" style="display: inline;width: 200px;" placeholder="{$eBiz.lang.menu_form_icon_holder}"><i>{$eBiz.lang.menu_form_icon_tip}</i>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_sort}</label>
+					<div class="layui-input-block">
+						<input type="text" name="sort" autocomplete="off" value="50" class="layui-input" placeholder="{$eBiz.lang.menu_form_sort_holder}"><i>{$eBiz.lang.menu_form_sort_tip}</i>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">{$eBiz.lang.menu_form_status}</label>
+					<div class="layui-input-block">
+						<input type="radio" name="status" value="1" title="{$eBiz.lang.menu_form_status_op1}" checked=""><div class="layui-unselect layui-form-radio layui-form-radioed"><i class="layui-anim layui-icon"></i><span>{$eBiz.lang.menu_form_status_op1}</span></div>
+						<input type="radio" name="status" value="2" title="{$eBiz.lang.menu_form_status_op2}"><div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i><span>{$eBiz.lang.menu_form_status_op2}</span></div>
+						<i>{$eBiz.lang.menu_form_status_tip}</i>
+					</div>
+				</div>
+				{:token()}
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button type="button" class="layui-btn" lay-submit="" lay-filter="*">{$eBiz.lang.menu_form_btn_submit}</button>
+						<button type="reset" class="layui-btn layui-btn-primary">{$eBiz.lang.menu_form_btn_reset}</button>
+					</div>
+				</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<script type="text/javascript">
+	layui.use(['form','upload'],function(){
+        var form = layui.form();
+        form.verify({
+  			type: function(value){
+  				var tp = $('input[name="type"]:checked').val();
+  				var pid = $('#pid').val();
+  				if (tp==1 && pid!='') {
+  					if ($('#controller').val()=='' || $('#action').val()=='') {
+  						return '请绑定操作';
+  					};  					
+  				};
+  			}
+    	});
+     	form.on('radio(type)', function(data){
+			if (data.value==1) {
+				$('#menu_blind').css('display','block');
+				$('#menu_name').css('display','none');
+			};
+			if (data.value==2) {
+				$('#menu_blind').css('display','none');
+				$('#menu_name').css('display','block');
+			};
+
+		});  
+     	form.on('select(module)', function(data){
+		  	$.ajax({
+		  		url:"{:url('Comm/getMenu')}",
+		  		data:{
+		  			'module':data.value
+		  		},		
+		  		success: function(data){
+		  			if (data.code==1) {
+		  				layer.msg(data.msg);
+			  			var Html = '<option value="">{$eBiz.lang.menu_form_pid_tip}</option>';
+			  			var menus = data.menus;
+			  			for (var i = 0; i < menus.length; i++) {
+			  				var row = menus[i];
+			  				Html += "<option value='"+row.id+"'>"+row.title+"</option>";
+			  			};
+			  			$('#pid').html(Html);
+			  			var ConHtml = '<option value="">{$eBiz.lang.menu_form_blind_controller}</option>';
+			  			var con = data.controller;
+			  			for (var i = 0; i < con.length; i++) {
+			  				var contr = con[i];
+			  				ConHtml += "<option value='"+contr+"'>"+contr+"</option>";
+			  			};
+			  			$('#controller').html(ConHtml);
+			  			$('#form_area').css('display','block');
+			  			form.render('select'); //刷新select选择框渲染		  				
+		  			};
+		  		}
+		  	});	
+		});
+		form.on('select(controller)', function(data){
+	  		$.ajax({
+	  			url:"{:url('Comm/getAction')}",
+		  		data:{
+		  			'module':$('#module').val(),
+		  			'controller':data.value
+		  		},			
+	  			success: function(data){									
+	  				if (data.code==1) {
+	  					layer.msg(data.msg);
+	  					var Html = '<option value="">{$eBiz.lang.menu_form_blind_action}</option>';
+	  					var actData = data.action;
+	  					for (var i = 0; i < actData.length; i++) {
+	  						var row = actData[i]; 
+	  						Html += "<option value='"+row+"'>"+row+"</option>";
+	  					};
+	  					$('#action').html(Html);
+	  					form.render('select'); //刷新select选择框渲染	
+	  				};
+	  			}
+	  		});	
+		});
+		form.on('submit(*)', function(data){
+	  		var url = $(data.form).attr('action');
+	  		$.ajax({
+	  	        type : "POST",
+	  	        url: url,
+	  	        data : data.field,
+	  	        dataType : 'json',
+	  	        success: function(data){
+	  	        	layer.confirm(data.msg+"<br/>"+"{$eBiz.lang.menu_add_again_tips}",{btn:['{$eBiz.lang.menu_again_btn_confirm}','{$eBiz.lang.menu_again_btn_cancle}']},function(){
+	  	        		if (data.code==1) {
+	  	        			location.reload();
+	  	        		};
+	  	        	},function() {
+	  	        		if (data.code==1) {
+	  	        			parent.callback(data.url);
+	  	        		};
+	  	        	});
+	  	        }
+	  	    });
+		  	return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+	});
+	function showIcons () {
+	    layer.open({
+	      type: 2,
+	      title: false,
+	      shadeClose: false,
+	      shade:  [0.8, '#393D49'],
+	      maxmin: false, //开启最大化最小化按钮
+	      area: ['800px', '90%'],
+	      content: '{:url("Menu/showicons")}'
+	    });
+	}
+	function icon_callback(icon) {
+		$('input[name="icon"]').val(icon);
+		$('#ico_show').attr('class',icon);
+		layer.closeAll();
+	}
+</script>
+</body>
+</html>

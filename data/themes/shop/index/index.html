@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{:tb_config('web_site_title',1)}</title>
+	{include file="common/static"}
+</head>
+<body class="has-right">
+
+	<!-- 广告 -->
+	{include file="common/ad_top"}
+	<!-- top -->
+	{include file="common/top_header"}
+	<!-- header -->
+
+	{include file="common/header"}
+
+	<!-- nav -->
+	{include file="common/nav"}
+
+	<script>
+		$('.mall-classify').addClass('open');
+	</script>
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	<main class="main pb50">
+		<!-- banner -->
+		<div class="banner-slide">
+			<a href="javascript:;" class="banner-ad fl" style="background: url({tbimg module="shop" src="banner-ad.png"}) no-repeat center bottom;"></a>
+			<div class="container w1200">
+				<div id="slider">
+					{banner position="index"}
+					<a href="#"><img src="{$banner.ad_pic}"/></a>
+					{/banner}
+				</div>
+			</div>
+		</div>
+
+		<!-- 抢购 -->
+		<div class="mall-section panic-buying-section c-floor-section" data-floor="抢购">
+			<div class="container w1200">
+				<div class="index-topTitle">
+					<p>TB MALL TIME LIMIT BUY</p>
+				</div>
+				<!-- 抢购时间 -->
+
+				<div class="panic-time-block">
+					<ul class="clearfix">
+
+						{volist name="time_slot" id="vo"}
+						<li class="item" >
+							<a href="{:U('shop/index/flash_buy',['type'=>$key])}">
+
+								<!-- 已过期 -->
+								{eq name="vo.status" value="0"}
+								<div class="l"><span class="t">{$vo.time}</span></div>
+								<div class="r">
+									<p>{$eBiz.lang.Index_Text_flash_timeout}</p>
+								</div>
+								{/eq}
+								<!-- 抢购进行中 -->
+								{eq name="vo.status" value="1"}
+
+								<div class="l"><span class="t now">{$vo.time}</span></div>
+								<div class="r">
+									<p>{$eBiz.lang.Index_Text_flash_ing}</p>
+									<p>{$eBiz.lang.Index_Text_end_time}：
+										<span class="color--eb1a16 time countdown">
+												<span class="hours">00</span>
+												<span>:</span>
+												<span class="minutes">00</span>
+												<span>:</span>
+												<span class="seconds">00</span>
+											</span>
+									</p>
+								</div>
+								{/eq}
+								<!-- 抢购未开始 -->
+								{eq name="vo.status" value="2"}
+								<div class="l"><span class="t">{$vo.time}</span></div>
+								<div class="r">
+									<p>{$eBiz.lang.Index_Text_ready_start}</p>
+								</div>
+								{/eq}
+							</a>
+						</li>
+						{/volist}
+
+					</ul>
+				</div>
+				<!-- 列表 -->
+				<div class="section-content mt20">
+					<div class="box">
+						<ul class="clearfix">
+							{volist name="list" id="vo"}
+							<li class="shop-list-b">
+								<div class="pic">
+									<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}"><img src="{:common_thumb_img($vo['goods']['thumb'],230,230)}" width="100%" alt="" /></a>
+								</div>
+								<div class="info">
+									<p class="info-title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']['id']])}">{$vo.goods.title}</a></p>
+									<div class="msg mt10">
+										<p style="text-align: right;"><del>{:web_currency()}{$vo.goods.shop_price}</del></p>
+										<p>
+											<!-- <span style="line-height: 22px;font-size: 13px;"><span class="color--c16a00">售07</span>/10件</span> -->
+											<span class="color--9b1b33 price fr">{:web_currency()}{$vo.goods.price}<small></small></span>
+										</p>
+									</div>
+								</div>
+							</li>
+							{/volist}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 团购 -->
+		<div class="mall-section mt20 index-group-section c-floor-section" data-floor="{$eBiz.lang.Index_Text_groupbuy}">
+			<div class="container w1200">
+				<div class="index-topTitle">
+					<p>TBMALL GROUP BUY</p>
+				</div>
+				<div class="section-content">
+					<!-- 列表 -->
+					<div class="box">
+						<ul class="clearfix">
+							<?php
+							$nowTime =date('Y-m-d H:i:s');
+							$groups = db('shop_promotion_group','',false) ->where('start_time','<= time',$nowTime) ->where('end_time','> time',$nowTime) ->where('is_end',0)->limit(4)->select();
+							?>
+							{volist name="groups" id="vo"}
+							<li class="i-group-list">
+								{assign name="goods" value=":getTableValue('shop_goods',['id'=>$vo['goods']])" /}
+								<div class="info">
+									<p class="title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}">{$vo.title}</a></p>
+									<p class="m">{$goods.title}</p>
+									<div class="clearfix p">
+										<p style="text-align: right;"><del>{:web_currency()}{$goods.shop_price}</del></p>
+										<div class="fl left color--b1191a">
+											<?php
+											$left = ($goods['shop_price']-$vo['price'])/$goods['shop_price']*100;
+											$left = sprintf("%.2f", $left);
+										?>
+											<small>{$eBiz.lang.Index_Text_reduce_mny}</small>{$left}%
+										</div>
+										<div class="fr right">{:web_currency()}{$vo.price}</div>
+									</div>
+
+									<div class="load">
+										<div class="progress">
+											{php}$percent = ($vo['virtual_buy_num']+$vo['buy_num'])/$vo['group_num']*100;{/php}
+											<div class="progress-bar progress-bar-danger active" data-load="{$percent}%">
+												<div class="progress-value">
+													<p>{$eBiz.lang.Index_Text_proup_nums}</p>
+													<p class="num">{$percent}%</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="pic">
+									<a href="{:U('shop/goods/activity',['id'=>$vo['goods']])}"><img src="{$goods.id|goods_thum_images=248,248}" alt="" /></a>
+									<div class="mask">
+										{$eBiz.lang.Index_Text_group_end_time}
+										<span data-time="{$vo.end_time}" class="time">
+											<span class="days"></span>
+											<span>天</span>
+											<span class="hours">00</span>
+											<span>:</span>
+											<span class="minutes">00</span>
+											<span>:</span>
+											<span class="seconds">00</span>
+										</span>
+									</div>
+								</div>
+							</li>
+							{/volist}
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- 品牌  产品区 -->
+		<div class="mall-section mt30 index-area-section">
+			<div class="container w1200">
+				<!-- 品牌区 -->
+				<div class="brand-area-box index-area-block c-floor-section" data-floor="{$eBiz.lang.Index_Text_brand}">
+					<div class="index-leftTitle">
+						<p style="display: inline;">{$eBiz.lang.Index_Text_brand_area}</p>
+						<div style="display: inline;font-size: 12px;">热门搜索：{:tb_config('brand_hot_key',1)}</div>
+					</div>
+					<div class="area-content">
+						<div class="area-list-box clearfix">
+							<div class="left">
+								<!-- <img src="picture/index_38.png" alt="" /> -->
+								<div class="demo">
+									<ul id="imageGallery" class="gallery list-unstyled">
+										{ad_list cid="19" item="ad" limit="15"}
+										<li data-thumb="{$ad.ad_pic|common_thumb_img=82,58}"> <a href="javascript:void(0)"> <img src="{$ad.ad_pic|common_thumb_img=440,280}" /> </a> </li>
+										{/ad_list}
+
+									</ul>
+								</div>
+							</div>
+							<div class="right" id="brand_list">
+
+								<a href="javascript:;" onclick="freshBrand();" class="a-list last">
+									<i class="icon"></i>
+									<p>换一批</p>
+								</a>
+							</div>
+						</div>
+
+					</div>
+				</div>
+				{assign name="j" value="1"/}
+				{category_list pid="0" item="vo"}
+				{if condition="($vo['is_hot'] eq 1)"}
+				{assign name="ad_switch" value=":tb_config('floor_ad_switch',1,$lang)"/}
+				<!-- 产品区 -->
+				<div class="product-area-box index-area-block mt50 c-floor-section" data-floor="{$vo.mobile_name}">
+					<div class="index-leftTitle index-top">
+						<span>{$vo.name}</span>
+						<div class="fr">
+							<ul>
+
+							</ul>
+						</div>
+					</div>
+					<div class="area-content">
+						<div class="area-list-box clearfix">
+							<div class="left">
+								<div class="demo product-gallery1">
+									<ul class="gallery list-unstyled product-gallery">
+										{floor_ad_list cid="$vo['id']" pid="0" limit="5" item="val" }
+										<li><a href="{$val['url']}"><img src="{$val['img']}" /></a></li>
+										{/floor_ad_list}
+									</ul>
+								</div>
+							</div>
+							<div class="right">
+								<div class="a-com-list img-list">
+									<div class="demo product-gallery2">
+										<ul class="gallery list-unstyled product-gallery">
+											{floor_ad_list cid="$vo['id']" pid="1" limit="5" item="val" }
+											<li><a href="{$val['url']}"><img src="{$val['img']}" /></a></li>
+											{/floor_ad_list}
+										</ul>
+									</div>
+								</div>
+								{floor_ad_list cid="$vo['id']" pid="3" limit="6" item="val" }
+								<a href="{$val['url']}" class="a-com-list">
+									<img width="100%" height="100%" src="{$val['img']}" title="{$val.title}" />
+								</a>
+								{/floor_ad_list}
+
+							</div>
+						</div>
+						<div class="area-block mt10">
+							{floor_ad_list cid="$vo['id']" pid="2" limit="1" item="ad" }
+							<a width="100%" href="{$ad.url}"><img src="{$ad.img}" /></a>
+							{/floor_ad_list}
+						</div>
+					</div>
+				</div>
+				{/if}
+				{/category_list}
+			</div>
+		</div>
+		<!-- 全部产品 -->
+
+		<div class="mall-section mt20 all-product-section c-floor-section" data-floor="{$eBiz.lang.Index_Text_newest_goods}">
+			<div class="container w1200">
+				<div class="index-topTitle">
+					<p>ALL PRODUCT DISPLAY</p>
+				</div>
+				<div class="section-content" id="all_goods_list">
+					<!-- 列表 -->
+					<div class="box clearfix">
+
+					</div>
+				</div>
+				<div class="mall-block mt30" style="text-align: center;">
+					<button type="button" id="more_goods_btn" onclick="loadMoreGoods();" class="product-btn">{$eBiz.lang.Index_Text_show_more}<img src="{:tb_config('resource_path',1)}shop/images/down-red.png" width="10" alt=""></button>
+				</div>
+			</div>
+		</div>
+	</main>
+
+
+	<!-- 左侧楼层 -->
+	<div class="mall-fix-floor">
+		<ul class="itemBox">
+		</ul>
+		<div class="backTop" onclick="backTop()">
+			<a href="javascript:;" class="floor-item">{$eBiz.lang.Comm_Right_Text_totop}</a>
+		</div>
+	</div>
+
+	<section class="bottom-function">
+		<div class="container w1200">
+			<div class="clearfix box">
+				<div class="func-item">
+					<div class="func-top">
+						<p>NEWS & NOTICE</p>
+					</div>
+					<div class="func-content">
+						<ul class="clearfix bottom-news pl20">
+							{list table="web_content" condition="cid = 31 AND status = 1" field="id,title" item="vo" limit="8" key="i" order="sort ASC,id DESC"}
+							<li class="item"><a href="{:U('Index/news',['id'=>$vo.id])}">{$vo.title|mb_substr=0,25,'utf-8'}</a></li>
+							{/list}
+						</ul>
+					</div>
+				</div>
+				<div class="func-item pl40 pr40">
+					<div class="func-top">
+						<p>NEWS & NOTICE</p>
+					</div>
+					<div class="func-content func-service">
+						<p>{:tb_config('home_bottom_kf_info',1)}</p>
+						<p class="color--9b1b33 time"><span>{:tb_config('home_bottom_kf_phone_big',1)}</span><a href="{:tb_config('service_client_url',1)}" class="online-btn" style="margin-top: -4px;">在线客服</a></p>
+						<div class="block clearfix">
+							<div class="fl w50">
+								<p>电子交易纠纷</p>
+								{:htmlspecialchars_decode(tb_config('home_bottom_jiufen_info',1))}
+								<a href="{:tb_config('service_client_url',1)}" class="online-btn-2 mt10" style="margin-top: -4px;">在线处理交易纠纷</a>
+							</div>
+							<div class="fr w50">
+								<p>侵犯版权举报</p>
+								{:htmlspecialchars_decode(tb_config('home_bottom_banquan_info',1))}
+								<a href="{:tb_config('service_client_url',1)}" class="online-btn-2 mt10" style="margin-top: -4px;">在线举报侵犯版权</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="func-item pl40">
+					<div class="func-top">
+						<p>DISCUSSION & AREA</p>
+					</div>
+					<div class="func-content">
+						<ul class="clearfix discussion-area pl20">
+							{list table="shop_goods_consult" condition="parent_id = 0 AND is_show = 1" item="vo" key="i" order="add_time DESC" limit='3'}
+							<li class="item">
+								<a href="{:U('shop/goods/goodsinfo',['id'=>$vo['goods_id']])}">
+									<div class="block clearfix">
+										<div class="fl left color--b1191a">讨论产品：{:getTableValue('shop_goods',['id'=>$vo['goods_id']],'title')}</div>
+										<div class="fr right">讨论者：{$vo.username}</div>
+									</div>
+									<div class="block clearfix">
+										<div class="fl left" style="color: #000;">{$vo.content}</div>
+										<div class="fr right">{$vo.add_time}</div>
+									</div>
+								</a>
+							</li>
+							{/list}
+
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+
+	{include file="common/footer"}
+
+	{tbjs module="shop" src="vmc.slider.full.js,justTools.js,jquery.lightSlider.js,panelRight.js,jquery.downCount.js"}
+
+	<script type="text/javascript">
+		// 公用window对象
+		var win = $(window);
+		var winH = win.height();
+		var body = $('body');
+		var brand_page = 0;
+		// banner轮播图
+		$(document).ready(function() {
+			freshBrand();
+			$('#slider').vmcSlider({
+				width: 1200,
+				height: 480,
+				gridCol: 20,
+				gridRow: 10,
+				gridVertical: 20,
+				gridHorizontal: 10,
+				autoPlay: true,
+				ascending: true,
+				effects: [
+					'fade', 'fadeLeft', 'fadeRight', 'fadeTop', 'fadeBottom', 'fadeTopLeft', 'fadeBottomRight',
+					'blindsLeft', 'blindsRight', 'blindsTop', 'blindsBottom', 'blindsTopLeft', 'blindsBottomRight',
+					'curtainLeft', 'curtainRight', 'interlaceLeft', 'interlaceRight', 'mosaic', 'bomb', 'fumes'
+				],
+				ie6Tidy: false,
+				random: false,
+				duration: 2000,
+				speed: 1200
+			});
+		});
+		// 品牌区轮播图
+		// $('#imageGallery').lightSlider({
+  //           gallery:true,
+  //           minSlide:1,
+  //           maxSlide:1,
+  //           thumbWidth: 80,
+  //           thumbMargin: 5,
+		// 	currentPagerPosition:'left'  
+  //       });
+        $('#imageGallery').lightSlider({
+                gallery:true,
+                item:1,
+                thumbItem:5,
+                slideMargin: 0,
+                speed: 700,
+                pause: 3000,
+                auto:true,
+                loop:true,
+                onSliderLoad: function() {
+                    $('#image-gallery').removeClass('cS-hidden');
+                }  
+            });
+
+		// 楼层函数
+		function floor() {
+			// 楼层内容
+			var floors = $('.c-floor-section');
+			// 楼层左边固定引导
+			var floorGuide = $('.mall-fix-floor');
+			// 楼层itembox
+			var itemBox = floorGuide.find('.itemBox');
+			// 楼层item top
+			var itemTop = [];
+			floors.each(function() {
+				itemTop.push($(this).offset().top - win.height()/3);
+			})
+
+			floors.each(function() {
+				itemBox.append('<li class="floor-item"><a href="javascript:;">' + $(this).attr('data-floor') + '</a></li>');
+			})
+			// 楼层item
+			var floorItem = itemBox.find('.floor-item');
+
+			// 绑定楼层item事件
+			itemBox.on('click','.floor-item',function() {
+
+				var num = $(this).index();
+				$('html,body').animate({scrollTop:itemTop[num] + 10 + 'px'}, 800);
+			})
+
+			// 设置左边固定位置
+			if(floorGuide.height() < winH) {
+				floorGuide.css({
+					'left': ((win.width() - 1200)/2 - floorGuide.width()) - 40,
+					'top': (winH - floorGuide.height())/2 + 'px'
+				})
+			}
+
+			$(window).resize(function(){
+				var winWidth = $(window).width();
+				var winHeight = $(window).height();
+				var elevatorHeight = $('.mall-fix-floor').height();
+				var elevatorWidth = $('.mall-fix-floor').width();
+				var elevatorLeft = $('.mall-fix-floor').offset().left;
+				var contentLeft = $('.w1200').offset().left;
+
+				if( winWidth>=1280 && elevatorLeft > contentLeft ){
+
+					$('.mall-fix-floor').css('left',contentLeft-elevatorWidth-20 +'px');
+				}else if( winWidth>1280 && elevatorLeft <= contentLeft){
+
+					$('.mall-fix-floor').css('left',contentLeft-elevatorWidth-20 +'px');
+				}else{
+					$('.mall-fix-floor').css('left','20px');
+				}
+
+				// if(winWidth < 1280){
+
+				// 	$('.mall-fix-floor').css('left','40px');
+				// }
+
+				$('.mall-fix-floor').css('top',(winHeight-elevatorHeight)/2+'px');
+
+
+			})
+
+
+
+			// 滚动事件
+			win.scroll(function() {
+				console.log(444)
+				var top = win.scrollTop();
+				floorInit(top);
+				if(top >= itemTop[0]) {
+					floorGuide.fadeIn();
+				} else {
+					floorGuide.fadeOut();
+				}
+			})
+			// 执行
+			function floorInit(top) {
+				for(var i = 0; i < itemTop.length; i++) {
+					if(top > itemTop[i]) {
+						floorItem.eq(i).addClass('on').siblings().removeClass('on')
+					} else {
+						floorItem.eq(i).removeClass('on')
+					}
+				}
+			}
+		}
+
+		$(document).ready(function() {
+			// 楼层
+			floor();
+		});
+
+		// 提示层
+		$(".just-tipLeft").mouseover(function(event){
+			$.justToolsTip({
+				events:event,
+		        animation:"moveInLeft",
+		        //width:"300px",
+		        contents:$(this).attr('data-tip'),
+		        gravity:'left'
+		    });
+		});
+
+		function freshBrand() {
+			$.ajax({
+				url:"{:U('Index/ajaxGetBrand')}",
+				data:{
+					page:brand_page
+				},
+				success: function(data){
+					var btn_html = '<a href="javascript:;" onclick="freshBrand();" class="a-list last"><i class="icon"></i><p>换一批</p></a>';
+					$('#brand_list').html(data+btn_html);
+					if(data!=''){
+						brand_page ++;
+					}else{
+						brand_page = 0;
+						freshBrand();
+					}
+				}
+			});
+		}
+
+	</script>
+	<script class="source" type="text/javascript">
+        $('.countdown').downCount({
+            date: '{$now_time_slot.end_time|date="Y-m-d H:i:s",###}',
+            offset: +8
+        }, function () {
+//            alert('倒计时结束!');
+        });
+    </script>
+	
+</body>
+</html>

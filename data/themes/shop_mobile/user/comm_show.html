@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>评价晒单</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/comment.css" />
+	<style type="text/css">
+		.al_comentaid .star_click {
+		    float: left; 
+		    margin-top: 0;
+		    margin-left: 30px;
+		}
+	</style>
+</head>
+<body>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<div style="border-bottom: 1px solid #ddd;">
+		<!--评分-s-->
+	        <div class="sp_idear">
+	            <div class="maleri30">		    		
+	                <img src="{$goods.thumb}" style="width: 80px;" />
+		    		
+	                <div class="com_igy p">
+	                    <p class="confine-wsp">{$goods.title}</p>
+	                    <p class="confine-wsp  shuxg">{$comm.spec_item}</p>
+	                </div>
+	            </div>
+	        </div>
+		</div>
+		<!--评分-e-->
+		<div>
+			<!--评论-s-->
+			    <div class="customer-messa comm_text_goods">
+			        <div class="maleri30">
+			            <textarea class="tapassa" name="content" placeholder="
+			            ">{$comm.content}</textarea>
+			        </div>
+			    </div>
+			<!--评论-e-->
+			<!--上传图片-s-->
+			    <div class="seravetype">
+			        <div class="maleri30">
+			            <ul id="imglen">
+			            	{notempty name="comm.img"}
+							{assign name="imgs" value=":explode(',',$comm['img']);" /}
+			            	{volist name="imgs" id="vo"}
+			                <label>
+			                    <li class="file">
+			                        <div class="shcph">
+			                            <img src="{$vo}">
+			                        </div>
+			                    </li>
+			                </label>
+			                {/volist}
+			                {/notempty}	                
+			            </ul>
+			        </div>
+			    </div>
+			<!--上传图片-e-->
+			<!--服务评价-s-->
+			    <div class="wlcomenser ma-to-20">
+			        <div class="maleri30">
+			            <div class="p_zyft p">
+			                <p class="fl">评分</p>
+			            </div>
+			        </div>
+			    </div>
+			    <div class="thirs_commen" style="border-bottom: 1px solid #ddd;">
+			        <div class="maleri30 jsstar">
+	                    <div class="al_comentaid p">
+		                    <div class="taidh">综合评价</div>
+		                    <div class="star_click">
+			                   	<span class="starRating-area">
+                                	<input id="good_comm" type="radio" name="goods_rank" {eq name="comm.goods_rank" value="3"}checked=''{/eq} disabled="" value="3">
+                                    <label for="good_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/good.png" style="width: 15px;height: 18px;" title="好评"></label>
+                                	<input style="margin-left: 15px;" id="mid_comm" type="radio" name="goods_rank" {eq name="comm.goods_rank" value="2"}checked=''{/eq} disabled="" value="2">
+                                    <label for="mid_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/mid.png" style="width: 15px;height: 18px;" title="中评"></label>
+                                	<input style="margin-left: 15px;" id="bad_comm" type="radio" name="goods_rank" {eq name="comm.goods_rank" value="1"}checked=''{/eq} disabled="" value="1">
+                                    <label for="bad_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/bad.png" style="width: 15px;height: 18px;" title="差评"></label>
+                                </span>
+		                    </div>
+		                </div>
+		                <div class="al_comentaid p">
+		                    <div class="taidh">商品描述</div>
+		                    <div class="star_click">
+			                {for start="0" end="$comm.description_rank"}
+		                    <span class="comment-item-star_wr">
+		                        <span class="real-star_wr comment-stars-width5"></span>
+		                    </span>
+							{/for}
+		                    </div>
+		                </div>
+		                <div class="al_comentaid p">
+		                    <div class="taidh">客服服务</div>
+		                    <div class="star_click">
+		                    {for start="0" end="$comm.service_rank"}
+		                    <span class="comment-item-star_wr">
+		                        <span class="real-star_wr comment-stars-width5"></span>
+		                    </span>
+							{/for}		                    
+		                    </div>
+		                </div>
+	                    <div class="al_comentaid p">
+			                <div class="taidh">物流服务</div>
+			                <div class="star_click">
+			                    {for start="0" end="$comm.deliver_rank"}
+			                    <span class="comment-item-star_wr">
+			                        <span class="real-star_wr comment-stars-width5"></span>
+			                    </span>
+								{/for}
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+		</div>
+	</main>
+
+</body>
+
+</html>

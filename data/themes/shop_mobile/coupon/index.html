@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Coupon_page_title}</title>
+
+	{include file="public/static" /}
+</head>
+<body style="background: #f0f2f5;">
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Coupon_page_title}</h5>
+			</div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<div class="tooltop-select">
+			<div class="swiper-container tooltop-select-container">
+				<ul class="swiper-wrapper clearfix">
+					<li class="item {if condition="empty($param['cl'])"}on{/if}"><a href="{:U('shop/Coupon/index',array_merge($param,['cl'=>'']))}">全部类型</a></li>
+					{volist name="coupon_level" id="vo"}
+					<li class="item {if condition="!empty($param['cl']) && $param['cl'] == $vo['level']"}on{/if}"><a href="{:U('shop/Coupon/index',array_merge($param,['cl'=>$vo['level']]))}">{$vo.name}</a></li>
+					{/volist}
+				</ul>
+			</div>
+		</div>
+		<div>
+			{volist name="list" id="vo"}
+			<div id="coupon-{$vo.id}" class="coupon-item {if condition="$vo.num == $vo.send_num || $vo['is_receive'] == true"}nothing{/if}">
+				<span class="bg"></span>
+				<div class="c-type">
+					<div class="price clearfix">
+						<div class="txt">
+							<p>{$vo.title}</p>
+						</div>
+						<div class="summ" style="width: 100%; display: block">
+							<span class="num"><small>{$vo.discount_type_id}</small>{$vo.quota}</span>
+						</div>
+					</div>
+					<div class="range">
+						<div class="range-item"><p>满{$vo.money}元可用</p></div>
+						<!--<div class="range-item"><p>全平台可用</p></div>-->
+						<div class="range-item"><p>{:date('y.m.d H:i',$vo['send_start_time'])} - {:date('y.m.d H:i',$vo['send_end_time'])}</p></div>
+					</div>
+				</div>
+				<div class="c-opbtns">
+					<div class="box">
+						<a href="javascript:;" id="coupon-{$vo.id}-str" onclick="receiveCoupon({$vo.id});">{if condition="$vo.is_receive == true"}已领取{else/}立即领取{/if}</a>
+					</div>
+				</div>
+				{if condition="$vo.num == $vo.send_num"}<div class="state"></div>{/if}
+			</div>
+			{/volist}
+
+		</div>
+		<div style="height: 1.5rem;"></div>
+		<div class="other-coupon clearfix" style="border: 1px solid #EEEEEE;">
+			<a class="other-coupon-btn" href="javascript:;" >选择领取</a>
+			<a class="other-coupon-btn" href="{:U('shop/Coupon/code')}" >优惠码领取</a>
+		</div>
+	</main>
+
+	{tbjs module="mshop" src="swiper.min.js"}
+	<script type="text/javascript">
+	$(document).ready(function() {
+		var w = 0;
+		var wW = $(window).width()*0.94;
+		$('.tooltop-select .item').each(function() {
+			w += Number($(this).outerWidth(true));
+		})
+		if(w>wW) {
+			var tooltopSelect = new Swiper('.tooltop-select-container', {
+		        slidesPerView: 'auto',
+		        paginationClickable: true,
+		        spaceBetween: 0
+		    });
+		}
+	})
+		function receiveCoupon(coupon_id)
+		{
+			if( coupon_id == null || coupon_id == undefined){
+				alert('请选择您需要领取的优惠券');
+			}
+			$.ajax({
+				type:'post',
+				url:"{:U('shop/coupon/receive')}",
+				data:{coupon:coupon_id},
+				success:function (data) {
+					if( data.code == 0 ){
+						alert(data.msg);
+					}else{
+						alert(data.msg);
+						var cid = '#coupon-'+coupon_id;
+						var cidStr = '#coupon-'+coupon_id+'-str';
+						$(cid).addClass('nothing');
+						$(cidStr).html('已领取');
+					}
+				}
+			});
+
+		}
+	</script>
+
+</body>
+</html>

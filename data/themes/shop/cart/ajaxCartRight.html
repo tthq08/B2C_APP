@@ -1,0 +1,56 @@
+<div class="box fcart-message mscrollbox">
+	{notempty name="cart_list.cartList"}
+	{volist name="cart_list.cartList" id="vo"}
+	<div class="fcart-item">
+		<div class="pic"><a href="{:U('shop/goods/goodsinfo',['id'=>$vo['goods'].'--'.$vo['spec_key']])}"><img src="{$vo.goods|goods_thum_images=200,200}" alt="" /></a></div>
+		<div class="info">
+			<div class="fc-name"><a href="{:U('shop/goods/goodsinfo',['id'=>$vo['goods'].'--'.$vo['spec_key']])}">{$vo.goods_name}【{$vo.spec_text}】</a></div>
+			<div class="fc-price">
+				<span class="p">{:web_currency()}{$vo.shop_price}</span>x{$vo.goods_num}
+				<span class="fr"><a href="javascript:;" onclick="ajaxDelCart('{$vo.id}');" class="del">{$eBiz.lang.Right_cart_del_btn}</a></span>
+			</div>
+		</div>
+	</div>
+	{/volist}
+	{else/}
+	<span style="font-size: 16px;">
+		您的购物车还是空的，请开始购物
+	</span>
+	{/notempty}
+</div>
+<div class="fcart-settlement">
+	<div class="clearfix">
+		<div class="fl">
+			<p><strong class="fcnum color--c81623">{$cart_list.total_price.num}</strong>{$eBiz.lang.Right_pieces_goods}</p>
+			<p>{$eBiz.lang.Right_goods_nums_total}：<strong class="fcnum color--c81623">{:web_currency()}{$cart_list.total_price.total_fee}</strong></p>
+		</div>
+		<div class="fr">
+			<a href="{:U('shop/cart/cart')}" class="cmall-btn-j">{$eBiz.lang.Right_go_cart}</a>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function ajaxDelCart(id) {
+	 	layer.confirm("{$eBiz.lang.Right_cart_del_confirm}", {
+		  	btn: ['Yes','No'] //按钮
+		}, function(){
+		 	$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/ajaxDelCart')}",//+tab,
+				data:{ids:id}, // 
+			    dataType:'json',		
+				success: function(data){
+
+				   if(data.code == 1){
+				   	    layer.msg(data.msg);
+					    ajaxGetRightCart(); // ajax 请求获取购物车列表
+				   }else{
+					   //layer.msg(data.msg);
+					   layer.msg(data.msg)
+				   }
+				}
+			});
+		})
+	}
+</script>

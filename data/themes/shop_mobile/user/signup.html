@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>{$eBiz.lang.Reg_page_title} - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/jquery-editable-select.min.css" />
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery-editable-select.min.js"></script>
+	<style type="text/css">
+		.send-btn {
+		    height: 1.7rem;
+		    line-height: 1.8rem;
+		    border-radius: 0.1rem;
+		    background: #3f94d4;
+		    color: #fff;
+		    font-size: .7rem;
+		    vertical-align: middle;
+		    display: inline-block;
+		}
+		.btn-disabled, .btn-disabled:hover{
+			background: #adabab;
+		}
+	</style>
+</head>
+<body>
+
+	<header class="header signup-header header-absolute">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="javascript:history.go(-1)" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">{$eBiz.lang.Reg_user_reg}</h5>
+			</div>
+			<div class="header-right"></div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body">
+		<div class="signup-tooltop">
+			<h1>创建您的TBMALL账号</h1>
+			<p>只需一个免费账号，即时掌握所有产品的特价信息</p>
+		</div>
+		<div class="sign-form-wrap">
+			
+		<form id="MobileRegisterModel" method="post" action="{:U('member/login/register')}">
+		    <div class="sign-form-box">
+
+				<div class="sign-form-group">
+
+					<input class="sign-input" type="text" name="username" placeholder="请输入用户名"/>
+					<i></i>
+
+					<p class="form_tips">* 用于登录、密码找回、资料修改等,请谨慎填写。</p>
+				</div>
+				<div class="sign-form-group sign-phone">
+					<div class="sign-form-flex">
+						<input class="sign-input sign-input-phone" type="text" id="mobile_back" name="mobile_back" placeholder="输入手机号码"/>
+						<i></i>
+					</div>
+				</div>
+				<div class="sign-form-group  sign-pwd">
+					<input  class="sign-input" type="password" name="pass" placeholder="输入密码（密码为6-15位的英文,数字,特殊符号组成）"/>
+                    <i></i>
+				</div>
+				<div class="sign-form-group sign-pwd-again">
+					<input  class="sign-input " type="password" name="repass" placeholder="请重复输入上述密码"/>
+				     <i></i>
+				</div>
+				<div class="sign-protocol-confirm">
+					<input type="checkbox" id="protocol"/>
+					<label for="protocol">阅读并同意</label><a href="javascript:;">《TBmall用户注册协议》</a><a href="javascript:;">《隐私政策》</a>
+				</div>
+				<div class="sign-btns">
+					<a class="sign-go-email disable" href="javascript:;" onclick="reg_submit();">点击注册</a>
+				</div>
+			</div>
+		</form>
+		</div>
+	</main>
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		var _flagEmailPrefix = 0;  //前缀
+		var _flagEmailSuffix = 0;   //后缀
+		var regEmail = new RegExp("^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$");
+
+        $('input#mobile_back').keyup(function(){  
+            var c=$(this);  
+            if(/[^\d]/.test(c.val())){	//替换非数字字符  
+              var temp_amount=c.val().replace(/[^\d]/g,'');  
+              $(this).val(temp_amount);  
+            }  
+         })
+
+        $(document).on('focus','.sign-email-select',function(){
+			if(_flagEmailSuffix){
+				$(this).css('background','rgba(255,255,255,1)');
+				 $(document).find('.sign-input-email').css('background','rgba(255,255,255,1)');
+			    $(this).parents('.sign-form-group').find('.form_tips').html('*电子邮箱地址用作登录账户，请慎重填写');
+			}
+		})
+
+        var regPhone = /^\d{11}$/;
+
+        $(document).on('blur','.sign-input-phone',function(){
+        	var _val = $(this).val();
+        	if(!regPhone.test(_val) && _val !==''){ 
+        		$(this).css('background','rgba(230,51,51,0.6)');
+				$(this).parents('.sign-form-group').find('.form_tips').html('*请重新输入有效电话号!');
+				return false;
+        	}
+        })
+
+       $(document).on('focus','.sign-input-phone',function(){
+    		$(this).css('background','rgba(255,255,255,1)');
+			$(this).parents('.sign-form-group').find('.form_tips').html('*密码丢失时查找账户所用电话号，请慎重填写');       	
+        })
+
+       //密码打开明文
+		$('.psw_open').click(function(){
+			if(!$(this).hasClass('on')){  //处于初始状态
+				$(this).addClass('on');
+				$(this).siblings('input').attr('type','text');
+			
+			}else{
+			    $(this).removeClass('on');
+				$(this).siblings('input').attr('type','password');
+			}
+			
+		})
+
+		$('.sign-pwd').on('blur','.sign-input',function(){
+			var _val = $('.sign-pwd').find('.sign-input').val();
+			if(checkRank(_val) < 2){
+			    
+			    if($(this).parent().find('.form_tips').length ==0){
+			    	$(this).css('background','rgba(230,51,51,0.6)');
+			    	$(this).parent().append('<p class="form_tips">输入密码（密码为6-15位的英文，数字，特殊符号组成）</p>');
+			    }  
+			    return false;
+			}
+             
+		})
+
+		$('.sign-pwd').on('focus','.sign-input',function(){
+		    $(this).css('background','rgba(255,255,255,1)');
+		    $(this).parent().find('.form_tips').remove();
+             
+		})
+
+		$('.sign-pwd-again').on('blur','.sign-input',function(){
+			var _val = $('.sign-pwd').find('.sign-input').val(); 
+			var _newVal = $(this).val();
+			if(_val !==''){  //第一个密码不为空
+				if(_newVal == _val) {
+					console.log('密码正确')
+				}else{
+					//console.log('两次密码不一致！')
+					if($(this).parent().find('.form_tips').length ==0){
+				    	$(this).css('background','rgba(230,51,51,0.6)');
+				    	$(this).parent().append('<p class="form_tips">输入的密码不一致请重新输入</p>');
+				    	 return false;
+				    }  
+				}
+			}
+             
+		})
+
+		$('.sign-pwd-again').on('focus','.sign-input',function(){
+		    $(this).css('background','rgba(255,255,255,1)');
+		    $(this).parent().find('.form_tips').remove();
+             
+		})
+
+		function checkRank(val){
+		   if(val.length<6||/^[0-9]{1,8}$/.test(val))
+		   {
+		        // showPwRank(0);
+		        return 0;
+		   }
+		   var ls = 0;
+		   if (val.match(/[a-z]/g)){ ls++; }
+		   if(val.match(/[A-Z]/g)){ ls++; } 
+		   if (val.match(/[0-9]/g)){ ls++; }
+		   if (val.match(/[^a-zA-Z0-9]/g)){ ls++; }
+		   if (val.length < 8 && ls > 1){  ls = 1;} 
+		   if(ls>3) {   ls=3; };
+		   return ls; 
+    	}
+
+		$('.sign-email-select').editableSelect({filter:true});
+		$('.sign-phone-select').editableSelect({filter:false});
+
+        //协议选中方可点击按钮
+		$('#protocol').click(function(){
+			var _flag = $('#protocol').prop('checked');
+			if(_flag) {  //true
+				$('.sign-btns').find('.sign-go-email').removeClass('disable');
+
+			}else{
+				$('.sign-btns').find('.sign-go-email').addClass('disable');
+			}
+
+		})
+
+		//按钮处于禁止点击状态
+		$('.sign-btns').on('click','.sign-go-email',function(){
+			if($(this).hasClass('disable')){
+				return;
+			}
+		})
+	});
+	
+
+	function reg_submit() {
+    	var userName = $('input[name="username"]').val();
+    	var email_back = $('input[name="email_back"]').val();
+    	var mobile_pre = $('input[name="mobile_pre"]').val();
+    	var mobile_back = $('input[name="mobile_back"]').val();
+    	var pass = $('input[name="pass"]').val();
+    	var repass = $('input[name="repass"]').val();
+    	if (email_pre=='' || email_back=='' || pass=='' || repass=='' || mobile_pre=='' || mobile_back=='') {
+    		layer.msg('{$eBiz.lang.Reg_form_has_empty}');
+    		return false;
+    	}
+
+    	if (pass != repass) {
+    		layer.msg('{$eBiz.lang.Reg_form_pass_not_same}');
+    		return false;
+    	}
+
+    	if(checkRank(pass)<2){
+    		layer.msg('{:lang("Reg_form_pass_simple")}');
+    		return false;
+    	}
+
+    	var email = userName;
+    	var mobile = mobile_pre+mobile_back;
+    	$.ajax({
+    	    type : "POST",
+    	    url:$('#MobileRegisterModel').attr('action'),
+    	    data : {
+    	    	mobile:mobile,
+    	    	email:email,
+    	    	username:userName,
+    	    	password:pass
+    	    },
+    	    dataType : 'json',
+    	    success: function(data){
+    			layer.msg(data.msg,{time:1000},function () {
+    				if (data.code) {
+    					location.href = "{:U('user/signup_2')}";
+    				}
+    			});
+    	    }
+    	});
+    }
+
+    function checkRank(val){
+	   if(val.length<6||/^[0-9]{1,8}$/.test(val))
+	   {
+	        // showPwRank(0);
+	        return 0;
+	   }
+	   var ls = 0;
+	   if (val.match(/[a-z]/g)){ ls++; }
+	   if(val.match(/[A-Z]/g)){ ls++; } 
+	   if (val.match(/[0-9]/g)){ ls++; }
+	   if (val.match(/[^a-zA-Z0-9]/g)){ ls++; }
+	   if (val.length < 8 && ls > 1){  ls = 1;} 
+	   if(ls>3) {   ls=3; };
+	   return ls; 
+	}
+
+    function checkName(type,obj) {
+    	if (type=='mail') {
+    		if ($('input[name="email_pre"]').val() == '' || $('input[name="email_back"]').val()=='') {
+    			return false;
+    		}
+    		var userName = $('input[name="email_pre"]').val()+'@'+$('input[name="email_back"]').val();
+    	}
+
+    	if (type=='mobile') {
+    		if ($('input[name="mobile_pre"]').val() == '' || $('input[name="mobile_back"]').val()=='') {
+    			return false;
+    		}
+    		var userName = $('input[name="mobile_pre"]').val()+$('input[name="mobile_back"]').val();
+    	}
+    	$.ajax({
+    		url:"{:U('member/login/checkName')}",
+    		data:{
+    			name:userName
+    		},
+    		success: function(data){
+				$(obj).parents('.sign-form-group').find('.form_tips').html('*'+data.msg+'!');
+    			layer.msg(data.msg,{time:1000},function () {
+    				if (data.code=='1001') {
+    					// 老用户，进入密码重设
+    					location.href = '{:U("user/reset_pwd")}';
+    				}
+    			});
+    		}
+    	});	
+    }
+
+</script>
+</html>

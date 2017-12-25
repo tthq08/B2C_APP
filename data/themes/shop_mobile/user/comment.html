@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>评价晒单</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/comment.css" />
+
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('user/index')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">评价晒单</h5>
+			</div>
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		{volist name="orderGoods" id="goods"}
+		{if condition="($order.status eq 5) and ($goods['is_comment'] eq 0)"}
+		<div style="border-bottom: 1px solid #ddd;" onclick="comment('{$goods.order_id}','{$goods.goods_id}','{$goods.spec_key}');">
+		{else/}
+		<div style="border-bottom: 1px solid #ddd;" onclick="comm_show('{$goods.order_id}','{$goods.goods_id}','{$goods.spec_key}');">
+		{/if}
+		<!--评分-s-->
+	        <div class="sp_idear">
+	            <div class="maleri30">		    		
+	                <img src="{:common_thumb_img(getTableValue('shop_goods','id='.$goods['goods_id'],'thumb'),100,100)}" style="width: 80px;" />
+		    		
+	                <div class="com_igy p">
+	                    <p class="confine-wsp">{$goods.goods_name}</p>
+	                    <p class="confine-wsp  shuxg">{$goods.spec_title}</p>
+	                </div>
+	            </div>
+	        </div>
+		</div>
+		<!--评分-e-->
+		<div id="div_{$order.id}_{$goods.goods_id}_{$goods.spec_key}" style="display: none;">
+		<form method="post" enctype="multipart/form-data" action="{:U('user/add_comment')}">
+			<input type="hidden" name="order_id" value="{$order.id}">
+			<input type="hidden" name="goods_id" value="{$goods.goods_id}">
+			<input type="hidden" name="spec_key" value="{$goods.spec_key}">
+			<input type="hidden" name="spec_item" value="{$goods.spec_title}">
+			<!--评论-s-->
+			    <div class="customer-messa comm_text_goods">
+			        <div class="maleri30">
+			            <textarea class="tapassa" name="content" placeholder="写下购买体会和使用感受来帮助其他小伙伴~
+			            "></textarea>
+			        </div>
+			    </div>
+			<!--评论-e-->
+			<!--上传图片-s-->
+			    <div class="seravetype">
+			        <div class="maleri30">
+			            <ul id="imglen">
+			                <label>
+			                    <li class="file">
+			                    	<input type="hidden" name="comment_img_file[]" id='img_val_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_1'>
+			                        <div class="shcph" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_1">
+			                            <img src="{:tb_config('resource_path',1)}mshop/images/camera.png">
+			                        	<input type="file" accept="image/*" name="pics" class="xxfiles" onchange="upImgs('{$order.id}_{$goods.goods_id}_{$goods.spec_key}_1');" style="display:none">
+			                        </div>
+			                    </li>
+			                </label>
+			                <label>
+			                    <li class="file">
+			                    	<input type="hidden" name="comment_img_file[]" id='img_val_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_2'>
+			                        <div class="shcph" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_2">
+			                            <img src="{:tb_config('resource_path',1)}mshop/images/camera.png">
+			                        	<input type="file" accept="image/*" name="pics" class="xxfiles" onchange="upImgs('{$order.id}_{$goods.goods_id}_{$goods.spec_key}_2');" style="display:none">
+			                        </div>
+			                    </li>
+			                </label>
+			                <label>
+			                    <li class="file">
+			                    	<input type="hidden" name="comment_img_file[]" id='img_val_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_3'>
+			                        <div class="shcph" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_3">
+			                            <img src="{:tb_config('resource_path',1)}mshop/images/camera.png">
+			                        	<input type="file" accept="image/*" name="pics" class="xxfiles" onchange="upImgs('{$order.id}_{$goods.goods_id}_{$goods.spec_key}_3');" style="display:none">
+			                        </div>
+			                    </li>
+			                </label>
+			                <label>
+			                    <li class="file">
+			                    	<input type="hidden" name="comment_img_file[]" id='img_val_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_4'>
+			                        <div class="shcph" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_4">
+			                            <img src="{:tb_config('resource_path',1)}mshop/images/camera.png">
+			                        	<input type="file" accept="image/*" name="pics" class="xxfiles" onchange="upImgs('{$order.id}_{$goods.goods_id}_{$goods.spec_key}_4');" style="display:none">
+			                        </div>
+			                    </li>
+			                </label>
+			                <label>
+			                    <li class="file">
+			                    	<input type="hidden" name="comment_img_file[]" id='img_val_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_5'>
+			                        <div class="shcph" id="img_container_{$order.id}_{$goods.goods_id}_{$goods.spec_key}_5">
+			                            <img src="{:tb_config('resource_path',1)}mshop/images/camera.png">
+			                        	<input type="file" accept="image/*" name="pics" class="xxfiles" onchange="upImgs('{$order.id}_{$goods.goods_id}_{$goods.spec_key}_5');" style="display:none">
+			                        </div>
+			                    </li>
+			                </label>
+			            </ul>
+			        </div>
+			    </div>
+			<!--上传图片-e-->
+			<!--服务评价-s-->
+			    <div class="wlcomenser ma-to-20">
+			        <div class="maleri30">
+			            <div class="p_zyft p">
+			                <p class="fl">评分</p>
+			                <p class="fr lifi">满意请给5分哦</p>
+			            </div>
+			        </div>
+			    </div>
+			    <div class="thirs_commen" style="border-bottom: 1px solid #ddd;">
+			        <div class="maleri30 jsstar">
+	                    <div class="al_comentaid p">
+		                    <div class="taidh">综合评价</div>
+		                    <div class="star_click">
+			                   	<span class="starRating-area">
+                                	<input id="good_comm" type="radio" name="goods_rank" value="3">
+                                    <label for="good_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/good.png" style="width: 15px;height: 18px;" title="好评"></label>
+                                	<input style="margin-left: 15px;" id="mid_comm" type="radio" name="goods_rank" value="2">
+                                    <label for="mid_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/mid.png" style="width: 15px;height: 18px;" title="中评"></label>
+                                	<input style="margin-left: 15px;" id="bad_comm" type="radio" name="goods_rank" value="1">
+                                    <label for="bad_comm"><img src="{:tb_config('resource_path',1)}shop/images/start/bad.png" style="width: 15px;height: 18px;" title="差评"></label>
+                                </span>
+		                    </div>
+		                </div>
+		                <div class="al_comentaid p">
+		                    <div class="taidh">商品描述</div>
+		                    <div class="star_click">
+		                   <span class="comment-item-star_wr" title="1">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="2">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="3">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="4">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="5">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                        <input name="desc_rank" value="0" type="hidden">
+		                    </div>
+		                </div>
+		                <div class="al_comentaid p">
+		                    <div class="taidh">客服服务</div>
+		                    <div class="star_click">
+		                    <span class="comment-item-star_wr" title="1">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="2">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr">
+		                        <span class="real-star_wr" title="3"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="4">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                    <span class="comment-item-star_wr" title="5">
+		                        <span class="real-star_wr"></span>
+		                    </span>
+		                        <input name="service_rank" value="0" type="hidden">
+		                    </div>
+		                </div>
+	                    <div class="al_comentaid p">
+			                <div class="taidh">物流服务</div>
+			                <div class="star_click">
+			                    <span class="comment-item-star_wr" title="1">
+			                        <span class="real-star_wr"  ></span>
+			                    </span>
+			                    <span class="comment-item-star_wr" title="2">
+			                        <span class="real-star_wr"  ></span>
+			                    </span>
+			                    <span class="comment-item-star_wr" title="3">
+			                        <span class="real-star_wr"  ></span>
+			                    </span>
+			                    <span class="comment-item-star_wr" title="4">
+			                        <span class="real-star_wr"  ></span>
+			                    </span>
+			                    <span class="comment-item-star_wr" title="5">
+			                        <span class="real-star_wr"  ></span>
+			                    </span>
+			                    <input name="deliver_rank" value="0" type="hidden">
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			<!--服务评价-e-->
+			<div style="padding: 15px;">
+				<button type="button" class="comment-btn" onClick="comment_submit(this)">确认评价</button>
+			</div>
+		</form>
+		</div>
+		{/volist}
+
+	</main>
+
+</body>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}mshop/js/jquery.js"></script>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}cust/layer/layer.js"></script>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}cust/js/xxUploadImg.js"></script>
+<script type="text/javascript">
+    $(function(){
+        //评分
+        $('.comment-item-star_wr').click(function(e){
+            var obj = $(this);
+            obj.find('span').addClass('comment-stars-width5');
+            obj.prevAll().find('span').addClass('comment-stars-width5').parent();
+            obj.nextAll().find('span').removeClass('comment-stars-width5');
+            obj.siblings('input').val(obj.attr('title'));
+        })
+    })
+    function hideUserName(obj){
+        $(obj).toggleClass('check_t')
+        if($(obj).hasClass('check_t')){
+            $("input[name='anonymous']").val(1);
+        }else{
+            $("input[name='anonymous']").val(0);
+        }
+    }
+
+    function comment_submit(t){
+        var form = $(t).parent().parent();
+        var goods_rank = parseInt($(form).find('input[name="goods_rank"]:checked').val());
+        
+        var service_rank = parseInt($(form).find('input[name="service_rank"]').val());
+        var deliver_rank = parseInt($(form).find('input[name="deliver_rank"]').val());
+        var desc_rank = parseInt($(form).find('input[name="desc_rank"]').val());
+        console.log(service_rank);
+
+        if(!goods_rank> 0){
+			layer.msg('请选择综合评价', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+            return false;
+        }
+        if(!desc_rank> 0){
+			layer.msg('请为商品描述评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+            return false;
+        }
+        if(!service_rank> 0){
+			layer.msg('请为商家服务评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+            return false;
+        }
+        if(!deliver_rank> 0){
+			layer.msg('请为物流评分', { icon: 1, time: 2000 });   //2秒关闭（如果不配置，默认是3秒）
+            return false;
+        }
+
+        var data = $(form).serialize();
+        $.ajax({
+            type : "POST",
+            url:"{:U('user/add_comment')}",
+            data :data,// 你的formid 搜索表单 序列化提交
+            success: function(data){
+                if(data.code == 1){
+                    //评论成功
+                     //alert('评论成功');
+					layer.msg('评论成功', {
+					  icon: 1,
+					  time: 2000 //2秒关闭（如果不配置，默认是3秒）
+					}, function(){
+		                   location.reload();
+					});
+ 
+                }else{
+                    $(form).parent().remove();
+                    layer.msg(data.msg);
+                }
+            }
+        });
+    }
+
+    function upImgs(obj) {
+    	var lay_index = layer.load(0, {shade: false}); 	//0代表加载的风格，支持0-2
+        $('#img_container_'+obj+' .xxfiles').xxUploadImg({
+            url: "{:U('sys/upload/upload',['img_tp'=>'comment'])}",
+            max: 800,
+            callbackFun: function (ret, param) {
+            	if (ret.state=='SUCCESS') {
+            		$('#img_container_'+obj+' img').attr('src',ret.url);
+                	$("#img_val_"+obj).val(ret.url);
+                	layer.close(lay_index);
+            	};
+            }
+        })
+    }
+
+
+    function comm_show(order_id,goods_id,spec_key) {
+    	var url = "{:U('user/comm_show')}?order_id="+order_id+"&goods_id="+goods_id+"&spec_key="+spec_key;
+    	var index = layer.open({
+		  type: 2,
+		  title: '评价详情',
+		  shadeClose: false,
+		  shade:  [0.8, '#393D49'],
+		  maxmin: true, //开启最大化最小化按钮
+		  area: ['99%', '99%'],
+		  content: url
+		});
+    	return;
+    }
+
+    function comment(order_id,goods_id,spec_key){
+        var div = "#div_"+order_id+"_"+goods_id+"_"+spec_key;
+        $(div).toggle();
+    }
+
+</script>
+
+</html>

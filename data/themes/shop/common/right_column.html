@@ -1,0 +1,168 @@
+<!-- 右侧功能栏 -->
+<!-- <script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/panelRight.js"></script> -->
+<!-- 右侧功能栏 -->
+<div class="panel-right-function">
+    <div class="box clear">
+        <div class="panel-toolbar-box">
+            <div class="toolbar-tabs">
+                <a href="{:U('User/index')}" class="p-tabs just-tipLeft" data-tip="{:lang('Right_pannel_ico_ucenter')}"><img width="20" src="{:tb_config('resource_path',1)}shop/images/i-user.png" alt="" /></a>
+                <div class="p-tabs has-panel just-tipLeft" panel-num="ajaxcart" data-tip="{:lang('Right_pannel_ico_cart')}"><img width="20" src="{:tb_config('resource_path',1)}shop/images/i-cart.png" alt="" /></div>
+                <div class="p-tabs has-panel just-tipLeft" panel-num="goodsCollect" data-tip="{:lang('Right_collect_goods_title')}"><img width="20" src="{:tb_config('resource_path',1)}shop/images/i-coll.png" alt="" /></div>
+                <!--<a href="{:tb_config('service_client_url',1)}" target="_blank"><div class="p-tabs just-tipLeft" panel-num="goodsCollect" data-tip="{:lang('Comm_Right_Text_online_serv')}"><img width="20" src="{:tb_config('resource_path',1)}shop/images/i-kf.png" alt="" /></div></a>-->
+                <!-- <div class="p-tabs has-panel just-tipLeft" panel-num="viewhistory" data-tip="我看过的"><img width="20" src="{:tb_config('resource_path',1)}shop/images/i-time.png" alt="" /></div> -->
+
+            </div>
+            <div class="toolbar-backtop just-tipLeft" data-tip="{:lang('Comm_Right_Text_totop')}" onclick="backTop()">
+                <img src="{:tb_config('resource_path',1)}shop/images/backtop.png" width="24" alt="" />
+            </div>
+        </div>
+        <div class="panel-content-box">
+            <!-- 购物车 -->
+            <div class="cmall-f-panel-list cmall-panel zoom-out f-cartPanel" panel-num="ajaxcart">
+                <div class="cmall-panel-top">
+                    <h5>
+                        <span class="title"><img src="{:tb_config('resource_path',1)}shop/images/i-cart-a.png" alt="" /><em>{:lang('Right_pannel_ico_cart')}</em></span>
+                        <span class="close-panel"><img src="{:tb_config('resource_path',1)}shop/images/close.png" alt=""></span>
+                    </h5>
+                </div>
+                <div class="cmall-panel-content" id="ajax_cart_list">
+                    <!-- 内容由ajax获取 -->
+                </div>
+            </div>
+            <div class="cmall-f-panel-list cmall-panel zoom-out" panel-num="goodsCollect">
+                <div class="cmall-panel-top">
+                    <h5>
+                        <span class="title"><img src="{:tb_config('resource_path',1)}shop/images/i-coll-a.png" alt="" /><em>{:lang('Right_collect_goods_title')}</em></span>
+                        <span class="close-panel"><img src="{:tb_config('resource_path',1)}shop/images/close.png" alt=""></span>
+                    </h5>
+                </div>
+                <div class="cmall-panel-content" id="goods_collect_list">
+                    <!-- 内容由ajax获取 -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/justTools.js"></script>
+<script type="text/javascript">
+    // 提示层
+    $(".just-tipLeft").mouseenter(function(event) {
+        $.justToolsTip({
+            events:event,
+            animation:"moveInLeft",
+            contents:$(this).attr('data-tip'),
+            gravity:'left'
+        });
+    });
+
+    $(document).ready(function() {
+        var win = $(window);
+        var winH = win.height();
+        var winW = win.width();
+        var body = $('body');
+
+        var panelBox = $('.panel-right-function');
+
+        // 初始化panel content高度
+        $('.cmall-f-panel-list .cmall-panel-content').css('height', winH - 40 + 'px')
+        $('.panel-toolbar-box').on('click','.toolbar-tabs .has-panel',function() {
+
+            $(this).addClass('on').siblings('.p-tabs').removeClass('on');
+            slidePanel($(this).attr('panel-num'));
+        })
+
+        // 收进panel
+        panelBox.on('click','.cmall-f-panel-list .close-panel',function() {
+            panelBox.removeClass('open');
+            $('.panel-toolbar-box .toolbar-tabs .p-tabs.on').removeClass('on')
+        })
+    })
+
+    function slidePanel(num) {
+        var panelBox = $('.panel-right-function');
+        var part = true;
+        $('.cmall-f-panel-list').each(function() {
+            if($(this).attr('panel-num') == num) {
+                console.log(num);
+                switch(num){
+                    case 'ajaxcart':
+                        ajaxGetRightCart();
+                        break;
+
+                    case 'goodsCollect':
+                        part = ajaxGetCollectGoods();
+                        break;
+
+                    case 'focusShop':
+                        part = ajaxGetFocusShopes();
+                        break;
+                }
+                if(part) {
+                    $(this).removeClass('zoom-out').addClass('zoom-in');
+                    if(!panelBox.hasClass("open")) {
+                        panelBox.addClass('open');
+                    }
+                } else {
+                    return false;
+                }
+            } else {
+                $(this).removeClass('zoom-in').addClass('zoom-out');
+            }
+        })
+    }
+
+    function backTop() {
+        $('html,body').animate({'scrollTop': '0px'},300)
+    }
+
+    function ajaxGetRightCart() {
+        $.ajax({
+            url:"{:U('Cart/ajaxCartRight')}",
+            success: function(data){
+                $('#ajax_cart_list').html(data);
+            }
+        });
+    }
+
+    function ajaxGetCollectGoods() {
+        var part = true;
+        $.ajax({
+            url:"{:U('shop/index/ajaxGetCollectGoods')}",
+            async:false,
+            success: function(data){
+                if (data.code==4001) {
+                    part = false;
+                    // 用户未登录，触发登录界面
+                    layer.msg(data.msg,{time:1000},function() {
+                        openWinLogin();
+                    });
+                }
+
+                $('#goods_collect_list').html(data);
+            }
+        });
+        return part;
+    }
+
+    function ajaxGetFocusShopes() {
+        var part = true;
+        $.ajax({
+            url:"{:U('shop/index/ajaxGetFocusShopes')}",
+            async:false,
+            success: function(data){
+                if (data.code==4001) {
+                    part = false;
+                    // 用户未登录，触发登录界面
+                    layer.msg(data.msg,{time:1000},function() {
+                        openWinLogin();
+                    });
+                }
+
+                $('#focus_shop_list').html(data);
+            }
+        });
+        return part;
+    }
+</script>

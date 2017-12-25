@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>订单查询 - {:tb_config('web_site_title',1,$lang)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/question.css" />
+	<style type="text/css">
+		input[type=password] {
+		    -webkit-border-radius: 3px;
+		    -moz-border-radius: 3px;
+		    -ms-border-radius: 3px;
+		    border-radius: 3px;
+		    outline: none;
+		    padding: 0 5px;
+		    min-height: 28px;
+		    width: 180px;
+		}
+		.m-time{
+			padding-top: 25px;
+		}
+		.m-time .title{
+			width: 160px;
+			text-align: right;
+		}
+		.m-time div{
+			display: inline-block;
+			padding-left: 20px;
+		}
+		.m-time button{
+			padding: 5px 60px;
+			background: #1dbac3;
+			color: #fff;
+		    font-size: 17px;
+   			line-height: 20px;
+		}
+	</style>
+</head>
+<body class="has-right">
+
+	{include file="public/header" /}
+	<!-- nav -->
+	{include file="public/nav" /}
+
+	<!-- 右侧功能栏 -->
+	{include file='public/right' /}
+
+	<main class="main pb50">
+		<div class="container w1200">
+			<!-- 当前位置、已筛选 -->
+			<div class="c-location-section">
+				<ul class="">
+					<li class="location-item has"><a href="/">首页</a></li>
+					<li class="location-item has"><a href="javascript:;">直接下单</a></li>
+					<li class="location-item"><span>订单查询</span></li>
+				</ul>
+			</div>
+
+			<div class="news-section">
+				<div class="clearfix">
+					<div class="left-800 fl" style="width: 1200px;">
+						<div class="news-editor-box">
+							<div class="news-editor">
+								<div class="msg-title">订单查询</div>
+								<div class="content" style="padding:40px 0;">
+								<form id="queryForm" action="" method="post">
+									<div class="m-time"><div class="title">收件人手机号:</div><div><input type="text" name="mobile"></div></div>
+									<div class="m-time"><div class="title">订单密码:</div><div><input type="password" name="ord_pwd"></div></div>
+									<div class="m-time" style="padding-top: 40px;"><button type="button" onclick="query_order();">查询</button></div>
+								</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+
+<script type="text/javascript">
+	function query_order() {
+		var mobile = $('input[name="mobile"]').val();
+		var ord_pwd = $('input[name="ord_pwd"]').val();
+
+		if (mobile=='' || ord_pwd=='') {
+			layer.msg('请输入完整的信息进行查询。');
+		}
+		
+		$.ajax({
+		    type : "POST",
+		    url:$('#queryForm').attr('action'),
+		    data : $('#queryForm').serialize(),
+		    dataType : 'json',
+		    success: function(data){
+				if (data.code==0) {
+					layer.msg(data.msg);
+					return false;
+				}
+
+				var ord_id = data.data;
+				var index = layer.open({
+				  type: 2,
+				  title: "订单信息",
+				  shadeClose: false,
+				  shade:  [0.8, '#393D49'],
+				  maxmin: true, //开启最大化最小化按钮
+				  area: ['1040px', '90%'],
+				  content: "{:U('index/ordershow')}?id="+ord_id+"&ord_pwd="+ord_pwd
+				});
+
+		    }
+		});
+	}
+</script>
+</body>
+</html>

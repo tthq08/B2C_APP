@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<body>
+<section class="layui-larry-box">
+    <div class="larry-personal">
+        {notempty name="web_title"}
+        <header class="larry-personal-tit">
+            <span>{$web_title}</span>
+        </header>
+        {/notempty}
+        <div class="larry-personal-body clearfix">
+            {notempty name="form_tpis"}
+            <blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+            {/notempty}
+            {notempty name="nav_list"}
+            <ul class="layui-tab-title" style="bottom:10px;">
+                {volist name="nav_list" id="nav"}
+                <li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+                {/volist}
+            </ul>
+            {/notempty}
+            <form class="layui-form col-lg-5" action="{:url('shop/PiecesGroup/save_pieces')}" method="post">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">拼团标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" style="width: 600px;" placeholder="请输入您的拼团标题" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">拼团商品</label>
+                    <div class="layui-input-block">
+                        <input type="button" id="selectgoods" style="width: 400px;" onclick="selectGoods();" placeholder="拼团商品" autocomplete="off" class="layui-btn layui-btn-primary" value="选择拼团商品">
+                        <div>
+                            <table class="layui-table">
+                                <thead>
+                                <tr>
+                                    <th style="font-size: 12px;">{:lang('goods_name')}</th>
+                                    <th style="font-size: 12px;">{:lang('goods_price')}</th>
+                                    <th style="font-size: 12px;">{:lang('prom_group_table_price')}</th>
+                                    <th style="font-size: 12px;">{:lang('goods_stock')}</th>
+                                    <th width="200">{:lang('operation')}</th>
+                                </tr>
+                                </thead>
+                                <tbody id="goodspec">
+                                {notempty name="$goods"}
+                                <tr id="goods{$goods.id}">
+                                    <td style="font-size: 12px;" title="{$goods.title}">{:mb_substr($goods.title,0,20)}..</td>
+                                    <td style="font-size: 12px;">{:priceFormat($goods.shop_price,1)}</td>
+                                    <td>{:tb_config('web_currency',1,getLang())}<input type="text" name="price"  value="{$goods.shop_price}"></td>
+                                    <td style="font-size: 12px;">{$goods.stock}</td>
+                                    <td><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal" onclick="selectGoodsSpec({$goods.id});">{:lang('prom_table_goods_spec')}</botton><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger" onclick="delGoods({$goods.id});">{:lang('delete')}</botton></td>
+                                    <input type="hidden" name="goods" id="goods" value="{$goods.id}">
+                                    <input type="hidden" class="goods_spec" name="goodsspec" value='{$groupData.goodsspec}'>
+                                </tr>
+                                {/notempty}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">单次团人数</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="single_num" lay-verify="number" style="width: 80px;" placeholder="0" autocomplete="off" class="layui-input">
+                        <i>当结束时间之前达到了单次团人数则该拼团购成立，否则不成立</i>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否分成</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="be_divided_into" value="1" title="{:lang('yes')}" checked>
+                        <input type="radio" name="be_divided_into" value="0" title="{:lang('no')}">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('membership_group')}</label>
+                    <div class="layui-input-block">
+                        {volist name="user_level" id="level"}
+                        <input type="checkbox" name="user_group" value="{$level.id}" title="{$level.level_name}" checked>
+                        {/volist}
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">{:lang('activit_time')}</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" name="start_time" placeholder="{:lang('start_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" name="end_time" placeholder="{:lang('end_time')}" onclick="layui.laydate({elem: this, istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">拼团描述</label>
+                    <div class="layui-input-block">
+                        <textarea placeholder="" name="description" value="" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+                {:token()}
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="button" class="layui-btn" lay-submit="" lay-filter="*">{$eBiz.lang.comm_form_btn_submit}</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">{$eBiz.lang.comm_form_btn_reset}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            var url = $(data.form).attr('action');
+            //验证传输的值是否为空
+            if( $('input[name="title"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_title_null')}');
+                return false;
+            }
+            if( $('input[name="goods"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_goods_null')}');
+                return false;
+            }
+            if( $('input[name="price"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_price_null')}');
+                return false;
+            }
+            if( $('input[name="goods_num"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_goods_num_null')}');
+                return false;
+            }
+            if( $('input[name="start_time"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_start_time_null')}');
+                return false;
+            }
+            if( $('input[name="end_time"]').val() == '' ) {
+                layer.msg('{:lang('prom_group_table_end_time_null')}');
+                return false;
+            }
+            var user_group = '';
+            $('input[name="user_group"]:checked').each(function(){
+                user_group += $(this).val()+',';
+            });
+            if( user_group.length > 0 ){
+                var user_groupLen = user_group.length;
+                user_group = user_group.slice(0,user_groupLen-1);
+            }
+            data.field.user_group = user_group;
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            var Home_tip = parent.$('#subwinaaa').text();
+                            var target = '{$target|default=''}';
+                            if(Home_tip=='home' && target!='parent'){
+                                location.reload();
+                            }else{
+                                parent.callback();
+                            }
+                        };
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+
+    //获取商品详情
+    function fillGoods(goods_id,title,price,stock) {
+        var id = '#goods'+goods_id;
+        if($(id).length>0){
+            return ;
+        }else{
+            if( price.length > 0 ){
+                var price_len = price.length;
+                var shop_price = price.slice(1,price_len);
+            }
+            var goodspechtml = '<tr id="goods'+goods_id+'"><td style="font-size: 12px;" title="'+title+'">'+title.slice(0,20)+'..</td><td style="font-size: 12px;">'+price+'</td><td>{:tb_config('web_currency',1,getLang())}<input type="text" name="price" value="'+shop_price+'"></td><td style="font-size: 12px;">'+stock+'</td><td><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-normal" onclick="selectGoodsSpec('+goods_id+');">选择抢购规格</botton><botton class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger" onclick="delGoods('+goods_id+');">删除</botton></td><input type="hidden" name="goods" class="goods" value="'+goods_id+'"><input type="hidden" class="goodsspec" name="goodsspec" value=""></tr>';
+            $('#goodspec').html(goodspechtml);
+        }
+    }
+
+    function selectGoods()
+    {
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: false, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/select_goods')}',
+    });
+    }
+    //进入选择商品规格页面
+    function selectGoodsSpec(goods_id)
+    {
+        var goods_spec_id = '#goods'+goods_id+' .goodsspec';
+        var spec_json = $(goods_spec_id).val();
+        layer.open({
+                type: 2,
+                area: ['90%', '90%'],
+                fixed: true, //不固定
+                maxmin: true,
+                content: '{:url('Promotion/getGoodsSpec')}?goods_id='+goods_id+'&spec_json='+encodeURIComponent(spec_json),
+    });
+    }
+    /**
+     * 删除商品
+     * @param id
+     */
+    function delGoods(id){
+        var g_id = '#goods'+id;
+        $(g_id).remove();
+    }
+
+</script>
+</body>
+</html>

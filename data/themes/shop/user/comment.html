@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Comment_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong>{$eBiz.lang.Comment_page_title}</strong>
+				</div>
+				<div class="j-user-section user-section plr20-section mt20">
+
+					<div class="user-content pb30 mt20">
+						<div class="order-list-box">
+							<div class="order-list-table" style="padding-top: 20px;">
+								<table>
+									<thead>
+										<tr>
+											<th width="50%">{$eBiz.lang.Comment_goods}</th>
+											<th width="35%">{$eBiz.lang.Comment_comm_time}</th>
+											<th width="15%">{$eBiz.lang.Comment_comm_action}</th>
+										</tr>
+									</thead>
+									{volist name="comment_list" id="list"}
+									<tbody class="u-order-list">
+										<tr class="sep-tr">
+											<td colspan="5"></td>
+										</tr>
+										<tr class="tr-th">
+											<td colspan="5">
+												<span class="otime">{$list.order.add_time}</span>
+												<span class="order-num ml20">{$eBiz.lang.Order_table_order_sn}：<i>{$list.order.order_sn}</i></span>
+											</td>
+										</tr>
+										<tr>
+											<td align="left"><div class="pic"><img src="{$list.goods_thumb|common_thumb_img=80,80}" alt="" /></div><div class="info"><a href="{:U('shop/Goods/goodsinfo',['id'=>$list['goods_id']])}" target="_blank">{$list.goods_name}【{$list.spec_item}】</a></div></td>
+											<td align="center">{$list.add_time}</td>
+											<td align="center"><a data-href="{:U('User/comm_show',['comm_id'=>$list['id']])}" data-msg="{$eBiz.lang.Comment_comm_detail}" onclick="openWin(this);" href="javascript:;" >{$eBiz.lang.Comment_comm_show}</a></td>
+										</tr>										
+									</tbody>
+									{/volist}
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+	
+</body>
+	<script type="text/javascript">
+		function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1020px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+	</script>
+</html>

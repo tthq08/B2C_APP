@@ -1,0 +1,42 @@
+<table class="layui-table">
+    <colgroup>
+        <col width="20">
+        <col width="600">
+        <col>
+        <col>
+        <col>
+    </colgroup>
+    <thead>
+    <tr>
+        <th layui-form></th>
+        <th>{$eBiz.lang.goods_name}</th>
+        <th>{$eBiz.lang.goods_price}</th>
+        <th>{$eBiz.lang.goods_stock}</th>
+        <th>{$eBiz.lang.cate_list_title_7}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {volist name="goods_list" id="vo"}
+    <tr id="goods{$vo.id}">
+        <td>
+            <input type="checkbox" name="goods" value="{$vo.id}">
+        </td>
+        <td class="title">{$vo.title}</td>
+        <td class="price">{:tb_config('web_currency',1,getLang())}{$vo.shop_price}</td>
+        <td class="stock">{$vo.stock}</td>
+        <td>
+            <botton onclick="delGoods({$vo.id});" class="layui-btn layui-btn-small layui-btn-radius layui-btn-danger">{$eBiz.lang.comm_btn_del}</botton>
+        </td>
+    </tr>
+    {/volist}
+    </tbody>
+</table>
+{if condition="$goods_list->total() == 0"}
+<div style="text-align: center">{:lang('no_goods')}</div>
+{/if}
+<div class="page">{$goods_list->render()}</div>
+<div class="layui-form-item" style="float: right">
+    <div class="layui-input-block">
+        <button class="layui-btn" onclick="closeIndex();" id="selected" lay-filter="formDemo">{$eBiz.lang.comm_btn_confirm}</button>
+    </div>
+</div>

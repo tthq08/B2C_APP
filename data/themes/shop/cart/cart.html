@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>购物车-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+</head>
+<body>
+
+	<!-- top -->
+	{include file="common/top_header"}
+
+	<!-- header -->
+	{include file="common/header"}
+
+	<!-- nav -->
+	{include file="common/nav"}
+
+	<!-- 右侧功能栏 -->
+	{include file="common/right_column"}
+
+	<main class="main cart-main">
+		<!-- 当前位置 -->
+		<div class="c-location-section background-location">
+			<div class="container w1200">
+				<ul class="">
+					<li class="location-item has"><a href="{:U('/')}">首页</a></li>
+					<li class="location-item"><span>购物车</span></li>
+				</ul>
+			</div>
+		</div>
+		<div class="container w1200 clearfix">
+			<div class="cart-wrap mt30 mb30">
+				<form name="cart_form" id="cart_form" action="{:U('shop/cart/ajaxCartList')}">
+				<div class="box plr40-section pb50" id="ajax_return">
+					<div style="text-align: center;">
+						<h1>购物车数据加载中......</h1>
+					</div>
+				</div>
+				</form>
+			</div>
+			<!-- 猜你喜欢 -->
+			<div class="j-block-section pb50">
+				<div class="j-block-top">
+					{assign name="goods" value=":getLoveGoods(15)" /}
+					<span class="t-title-1">猜你喜欢</span>
+					<div class="t-right fr">
+						<div class="guess-like-tab">
+						{php}$times = ceil (count($goods)/5);{/php}
+						{for start="1" end="$times+1" key="i"}
+							<a href="javascript:;" class="gk-tab {eq name='i' value='1'}on{/eq}"></a>
+						{/for}
+						</div>
+					</div>
+				</div>
+				<div class="box guess-you-like">
+					<div class="like-list-panel clearfix on">
+					{volist name="goods" id="vo"}
+						<div class="guess-like-list">
+							<div class="pic"><a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['id']])}"><img src="{$vo.id|goods_thum_images=220,220}" alt=""></a></div>
+							<div class="info">
+								<div class="info-title"><a href="{:U('shop/Goods/goodsInfo',['id'=>$vo['id']])}">{$vo.title}</a></div>
+								<div class="price mt10">
+									<span class="color--f43838">{:web_currency()}{$vo.shop_price}</span>
+								</div>
+							</div>
+						</div>
+					{/volist}
+					</div>
+					{gt name=":count($goods)" value="5"}
+					<div class="g-control">
+						<a href="javascript:;" class="g-prev"></a>
+						<a href="javascript:;" class="g-next"></a>
+					</div>
+					{/gt}
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file="common/footer" /}
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			ajax_cart_list(); // ajax 请求获取购物车列表
+		});
+
+		// ajax 提交购物车
+		var before_request = 1; // 上一次请求是否已经有返回来, 有才可以进行下一次请求
+
+		function ajax_cart_list(){
+
+			//if(before_request == 0) // 上一次请求没回来 不进行下一次请求
+			  //  return;
+			before_request = 0;
+
+			$.ajax({
+				type : "POST",
+				url:"{:U('Cart/ajaxCartList')}",//+tab,
+				data : $('#cart_form').serialize(),// 你的formid
+				success: function(data){
+					if (data.code==0) {
+						layer.msg(data.msg);
+						var info = data.data;
+						$("input[name='goods_num["+info.cart_id+"]']").val(info.nums);
+						before_request = 1;	
+					}else{						
+						$("#ajax_return").empty().append(data);
+						before_request = 1;	
+					}
+					
+				}
+			});
+
+		}
+
+	 	//商品加减操作  //事件写在行间，所以需放在document ready 外面
+	 	function switch_num(num,cart_id,store_count)
+		{
+			var num2 = parseInt($("input[name='goods_num["+cart_id+"]']").val());
+			num2 += num;
+			if(num2 < 1) num2 = 1; // 保证购买数量不能少于 1
+			if(num2 > store_count)  num2 = store_count;
+
+	        $("input[name='goods_num["+cart_id+"]']").val(num2);
+	        $('#header_cart_nums').html(num2);
+			ajax_cart_list(); // ajax 更新商品价格 和数量
+			//更新商品信息
+	  	}  
+
+
+	  // 商品删除操作
+		$("body").on('click', '.del', function() {
+			var cart_ids = $(this).attr('data-cart-id');
+			if (!cart_ids) {
+				cart_ids = [];
+				$("#cart_list").find(":checkbox:checked").each(function() {
+					cart_ids.push($(this).val());
+				})
+			} else {
+				cart_ids = [cart_ids];
+			}
+
+	        //判断删除按钮
+			if (cart_ids.length == 0) {
+
+				layer.msg("请选择您要移除的商品");
+		        return;
+			}
+	 
+	        layer.confirm("您确定要从购物车中移除选中的商品吗?", {
+			  	btn: ['确定','取消'] //按钮
+			}, function(){
+				if(cart_ids.length == 1) {
+					del_cart(parseInt(cart_ids));
+				}else {
+                    del_cart(cart_ids.join(','));
+                }
+			}, function(){
+			    layer.closeAll();
+			});
+		})
+
+		function del_cart(ids){
+		 	$.ajax({
+				type : "POST",
+				url:"{:U('shop/Cart/ajaxDelCart')}",//+tab,
+				data:{ids:ids}, // 
+			    dataType:'json',		
+				success: function(data){
+
+				   if(data.code == 1){
+				   	    layer.msg(data.msg);
+					    ajax_cart_list(); // ajax 请求获取购物车列表
+				   }else{
+					   //layer.msg(data.msg);
+					   layer.msg(data.msg)
+				   }	   			   
+				}
+			});
+		}
+
+	</script>
+	
+
+	<script type="text/javascript">
+		// 猜你喜欢切换
+		$(function() {
+			var guess = $('.guess-you-like');
+			var panel = guess.find('.like-list-panel');
+			var tab = $('.guess-like-tab .gk-tab');
+			var len = panel.length;
+			var curNum = 0;
+			console.log(len);
+			// 初始化
+			panel.each(function() {
+				var me = $(this);
+				if(me.hasClass('on')) {
+					curNum = me.index();
+					return ;
+				} else {
+					me.fadeOut(500);
+				}
+			});
+			console.log(curNum);
+
+			// 切换
+			guess.on('click','.g-prev',function() {
+				if(curNum == 0) {
+					curNum = 2;
+				} else {
+					curNum--;
+				}
+				move(curNum);
+			})
+			guess.on('click','.g-next',function() {
+				if(curNum == 2) {
+					curNum = 0;
+				} else {
+					curNum++;
+				}
+				move(curNum);
+			})
+			// tab切换
+			tab.on('click',function() {
+				curNum = $(this).index();
+				move(curNum);
+			})
+
+			function move(num) {
+				console.log(num)
+				panel.eq(num).fadeIn(500).siblings('.like-list-panel').fadeOut(500);
+				tab.eq(num).addClass('on').siblings().removeClass('on');
+			}
+		})
+	</script>
+	
+</body>
+</html>

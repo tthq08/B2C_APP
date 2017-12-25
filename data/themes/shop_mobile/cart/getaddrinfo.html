@@ -1,0 +1,13 @@
+<input type="hidden" name="address_id" value="{$addr.id|default=''}">
+<input type="hidden" name="consignee" value="{$addr.consignee}">
+<input type="hidden" name="consignee_en" value="{$addr.consignee_en}">
+<input type="hidden" name="mobile" value="{$addr.mobile}">
+<input type="hidden" name="emali" value="{$addr.emali}">
+<input type="hidden" name="zip" value="{$addr.zip}">
+<input type="hidden" name="clearance_sn" value="{$addr.clearance_sn}">
+<input type="hidden" name="base_addr" value="{$addr.base_addr}">
+<input type="hidden" name="address" value="{$addr.address}">
+<input type="hidden" name="en_address" value="{$addr.en_address}">
+<p class="mb10 tit"><span>{$addr.consignee}[{$addr.consignee_en}]</span><span class="fr">{$addr.mobile}</span></p>
+<p class="amsg">收货地址：{$addr.base_addr} {$addr.address}</p>
+<div class="line"></div>

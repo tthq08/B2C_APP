@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="cn">
+{include file="sys@Base:table_header" /}
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style type="text/css">
+	.steps {
+	  position: relative;
+	  margin-bottom: 30px;
+	  counter-reset: step;  /*创建步骤数字计数器*/
+
+	}
+	/*步骤描述*/
+	.steps li {
+	  list-style-type: none;
+	  font-size: 12px;
+	  text-align: center;
+	  width: 25%;
+	  position: relative;
+	  float: left;
+	}
+
+	/*步骤数字*/
+	.steps li:before {
+	  display: block;
+	  content: counter(step); /*设定计数器内容*/
+	  counter-increment: step;  /*计数器值递增*/
+	  width: 32px;
+	  height: 32px;
+	  background-color: #019875;
+	  line-height: 32px;
+	  border-radius: 32px;
+	  font-size: 16px;
+	  color: #fff;
+	  text-align: center;
+	  font-weight: 700;
+	 /* margin: 0 auto 8px auto;*/
+	  position: absolute;
+	  left: 50%;
+	  margin-left: -16px;
+	  z-index: 20;
+	}
+
+	/*连接线*/
+	.steps li ~ li:after {
+	  content: '';
+	  width: 100%;
+	  height: 2px;
+	  background-color: #019875;
+	  position: absolute;
+	  left: -50%;
+	  top: 15px;
+	  z-index: 10; /*放置在数字后面*/
+	}
+
+	.steps li span {
+		display: block;
+		padding-top: 40px;
+
+	}
+
+	/*将当前/完成步骤之前的数字及连接线变绿*/
+	.steps li.active:before,
+	.steps li.active:after {
+	  background-color: #019875;
+	}
+
+	/*将当前/完成步骤之后的数字及连接线变灰*/
+	.steps li.active ~ li:before,
+	.steps li.active ~ li:after {
+	  background-color: #777;
+	}
+</style>
+<body>
+<section class="layui-larry-box">
+	<div class="larry-personal">
+		{notempty name="web_title"}
+		<header class="larry-personal-tit">
+			<span>{$web_title}</span>
+		</header>
+		{/notempty}
+		<div class="larry-personal-body clearfix">
+			<ul class="steps clearfix">
+
+			  <li {eq name="step" value="2"}class="active"{/eq}>
+			      <span>{:lang('content_form_step_title_2')}</span>
+			  </li>
+			  <li {eq name="step" value="2"}class="active"{/eq}>
+			  <a href="{:url('Goods/addimgs',['id'=>$goods_id])}">
+			       <span>{:lang('content_form_step_title_3')}</span>
+			  </a>
+			  </li>
+			  <li {eq name="step" value="3"}class="active"{/eq}>
+			  <a href="{:url('Goods/spec_price',['id'=>$goods_id])}">
+			     <span>{:lang('content_form_step_title_4')}</span>
+			  </a>
+			   </li>
+			</ul>
+			<hr>
+			{notempty name="form_tpis"}
+		  	<blockquote class="layui-elem-quote">{$form_tpis}</blockquote>
+		  	{/notempty}
+		{notempty name="nav_list"}
+		    <ul class="layui-tab-title" style="bottom:10px;">
+          	{volist name="nav_list" id="nav"}
+  				<li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+          	{/volist}
+		  	</ul>
+      	{/notempty}
+			<form class="layui-form col-lg-12" action="{$action}" method="post">
+				{$form_Html}
+				{:token()}
+				<div class="layui-form-item">
+					<div class="layui-input-block">
+						<button type="button" class="layui-btn" lay-submit="" lay-filter="*">{$eBiz.lang.content_form_btn_next}</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+	layui.use(['form','upload','element','laydate'],function(){
+     	var form = layui.form();
+
+     	layui.upload({ 
+         	url: "{:url('Sys/Upload/upload')}",
+		    type: 'image',
+		    ext: 'jpg|png|gif|bmp',
+		    before: function () {
+		        lay_index = layer.load(3, {
+		          shade: [0.1,'#fff'], //0.1透明度的白色背景
+		        });
+		    },
+		    success: function (data,input) {
+		    	// console.log(data);
+		    	var img_input = $(input).attr('data-val');
+		    	var img_src = $(input).attr('data-val')+'_src';
+		    	// console.log();
+		        if (data.error === 0) {
+		        	$('#'+img_input).val(data.url);
+		        	$('#'+img_src).attr('src',data.url);
+		            layer.msg('上传完成',{time:1000});
+	            	layer.close(lay_index);
+		        } else {
+		            layer.msg(data.message);
+	            	layer.close(lay_index);
+		        }
+		    }
+         });
+
+        form.on('submit(*)', function(data){
+        	var url = $(data.form).attr('action');
+	  		$.ajax({
+	  	        type : "POST",
+	  	        url: url,
+	  	        data : data.field,
+	  	        dataType : 'json',
+	  	        success: function(data){
+	  	        	layer.msg(data.msg,{time:1000},function() {
+	  	        		if (data.code==1) {
+	  	        			location.href = data.url;
+	  	        		}
+	  	        	});
+	  	        }
+	  	    });
+		  	return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+		});
+	});
+
+	function goUrl(obj) {
+		var url = $(obj).attr('data-url');
+		location.href = url;
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<div class="layui-form-item">
+	<label class="layui-form-label">{$title}</label>
+	<div class="layui-input-block">
+		<ul id="{$name}"></ul>
+		<input type="hidden" id="{$name}_val" name="{$name}"  value="{$value}" {notempty name="verify"}lay-verify="{$verify}"{/notempty}><i>{$tips}</i>
+	</div>
+</div>
+{eq name="times.tags" value="1"}
+<link rel="stylesheet" type="text/css" href="{:tb_config('sys_css_src',1,$lang_id)}jquery.taghandler.css" />
+<script src="{:tb_config('sys_js_src',1,$lang_id)}jquery.taghandler.js"></script>
+{/eq}
+<script>
+var orig{$name} = '{$value}';
+var news{$name} = orig{$name}.split(',');
+var arr{$name} = new Array(); //将标签放入arr 数组中
+for (var i = 0; i < news{$name}.length; i++) {
+	arr{$name}[i] = news{$name}[i];
+}
+var {$name}key = '{$name}';
+jQuery(document).ready(function () {
+	$('#'+{$name}key).tagHandler({
+		assignedTags: arr{$name}, //原有标签,若没有，可以直接写 []
+		autocomplete: false, //自动补全功能，true为有提示，false则反之
+		onAdd: function (tag) {
+			var addflag = true, tags = $('#'+{$name}key).tagHandler("getTags");
+			jQuery.each(tags, function (i, e) {
+				if (tag.toUpperCase() === e.toUpperCase()) {
+					$('#'+{$name}key).find('.tagItem').each(function () {
+						if ($(this).html().toLocaleUpperCase() === tag.toLocaleUpperCase()) {
+							$(this).animate({ opacity: 0.55 }).delay(20).animate({ opacity: 1 }).animate({ opacity: 0.55 }).delay(20).animate({ opacity: 1 });
+						}
+					});
+					addflag = false;
+				}
+			});							
+			return addflag;
+		},
+		onDelete: function (tag) { //删除操作
+			var addflag = false;
+				addflag = true;
+			return addflag;
+		},
+		afterAdd: function (tag){
+			var getTag = $('#'+{$name}key).tagHandler("getTags");
+			$('#'+{$name}key+'_val').val(getTag);
+		},
+		afterDelete: function (tag){
+			var getTag = $('#'+{$name}key).tagHandler("getTags");
+			$('#'+{$name}key+'_val').val(getTag);
+		}
+	});
+});
+</script>

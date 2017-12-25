@@ -1,0 +1,218 @@
+@charset 'utf-8';
+
+
+/*login.css*/
+.login-main {
+	padding-bottom: 60px;
+}
+
+.login-section {
+	padding: 110px 0;
+}
+.login-form-box {
+	width: 470px;
+	padding-right: 50px;
+	border-right: 1px solid #a3aebf;
+}
+.login-form {
+	
+}
+.login-form .login-form-list {
+	margin-top: 30px;
+	font-size: 0px;
+}
+.login-form .login-form-list:first-child { margin-top: 0px; }
+.login-form .login-form-list * { font-size: 14px; }
+.login-form .login-form-list .name {
+	display: inline-block;
+	vertical-align: top;
+	line-height: 38px;
+	color: #434343;
+	font-size: 16px;
+	width: 100px;
+}
+.login-form .login-form-list .f-input {
+	display: inline-block;
+	vertical-align: top;
+	width: 318px;
+	border: 1px solid #cecece;
+	position: relative;
+}
+.login-form .login-form-list .right-btn {
+	position: absolute;
+	right: 5px;
+	top: 4px;
+}
+.login-form .login-form-list .right-btn .inline-btn {
+	display: inline-block;
+	width: 110px;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	border: 1px solid #ddd;
+	background: #eeefef;
+	color: #666;
+	font-size: 14px;
+	border-radius: 2px;
+}
+.login-form .login-form-list .right-btn .inline-btn:hover {
+	background: #ddd;
+}
+.login-form .login-form-list .f-input input {
+	height: 38px;
+	border: 0px;
+	border-radius: 0px;
+}
+.login-form .login-form-list .f-input input:focus {
+	box-shadow: none;
+}
+.login-form .login-form-list .f-input .input--100 {}
+.login-form .login-form-list.imgCode-list {}
+.login-form .login-form-list.imgCode-list .f-input {
+	width: 160px;
+}
+.login-form .login-form-list .img-code {
+	display: inline-block;
+	float: right;
+	width: 140px;
+	height: 38px;
+}
+.login-form .login-form-list .img-code img {
+	width: 100%;
+	height: 100%;
+}
+.login-btn {
+	display: block;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	text-align: center;
+	color: #fff;
+	background: #c11e1f;
+	font-size: 18px;
+}
+.signup-btn {
+	display: block;
+	width: 100%;
+	height: 58px;
+	line-height: 58px;
+	text-align: center;
+	color: #fff;
+	background: #c11e1f;
+	font-size: 18px;
+}
+.login-btn:hover,.signup-btn:hover {
+	background: #f43838;
+}
+.login-note {
+	font-size: 12px;
+	color: #999;
+	text-align: right;
+}
+.login-note a:hover {
+	color: #f43838;
+}
+.quick-logon {}
+.quick-logon .t {
+	color: #666;
+	font-size: 14px;
+	height: 42px;
+	line-height: 40px;
+	border-bottom: 2px solid #515a69;
+	position: relative;
+}
+.quick-logon .t .tt {
+	position: relative;
+	display: inline-block;
+}
+.quick-logon .t .tt:before {
+	content: '';
+	display: block;
+	width: 0;
+	height: 0;
+	border-bottom: 4px solid #515a69;
+	border-right: 4px solid transparent;
+	border-left: 4px solid transparent;
+	position: absolute;
+	bottom: 0px;
+	left: 50%;
+	margin-left: -4px;
+}
+.quick-logon {}
+.quick-logon .q-item {
+	float: left;
+	display: inline-block;
+	vertical-align: top;
+	width: 33.33%;
+	font-size: 16px;
+	color: #666;
+}
+.quick-logon .q-item img {
+	vertical-align: middle;
+	margin-right: 7px;
+	width: 28px;
+	height: 28px;
+}
+.quick-logon .q-item span {
+	vertical-align: middle;
+}
+.agree-block {
+	font-size: 14px;
+	color: 3333;
+}
+.agree-block * {
+	vertical-align: middle;
+}
+.agree-block a {
+	color: #3388ff;
+}
+.agree-block a:hover {
+	color: #0A3E87
+}
+
+.login-aslide {
+	/*width: 630px;*/
+	/*height: 450px;*/
+}
+.imageGallery-box, .lSSlideOuter  {
+	height: 450px;
+	width: 630px;
+	position: relative;
+	overflow: hidden;
+}
+.lSSlideWrapper {}
+.lSSlideOuter .lSPager.lSpg {
+	bottom: 10px;
+	z-index: 999;
+	position: absolute;
+	background: rgba(51,51,51,.75);
+	left: 50%;
+	-webkit-transform: translateX(-50%);
+	-moz-transform: translateX(-50%);
+	-ms-transform: translateX(-50%);
+	transform: translateX(-50%);
+	border-radius: 13px;
+	line-height: 1;
+	padding: 5px;
+	height: 20px;
+}
+.lSSlideOuter .lSPager.lSpg > li {
+	vertical-align: top;
+	line-height: 1;
+	height: 10px;
+}
+.lSSlideOuter .lSPager.lSpg > li a {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	line-height: 1;
+	vertical-align: top;
+	background: #fff;
+}
+.lSSlideOuter .lSPager.lSpg > li:hover a, .lSSlideOuter .lSPager.lSpg > li.active a {
+	background: #b1191a;
+}
+
+
+
+

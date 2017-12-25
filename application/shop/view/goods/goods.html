@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="cn">
+	{include file="sys@Base:table_header" /}
+<body>
+<script type="text/javascript" src="{:tb_config('sys_plugin_src',1,$lang_id)}common/layui/layui.js"></script>
+<script type="text/javascript" src="{:tb_config('sys_js_src',1,$lang_id)}jquery.min.js"></script>
+<style type="text/css">
+  .pagination {margin:0px;}
+  .result-note {
+    width: 50px;
+  }
+  .cate_box {
+    display: inline-block;
+    color: #fff;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    background: #78b67c;
+    border-radius: 2px;
+    padding: 0 5px;
+  }
+</style>
+<section class="layui-larry-box">
+  {notempty name="tabel_tips"}
+  <blockquote class="layui-elem-quote">{$tabel_tips}</blockquote>
+  {/notempty}
+  <div class="larry-personal">
+      <div class="layui-tab layui-tab-card">
+      {if condition="(empty($top_btn) eq false) OR (empty($filter) eq false)"}
+        <blockquote class="layui-elem-quote mylog-info-tit">
+          {notempty name="filter"}
+          {$filter}
+          {/notempty}
+          {notempty name="top_btn"}
+          <ul class="layui-tab-title">
+            {volist name="top_btn" id="top"}
+            {switch name="top.type"}
+              {case value="frame"}{assign name="action" value="showFrame" /}{/case}
+              {case value="confirm_form"}{assign name="action" value="showConfirm_form" /}{/case}
+            {/switch}
+            <li class="layui-btn {$top.class}" onclick="{$action}(this);" data-msg="{$top.msg}" data-href="{:url($top['url'],$top['pram'])}"><i class="{$top.icon}"></i>{$top.title}</li>
+            {/volist}
+          </ul>
+          {/notempty}
+        </blockquote>
+        <div class="larry-separate"></div>
+      {/if}
+      {notempty name="nav_list"}
+		    <ul class="layui-tab-title">
+          {volist name="nav_list" id="nav"}
+  				<li {eq name="nav.sign" value="$tab_now"}class="layui-this"{/eq} onclick="location.href='{$nav.url}'">{$nav.title}</li>
+          {/volist}
+			  </ul>
+      {/notempty}
+		    <div class="layui-tab-content larry-personal-body clearfix mylog-info-box">
+          <div class="layui-tab-item layui-field-box layui-show">
+          
+          <form id="listFrom" method="post" action="" >
+            <table class="layui-table table-hover" lay-even="" lay-skin="nob">
+              <thead>
+                <tr>
+                {eq name="show_check" value="1"}
+                  <th><input type="checkbox" id="checkall"></th>
+                {/eq}
+                  <th >ID</th>
+                  <th style="text-align: center;">预览产品<p>产品货号</p></th>
+                  <th >一级分类 ‖ 二级分类 ‖ 三级分类 <p>商品名称</p></th>
+                  {notempty name="custGoods"}
+                  <th >所属商户</th>
+                  {/notempty}
+                  <!-- <th >分类</th> -->
+                  {php}
+                    $url = get_url();
+                    if(strpos($url,'?')!==false){
+                      if(strpos($url,'sort')===false){
+                        $url .= '&sort='.$sort_curr;
+                      }else{
+                        if(strpos($url,'ASC')!==false){
+                          $url = str_replace('ASC',$sort_curr,$url);
+                        }
+                        if(strpos($url,'DESC')!==false){
+                          $url = str_replace('DESC',$sort_curr,$url);
+                        }
+                      }
+                    }else{
+                      $url .= '?sort='.$sort_curr;
+                    }
+                  {/php}
+                  <th ><a href="{$url}">现价</a> / 原价</th>
+                  <th >库存</th>
+                  <th >断货</th>
+                  <th >上架</th>
+                  <th >推荐</th>
+                  <th >新品</th>
+                  <th >热卖</th>
+                  <th >审核</th>
+                  <th >排序</th>
+                  <th >操作</th>
+                </tr>
+              </thead>
+              <tbody>
+              {volist name="data" id="v"}
+                <tr>
+                {eq name="show_check" value="1"}
+                <td><input type="checkbox" value="{$v.id}" name="id[{$v.id}]" ></td>
+                {/eq}
+                <td class="layui-form">{$v.id}</td>
+                <td class="layui-form" style="text-align: center;">
+                  <img src="{$v.thumb}" style="max-width:150px;height:80px;">
+                  <p><u>{$v.goods_sn}</u></p>
+                </td>
+                <td class="layui-form">
+                  {$v.cat_tree|getCateName}
+                  <p>
+                    <input name="title[{$v.id}]" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" data-field="title" value="{$v.title}" style="width:180px;" onblur="ajaxInput(this);">
+                  </p>
+                </td>
+                {notempty name="v.cust"}
+                <td class="layui-form">{$v.cust}</td>
+                {/notempty}
+                <!-- <td class="layui-form">{$v.cat_id}</td> -->
+                <td class="layui-form">{:web_currency()}
+                  <input name="shop_price[{$v['id']}]" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" data-field="shop_price" value="{$v.shop_price}" style="width:60px;" onblur="ajaxInput(this);">
+                  / {:web_currency()}{$v.market_price|number_format=0,'.',','}</td>
+                <td class="layui-form">
+                  <!-- <input name="stock[{$v['id']}]" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" data-field="stock" value="100" style="width:60px;" onblur="ajaxInput(this);"> -->
+                  {$v.stock|default=100}
+                </td>
+                <td class="layui-form">
+                  <input type="checkbox" name="is_empty" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.is_empty" value="1"}checked{/eq}>
+                </td>
+                <td class="layui-form">
+                  <input type="checkbox" name="status" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.status" value="1"}checked{/eq}>
+                </td>
+                <td class="layui-form">
+                  <input type="checkbox" name="is_comm" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.is_comm" value="1"}checked{/eq}>
+                </td>
+                <td class="layui-form">
+                  <input type="checkbox" name="is_new" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.is_new" value="1"}checked{/eq}>
+                </td>
+                <td class="layui-form">
+                  <input type="checkbox" name="is_hot" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" lay-skin="switch" lay-filter="switch" value="1" {eq name="v.is_hot" value="1"}checked{/eq}>
+                </td>
+                <td class="layui-form" style="min-width: 100px;">
+                {neq name="v.is_audit" value="0"}
+                  {eq name="v.is_audit" value="1"}
+                  <span class="result-note" style="color:green;">通过</span>
+                  {else/}
+                  <span class="result-note" style="color:red;">不通过</span>
+                  {/eq}
+                {else/}
+                   <select name="is_audit" lay-filter="audit" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}">
+                    <option value="0">请选择</option>
+                    <option value="1">通过</option>
+                    <option value="-1">不通过</option>
+                  </select>
+                {/neq}
+                </td>
+                <td class="layui-form">
+                  <input name="sort[{$v['id']}]" data-href="{:U('goods/goods_set_value',['id'=>$v['id']])}" data-field="sort" value="{$v.sort}" style="width:40px;" onblur="ajaxInput(this);">
+                </td>
+                <td>
+                  <div class="layui-btn-group">
+                    <button type="button" onclick="showFrame(this);" data-msg="设置推荐位" data-href="{:U('Sys/Position/addBind',['goods_id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-normal" title="推荐">推荐</button>
+
+                    <button type="button" id="frame" onclick="showFrame(this);" data-msg="编辑记录" data-href="{:U('goods/edit',['goods_id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-normal" title="编辑"><i class="fa fa-fw fa-pencil-square-o"></i></button>
+                    <button type="button" id="frame" onclick="showConfirm(this);" data-msg="清除图片缓存" data-href="{:U('goods/clearGoodsThumb',['id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-normal" title="清除图片缓存"><i class="fa fa-fw fa-picture-o"></i></button>
+                    <button type="button" id="confirm" onclick="showConfirm(this);" data-msg="确认删除当前记录吗？" data-href="{:U('content/del',['goods_id'=>$v['id']])}" class="layui-btn layui-btn-small layui-btn-danger" title="删除"><i class="fa fa-fw fa-trash-o"></i></button>
+                  </div>
+                </td>             
+              </tr> 
+              {/volist}
+              </tbody>
+            </table>
+          </form> 
+          <div class="larry-table-page clearfix">
+          {notempty name="page"}
+            <div id="page" class="page">{$page}</div>
+          {/notempty}
+          </div>
+          </div>
+        </div>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+	layui.use(['jquery','form','layer','element','laypage'],function(){
+    var form = layui.form();
+    window.jQuery = window.$ = layui.jquery;
+    window.layer = layui.layer;
+    var element = layui.element(),
+    laypage = layui.laypage;
+    form.on('select(audit)', function(data){
+      var url = $(data.elem).attr('data-href');
+      var field = $(data.elem).attr('name');
+      var val = data.value;
+      var msg = '';
+      if (val == -1) {
+        layer.prompt({title: '您选择了不通过审核，请输入拒绝原因！', formType: 2}, function(text, index){
+          msg = text;
+          $.ajax({
+            type : "POST",
+            url:url,
+            data : {
+              'field':field,
+              'val':val,
+              'msg':msg
+            },
+            dataType : 'json',
+            success: function(data){
+              layer.msg(data.msg,{time:1000},function () {
+                // if (data.code==0) {
+                  location.reload();
+                // };
+              });
+            }
+          }); 
+        });
+      }else{
+        $.ajax({
+          type : "POST",
+          url:url,
+          data : {
+            'field':field,
+            'val':val,
+            'msg':msg
+          },
+          dataType : 'json',
+          success: function(data){
+            layer.msg(data.msg,{time:1000},function () {
+              if (data.code==0) {
+                location.reload();
+              };
+            });
+          }
+        });        
+      }
+    });
+    form.on('switch(switch)', function(data){
+      var url = $(data.elem).attr('data-href');
+      var field = $(data.elem).attr('name');
+      var val = data.elem.checked?1:0;
+      var old_val = val==1?0:1;
+      $.ajax({
+        type : "POST",
+        url:url,
+        data : {
+          'field':field,
+          'val':val
+        },
+        dataType : 'json',
+        success: function(data){
+          layer.msg(data.msg,{time:1000},function () {
+            if (data.code==0) {
+              location.reload();
+            };
+          });
+        }
+      });
+    });
+    form.on('select(select)', function(data){
+      var url = $(data.elem).attr('data-href');
+      var field = $(data.elem).attr('name');
+      var val = data.value;
+      $.ajax({
+        type : "POST",
+        url:url,
+        data : {
+          'field':field,
+          'val':val
+        },
+        dataType : 'json',
+        success: function(data){
+          layer.msg(data.msg,{time:1000});
+        }
+      });
+    });
+    form.render('select');
+  });
+  $('#checkall').click(function () {
+    $("input[name^='id']").prop("checked",$(this).prop("checked"));
+  });
+  
+  function showFrame (obj) {
+    var index = layer.open({
+      type: 2,
+      title: $(obj).attr('data-msg'),
+      shadeClose: false,
+      shade:  [0.8, '#393D49'],
+      maxmin: true, //开启最大化最小化按钮
+      area: ['90%', '90%'],
+      content: $(obj).attr('data-href')
+    });
+    layer.full(index);
+  }
+
+  function showConfirm (obj) {
+    layer.confirm($(obj).attr('data-msg'), {
+      btn: ['Yes','No'] //按钮
+    }, function(){
+        $.ajax({
+          url:$(obj).attr('data-href'),      
+          success: function(data){                  
+            layer.msg(data.msg,{time:1000},function () {
+              if (data.code==1) {
+                  // console.log(data);
+                location.reload();
+              }
+            })
+          }
+        });  
+    });
+  }
+  function callback () {
+    layer.closeAll();
+    location.reload();
+  }
+  function ajaxInput (obj) {
+    var url = $(obj).attr('data-href');
+    var field = $(obj).attr('data-field');
+    var value = $(obj).val();
+    $.ajax({
+      type : "POST",
+      url:url,
+      data : {
+        'field_name':field,
+        'field' : value
+      },
+      dataType : 'json',
+      success: function(data){
+        layer.msg(data.msg,{time:1000},function () {
+          // if (data.code==1) {
+          //   location.reload();
+          // };
+        });
+      }
+    });
+  }
+
+  function showConfirm_form (obj) {
+    layer.confirm($(obj).attr('data-msg'), {
+      btn: ['Yes','No'] //按钮
+    }, function(){
+      $.ajax({
+        type : "POST",
+        url:$(obj).attr('data-href'),
+        data :$('#listFrom').serialize(),
+        dataType : 'json',
+        success: function(data){
+          layer.msg(data.msg,{time:1000},function () {
+            if (data.code==1) {
+              location.reload();
+            };
+          });
+        }
+      });
+    })
+  }
+</script>
+</body>
+</html>

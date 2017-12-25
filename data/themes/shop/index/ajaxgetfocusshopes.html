@@ -1,0 +1,17 @@
+<div class="box fcshop-message mscrollbox">
+	<div class="fcshop-itembox clearfix">
+	{volist name="collect_list" id="vo"}
+		<div class="fcshop-item">
+			<a href="{:U('shop/Store/index',['id'=>$vo['shop_id']])}" class="pic"><img src="{$vo.shop.shop_logo}" alt="" /></a>
+			<div class="info">
+				<span class="line"><i></i></span>
+				<div class="fcs-name"><a href="{:U('shop/Store/index',['id'=>$vo['shop_id']])}">{$vo.shop.shop_name}</a></div>
+				<div class="fcs-join">
+					<a href="{:U('shop/Store/index',['id'=>$vo['shop_id']])}">进入店铺</a>
+				</div>
+			</div>
+		</div>
+	{/volist}
+		
+	</div>
+</div>

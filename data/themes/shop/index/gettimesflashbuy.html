@@ -1,0 +1,21 @@
+<div class="box">
+	<ul class="clearfix">
+		{volist name="list" id="vo"}
+		<li class="shop-list-b">
+			<div class="pic">
+				<a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}"><img src="{$vo['goods']['thumb']}" width="100%" alt="" /></a>
+			</div>
+			<div class="info">
+				<p class="info-title"><a href="{:U('shop/goods/activity',['id'=>$vo['goods']['goods_id']])}">{$vo.goods.title}</a></p>
+				<div class="msg mt10">
+					<p style="text-align: right;"><del>{:web_currency()}{$vo.goods.shop_price}</del></p>
+					<p>
+						<!-- <span style="line-height: 22px;font-size: 13px;"><span class="color--c16a00">售07</span>/10件</span> -->
+						<span class="color--9b1b33 price fr">{:web_currency()}{$vo.goods.price}</span>
+					</p>
+				</div>
+			</div>
+		</li>
+		{/volist}
+	</ul>
+</div>

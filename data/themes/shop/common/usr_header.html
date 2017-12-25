@@ -1,0 +1,119 @@
+<style type="text/css">
+	.msg-num{
+		background: #b1191a;
+		color: #fff;
+		display: inline-block;
+		vertical-align: middle;
+		height: 18px;
+		width: 18px;
+		font-size: 10px;
+		line-height: 18px;
+		border-radius: 50%;
+		margin-left: 10px;
+		position: absolute;
+		top: 8px;
+	}
+</style>
+<header class="header bus_header">
+	<div class="container w1200 clearfix">
+		<div class="header-left" style="width: 300px;">
+			<a href="/" class="logo fl"><img src="{:tb_config('web_site_logo',1)}" alt="" /></a>
+			<div class="header-intr fl">
+				<h1 class="color--d81c1d" style="font-size: 24px;"><a href="{:U('User/index')}">{$eBiz.lang.Ucenter_center_title}</a></h1>
+				<a href="/" class="topback">
+					<img src="{:tb_config('resource_path',1)}shop/picture/back.png" alt="" />
+					<span>{$eBiz.lang.Ucenter_go_home}</span>
+				</a>
+			</div>
+		</div>
+
+		<div class="header-userintr">
+			<div class="user-introduct">
+				<div class="introduct-block">
+					<div class="user-img">
+						<a href="{:U('user/info')}">
+							<img src="{$user.head_pic}" alt="" />
+						</a>
+					</div>
+					<div class="user-msg">
+						{assign name="reg_url" value=":url('member/login/reg',['d'=>$user['sysid']],'',true)" /}
+						<div class="user-name">
+							<a href="{:U('user/info')}">{$user.nickname}</a>
+						</div>
+						<div class="user-worth">
+							<img src="{:getTableValue('user_level',['id'=>$user['level']],'icon')}" style="width: 26px;">
+							<span class="vip">
+								<a href="{:U('index/article',['id'=>23])}">{:getTableValue('user_level',['id'=>$user['level']],'level_name')}</a>
+							</span>
+							<span class="integral">
+								{$eBiz.lang.User_Index_account}
+								<a href="{:U('user/account')}">
+									<i class="color--b82e2f">{:web_currency()}{$user.user_money}</i>
+								</a>
+							</span>
+							<span class="integral">
+								{$eBiz.lang.User_Index_points}
+								<a href="{:U('user/account')}">
+									<i class="color--b82e2f">{$user.pay_points}</i>
+								</a>
+							</span>
+							<span class="coupon">
+								{$eBiz.lang.User_Index_coupon}
+								<a href="{:U('User/coupon')}">
+									<i class="color--b82e2f">{:api('shop','Coupon','userCouponNum',[$user.id])}</i>
+								</a>
+							</span>
+							{$eBiz.lang.User_Index_coupon_unit}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="header-right fr">
+			<div class="cart-frame">
+				<a class="cart-con" href="{:U('shop/cart/cart')}">
+					<img src="{:tb_config('resource_path',1)}shop/picture/cart.png" alt="">
+					<span>购物车</span>
+					{notempty name="cart_num"}
+					<span class="num" id="header_cart_nums">{$cart_num}</span>
+					{/notempty}
+				</a>
+				<div class="cart-subbox" id="cart_list">
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/clipboard.min.js"></script>
+<script type="text/javascript">
+	getsCart = false;
+	$('.cart-frame').mouseenter(function() {
+		if( getsCart == true ){
+			return false;
+		}
+		$.ajax({
+			url:"{:U('index/ajaxBarCart')}",
+			success: function(data){
+				$('#cart_list').html(data);
+				getsCart = true;
+			}
+		});
+	})
+
+
+	var btn = document.getElementById('btn');
+    var clipboard = new Clipboard(btn);//实例化
+
+    //复制成功执行的回调，可选
+    clipboard.on('success', function(e) {
+        layer.msg('复制成功');
+    });
+
+    //复制失败执行的回调，可选
+    clipboard.on('error', function(e) {
+        layer.msg('复制失败，请重试，或使用Ctrl+C手动复制。');
+    });
+
+</script>

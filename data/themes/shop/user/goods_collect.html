@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.CollGoods_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/common.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/style.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/list.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/lightSlider.css" />
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.min.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/layer/layer.js"></script>
+	<style type="text/css">
+	.lSSlideWrapper:hover .lSAction {
+		visibility: visible;
+		opacity: 1;
+		transition: .5s;
+	}
+	.lSAction {
+		visibility: hidden;
+		opacity: 0;
+	}
+	.lSAction > a {
+		background-image: url('{:tb_config('resource_path',1)}shop/images/controls1.png');
+		opacity: 1;
+	}
+	.on {
+		color:#e06208;
+	}
+	.fr a {
+		margin-right: 10px;
+	}
+	.sign-num {
+		background: #b1191a;
+	    color: #fff;
+	    display: inline-block;
+	    vertical-align: middle;
+	    height: 18px;
+	    width: 18px;
+	    line-height: 18px;
+	    border-radius: 50%;
+	}
+	</style>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong>{$eBiz.lang.CollGoods_page_title}</strong>
+					<div class="fr">
+						<a href="{:U('user/goods_collect',['type'=>'all'])}" {eq name="type" value="all"}class="on"{/eq}>全部宝贝{$all_num}</a>
+						<a href="{:U('user/goods_collect',['type'=>'reduce'])}" {eq name="type" value="reduce"}class="on"{/eq}>降价{$reduce_num}</a>
+						<a href="{:U('user/goods_collect',['type'=>'unable'])}" {eq name="type" value="unable"}class="on"{/eq}>失效{$unable_num}</a>
+					</div>
+				</div>
+				<!-- 商品 -->
+				<div class="j-user-section user-section mt20 plr20-section">
+					<div class="content user-follow-box">
+						<div class="item-box pt20 pb20 clearfix">
+						{empty name="goods_collect_list"}暂无收藏商品...{/empty}
+						{volist name="goods_collect_list" id="list"}
+							<div class="shop-follow-list cmall-shop-list cmall-shop-check">
+								<div class="item-check">
+									<div class="i-check"><img src="{:tb_config('resource_path',1)}shop/images/gou.png" width="24" alt=""><input class="input-check" type="checkbox" /></div>
+									<div class="item-mask"></div>
+								</div>
+								<div class="operate">
+									<a href="javascript:;" onclick="delCollect('{$list.id}');" class="op-item w50">{$eBiz.lang.CollGoods_cancel_collect}</a>
+
+								</div>
+								<div class="pic"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$list['goods_id']))}" target="_blank"><img src="{:common_thumb_img(getTableValue('shop_goods','id='.$list['goods_id'],'thumb'),200,200)}" alt=""></a></div>
+								<div class="info">
+									<div class="info-title"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$list['goods_id']))}" target="_blank">{:getTableValue('shop_goods','id='.$list['goods_id'],'title')}</a></div>
+									<div class="activity jian" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;">
+									</div>
+									<div class="info-price">
+										<span class="p color--e4393c">{:web_currency()}{:getTableValue('shop_goods','id='.$list['goods_id'],'shop_price')}</>
+									</div>
+								</div>
+								<!-- <div class="stats clearfix">
+									<a href="javascript:;" target="_blank" class="p-comment"><i></i><em>40480人评价</em></a>
+									<a href="javascript:;" target="_blank" class="p-like"><i></i><em>95%</em></a>
+								</div> -->
+								<div class="p-control clearfix">
+									<a href="javascript:;" onclick="addCart('{$list.goods_id}','1');" class="co co-cart w100"><i class="btnico"></i><em>{$eBiz.lang.CollGoods_add_cart}</em></a>
+								</div>
+							</div>
+						{/volist}							
+						</div>
+						{$page}
+						<!-- <div class="batch-check-shop pb20">
+							<a href="javascript:;" class="batch-shop-btn cmall-btn-c">批量操作</a>
+							<div class="batch-show">
+								<a href="javascript:;" class="batched-shop-btn cmall-btn-g">完成</a>
+								<span class="op-btn u-cart"><i></i><em>加入购物车</em></span>
+								<span class="op-btn u-unfollow"><i></i><em>取消关注</em></span>
+								<span all-check="0" class="op-btn u-check"><i></i><em>全选</em></span>
+							</div>
+						</div> -->
+					</div>
+				</div>
+				<!-- 根据你关注推荐 -->
+				<div class="j-user-section user-section mt20 plr20-section">
+					<div class="user-title">
+						<h4>{$eBiz.lang.CollGoods_recommond_tips}</h4>
+					</div>
+					<div class="user-content">
+						<div class="shop-promotion-itemBox pb30 clearfix">
+							<div class="imageGallery-box">
+								<ul class="imageGallery gallery list-unstyled">
+								{volist name="recommend_goods" id="vo"}
+							    	<li class="shop-promotion-list">
+							    		<div class="pic"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$vo['id']))}"><img src="{$vo.thumb|common_thumb_img=200,200}" alt="" /></a></div>
+							    		<div class="info">
+							    			<div class="p-name"><a href="{:U('shop/Goods/goodsInfo',array('id'=>$vo['id']))}">{$vo.title}</a></div>
+							    			<div class="p-price"><span class="p color--e4393c">{:web_currency()}{$vo['shop_price']}</span></div>
+							    		</div>
+							    		<div class="p-control clearfix">
+							    			<a href="{:U('shop/Goods/goodsInfo',array('id'=>$vo['id']))}" target="_blank" class="co co-cart w100"><i class="btnico"></i><em>{$eBiz.lang.CollGoods_show_goods}</em></a>
+							    		</div>
+							    	</li>
+								{/volist}
+							    	
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/jquery.lightSlider.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('.imageGallery').lightSlider({
+				speed: 800,
+				slideMove: 5,
+		      	item:5,
+		      	slideMargin:0,
+		      	enableTouch: false,
+		      	enableDrag: false,
+		      	pager: false
+		    });
+		})
+
+		// 加入购物车
+	    function addCart(id,nums,spec) {
+	    	$.ajax({
+	    		url:"{:U('Cart/ajaxAddCart')}",
+	    		data:{
+	    			goods_id:id,
+	    			goods_num:nums,
+	    			spec_key:spec
+	    		},			
+	    		success: function(data){									
+	    			layer.msg(data.msg,{time:1000});
+	    		}
+	    	});	
+    	}
+
+    	function delCollect(id) {
+    		$.ajax({
+    			url:"{:U('User/del_goods_collect')}",
+    			data:{id:id},			
+    			success: function(data){									
+    				layer.msg(data.msg,{time:1000},function () {
+    					if (data.code==1) {
+    						location.reload();
+    					}
+    				})
+    			}
+    		});	
+    	}
+	</script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/list.js"></script>
+	
+</body>
+</html>

@@ -1,0 +1,27 @@
+<script type="text/javascript">
+    layui.use(['form','upload','element','layedit','laydate'],function(){
+        var form = layui.form();
+        form.on('submit(*)', function(data){
+            $.ajax({
+                type : "POST",
+                url: url,
+                data : data.field,
+                dataType : 'json',
+                success: function(data){
+                    layer.msg(data.msg,{time:1000},function(){
+                        if (data.code==1) {
+                            var Home_tip = parent.$('#subwinaaa').text();
+                            var target = '{$target|default=''}';
+                            if(Home_tip=='home' && target!='parent'){
+                                location.reload();
+                            }else{
+                                parent.callback();
+                            }
+                        };
+                    });
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+    });
+</script>

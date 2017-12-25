@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="format-detection" content="email=no,telephone=no,address=no" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1" />
+	<title>{$eBiz.lang.Info_page_title}-{:tb_config('web_site_title',1)}</title>
+
+	{include file="common/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/bus.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/user.css" />
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}shop/css/foundation-datepicker.css" />
+
+	<style type="text/css">
+	.user-info-tooltop .i-img { position: relative;overflow: hidden;line-height: 85px; }
+	.user-info-tooltop .i-img .mask {
+		position: absolute;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.4);
+		color: #eee;
+		text-align: center;
+		display: none;
+		/*display: block;*/
+	}
+	.user-info-tooltop .i-img:hover .mask {
+		display: block;
+	}
+	.user-info-tooltop .i-img input {
+		position: absolute;
+		opacity: 0;
+		left: 0px;
+		top: 0px;
+		width: 100%;
+		height: 100%;
+		cursor: pointer;
+	}
+	.btn-disabled, .btn-disabled:hover {
+	    background: #adabab;
+	}
+</style>
+</head>
+<body>
+
+	{include file='common/top_header'/}
+	{include file='common/usr_header'/}
+
+	<main class="main bus-main">
+		<div class="container w1200 clearfix">
+			<!-- 左边功能导航 -->
+			{include file='common/usr_menu'/}
+
+			<div class="bus-right">
+				<div class="user-block-1">
+					<strong style="color:red;">{$eBiz.lang.Info_page_title}</strong>
+					<strong style="margin-left: 20px;"><a href="{:U('user/info_ext')}">更多个人信息</a></strong>
+				</div>
+				<!-- 个人信息 -->
+				<div class="user-message-section j-user-section mt10 p20">
+					<div class="user-message-box">
+					<form id="userForm" name="userForm" method="POST" action="{:U('User/save_info')}">
+						<div class="userInfo-tooltop-right">
+							<div class="block">
+								<span>{$user.nickname}</span>
+								<span class="ml5">您的用户等级是</span><img src="{:getTableValue('user_level',['id'=>$user['level']],'icon')}" style="width: 18px;">
+								<span class="u-vip ml5"><a href="{:U('index/article',['id'=>23])}">{:getTableValue('user_level',['id'=>$user['level']],'level_name')}</a></span>
+							</div>
+							<div class="block mt10">
+								<span>距离升级到</span><img src="{$next_lv.icon}" style="width: 18px;">
+								<span class="m-vip ml5"><a href="{:U('index/article',['id'=>23])}">{$next_lv.level_name}</a></span>
+								<span class="ml10">还需要<strong class="color--d81c1d pl10 pr10"><a href="{:U('index/article',['id'=>23])}">{$points_need}</a></strong>积分</span>
+							</div>
+							<div class="user-info-tooltop">
+								<div class="i-img"><div class="mask"><a href="javascript:;"><input class="filePrew" tabIndex="3" type="file" id="xxfile"  onchange="upImg();" size="3" name="pic">{$eBiz.lang.Info_form_change_headpic}</a></div><img id="head_pic" src="{$user.head_pic}" alt="" /></div>
+								<div class="i-msg">
+									<div class="u-name">{$eBiz.lang.Info_form_username}：{$user.username}</div>
+									<div class="mt5"><img src="{:getTableValue('user_level',['id'=>$user['level']],'icon')}" style="width: 18px;"><span class="u-vip">{:getTableValue('user_level',['id'=>$user['level']],'level_name')}</span></div>
+									<div class="u-type mt10">{$eBiz.lang.Info_form_nickname}：{$user.nickname}</div>
+									<!-- <div class="u-type mt10">UID:{$user.sysid}</div> -->
+								</div>
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Info_form_login_name}：</div>
+							<div class="m-msg"><input type="text" name="username" value="{$user.username}" class="input-200" /></div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Info_form_nickname}：</div>
+							<div class="m-msg"><input type="text" name="nickname" value="{$user.nickname}" class="input-200" /></div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Info_form_truename}：</div>
+							<div class="m-msg"><input type="text" name="truename" value="{$user.truename}" class="input-200" /></div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Info_form_sex}：</div>
+							<div class="m-msg">
+								<input type="hidden" name="sex" value="{$user.sex|default=0}">
+								<label class="mr30" for="usex-man">
+									<input type="radio" name="sex" id="usex-man" name="u-sex" value="1" {eq name="user.sex" value="1"}checked=""{/eq} />
+									<span>{$eBiz.lang.Info_form_sex_male}</span>
+								</label>
+								<label class="mr30" for="usex-woman">
+									<input type="radio" name="sex" id="usex-woman" name="u-sex" value="2" {eq name="user.sex" value="2"}checked=""{/eq} />
+									<span>{$eBiz.lang.Info_form_sex_female}</span>
+								</label>
+								<label for="usex-secrecy">
+									<input type="radio" name="sex" id="usex-secrecy" name="u-sex" value="0" {eq name="user.sex" value="0"}checked=""{/eq} />
+									<span>{$eBiz.lang.Info_form_sex_no}</span>
+								</label>
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name"><i class="impor">*</i>{$eBiz.lang.Info_form_birthday}：</div>
+							<div class="m-msg">
+							    <input type="text" name="birthday" value="{$user.birthday}"  class="input-200"  /> <i>{$eBiz.lang.Info_form_birthday_tips}</i>
+							</div>
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">{$eBiz.lang.Info_form_mail}：</div>
+							{eq name="user.email_validated" value='1'}
+							<div class="m-msg">
+								<span>{$user.email|hidemail}</span>
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/change_email')}" data-msg="{$eBiz.lang.Safe_mail_chg_title}" class="color--3CBE06">{$eBiz.lang.Safe_btn_change}</a>
+							</div>
+							{else/}
+							<div class="m-msg">
+								<span>{$user.email|hidemail}</span>
+								<a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/validate_email')}" data-msg="{$eBiz.lang.Safe_mial_vali_title}" class="color--3CBE06">{$eBiz.lang.Safe_btn_go_vali}</a>
+							</div>
+							{/eq}
+						</div>
+						<div class="user-message-item">
+							<div class="m-name">{$eBiz.lang.Info_form_mobile}：</div>
+							{eq name="user.mobile_validated" value='1'}
+							<div class="m-msg">
+								<span><input type="text" name="mobile" readonly="" value="{$user.mobile|hidetel}"></span>
+								<!-- <a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/change_mobile')}" data-msg="{$eBiz.lang.Safe_mobile_chg_title}" class="color--3CBE06 ml20">{$eBiz.lang.Safe_btn_change}</a> -->
+							</div>
+							{else/}
+							<div class="m-msg">
+								<span><input type="text" name="mobile" readonly="" value="{$user.mobile|hidetel}"></span>
+								<!-- <a href="javascript:;" onclick="openWin(this);" data-href="{:U('User/validate_mobile')}" data-msg="{$eBiz.lang.Safe_mobile_vali_title}" class="color--3CBE06 ml20">{$eBiz.lang.Safe_btn_go_vali}</a> -->
+							</div>
+							{/eq}
+						</div>
+
+						<div class="btn-box">
+							<div class="user-message-item mt40">
+								<div class="m-name"></div>
+								<div class="m-msg"><button id="btn_submit" type="button" onclick="postForm();"  class="cmall-btn-d btn-disabled">{$eBiz.lang.Info_btn_submit}</button></div>
+							</div>
+						</div>
+					</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	{include file='common/footer'/}
+
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/xxUploadImg.js"></script>
+	<script type="text/javascript" src="{:tb_config('resource_path',1)}shop/js/foundation-datepicker.js"></script>
+	<script type="text/javascript">
+		var nowTemp = new Date();
+		var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+		var checkin = $('#dpd1').fdatepicker({
+			format: 'yyyy-mm-dd',
+			onRender: function (date) {
+				// return date.valueOf() < now.valueOf() ? 'disabled' : '';
+				return '';
+			}
+		}).on('changeDate', function (ev) {
+			if (ev.date.valueOf() > checkout.date.valueOf()) {
+				var newDate = new Date(ev.date)
+				newDate.setDate(newDate.getDate() + 1);
+				checkout.update(newDate);
+			}
+			checkin.hide();
+		}).data('datepicker');
+
+		function upImg() {
+	    	var lay_index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2
+	        $("#xxfile").xxUploadImg({
+	            url: "{:U('sys/upload/upload')}",
+	            max: 800,
+	            callbackFun: function (ret, param) {
+	            	// layer.msg(ret.msg,{time:1000},function () {
+		            	if (ret.state=='SUCCESS') {
+		            		$.ajax({
+		            		    type : "POST",
+		            		    url:"{:U('User/chgUserInfo')}",
+		            		    data : {
+		            		    	id:"{$user.id}",
+		            		    	field:'head_pic',
+		            		    	value:ret.url
+		            		    },
+		            		    dataType : 'json',
+		            		    success: function(data){
+		            				layer.msg(data.msg,{time:1000},function () {
+		            					$('#head_pic').attr('src',ret.url);
+		            					layer.close(lay_index);
+		            				});
+		            		    }
+		            		});
+		            	};
+	            	// });
+	            }
+	        })
+	    }
+
+	    function postForm() {
+	    	$.ajax({
+	    	    type : "POST",
+	    	    url:$('#userForm').attr('action'),
+	    	    data :$('#userForm').serialize(),
+	    	    dataType : 'json',
+	    	    success: function(data){
+	    			layer.msg(data.msg,{time:1000},function () {
+	    				if (data.code==1) {
+	    					location.reload();
+	    				}
+	    			})
+	    	    }
+	    	});
+	    }
+
+	    function openWin(obj) {
+			var index = layer.open({
+			  type: 2,
+			  title: $(obj).attr('data-msg'),
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['1020px', '90%'],
+			  content: $(obj).attr('data-href')
+			});
+		}
+
+		function go_verify() {
+	    	var index = layer.open({
+			  type: 2,
+			  title: "{:lang('Pwd_page_truename_verify')}",
+			  shadeClose: false,
+			  shade:  [0.8, '#393D49'],
+			  maxmin: true, //开启最大化最小化按钮
+			  area: ['430px', '630px'],
+			  content: "{:U('member/login/verify')}"
+			});
+	    }
+
+	    function verify_callback(ret,info) {
+	    	if (ret) {
+	    		console.log(info);
+	    		info = $.parseJSON(info);
+				layer.msg('{:lang("Reg_form_verify_success")}',{time:2000},function () {
+					$('#btn_submit').html('{:lang("Reg_form_verify_succ_tips")}');
+					$('#btn_submit').attr("disabled", true);
+		    		$("#btn_submit").removeAttr("disabled");
+					$("#btn_submit").removeClass("btn-disabled");
+					$('input[name="truename"]').val(info.name);
+					$('input[name="birthday"]').val(info.birthday);
+					$('input[name="mobile"]').val(info.telNo);
+					var sex = info.sex;
+					var sex_str = '男';
+					if (sex==0) {
+						sex=2
+						sex_str = '女';
+					};
+					$('input[name="sex"]').val(sex);
+					$('#sex_str').html(sex_str);
+				})
+	    	}else{
+	    		$('#code').val('{:lang("Reg_form_verify_error_tips")}');
+	    	}
+	    	layer.closeAll();
+	    }
+	</script>
+	
+</body>
+</html>

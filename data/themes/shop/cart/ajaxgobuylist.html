@@ -1,0 +1,144 @@
+<style type="text/css">
+input[type=password], select {
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    border-radius: 3px;
+    outline: none;
+    padding: 0 5px;
+    min-height: 28px;
+    width: 120px;
+}
+</style>
+<div class="set-top"><strong>确认订单信息</strong></div>
+<div class="cart-shop-table">
+	<table>
+		<thead>
+			<tr>
+				<th width="40%" style="text-align: left;">店铺宝贝</th>
+				<th width="10%">单价</th>
+				<th width="15%">数量</th>
+				<th width="12%">关税/附加税</th>
+				<th width="8%">邮费</th>
+				<th width="10%">小计</th>
+				<th width="5%">操作</th>
+			</tr>
+		</thead>
+
+		{volist name="cartList" id="C"}
+		{eq name="C.shop_id" value="0"}
+			{assign name="shop_name" value="平台自营" /}
+		{else/}
+			{assign name="shop_name" value=":getTableValue('cust_shop',['id'=>$C.shop_id],'shop_name')"}
+		{/eq}
+		<tbody class="cart-shop-list">
+			<tr class="sep-tr"><td colspan="7"></td></tr>
+			<tr class="tr-th">
+				<td colspan="7" style="text-align: left;">
+					<div class="c-store" style="float: left; width: 240px;">
+						<img width="20" src="{:tb_config('resource_path',1)}shop/picture/user_07.png" alt="">
+						<span>{$shop_name}</span>
+					</div>
+					<div style="float: left;" id="coupon-{$C.shop_id}">
+
+					</div>
+				</td>
+			</tr>
+			{volist name="C.list" id="vo"}
+			<tr>
+				<td class="borleft" style="text-align: left;">
+					<div class="c-pic"><img src="{:common_thumb_img(getTableValue('shop_goods','id='.$vo['goods'],'thumb'),100,100)}" alt="" /></div>
+					<div class="c-info">
+						<div class="c-name">{$vo.goods_name}</div>
+						<div class="c-spec mt10">
+							<span class="ml10">{$vo.spec_text}</span>
+						</div>
+						<div class="c-spec mt10">
+							<span>{$vo.shipping_txt|default=''}</span>
+						</div>
+					</div>
+				</td>
+				{assign name="true_price" value=":compute()->promGoodsPrice($vo['goods'],$vo['spec_key'])" /}
+				<td>{:web_currency()}{$true_price}</td>
+				<td>
+					<div class="enter-number" style="vertical-align: middle;">
+						<span class="op reduce" onclick="nums_reduce(this);" data-id='{$vo.id}'>-</span>
+						<spna class="in"><input type="text" id="goods_num_{$vo.id}" value="{$vo.goods_num}" /></spna>
+						<span class="op add" onclick="nums_add(this);" data-id='{$vo.id}' data-max="1000">+</span>
+					</div>
+				</td>
+				<td>
+				{assign name="$goods_tariff" value="$true_price*$vo['tariff']/100*$vo['goods_num']" /}
+					{:web_currency()}{$goods_tariff}
+				</td>
+				<td>
+					{:web_currency()}{$vo['cost_shipping']}
+				</td>
+				<td class="borright">
+					<strong class="color--e4393c fs14">{:web_currency()}{$true_price*$vo['goods_num']+$goods_tariff+$vo['cost_shipping']}</strong>
+				</td>
+				<td class="borright">
+					<strong class="color--e4393c fs14"><a href="javascript:;" onclick="delBuy('{$vo.id}');">删除</a></strong>
+				</td>
+			</tr>
+			{/volist}
+			<tr class="other-shop-intr">
+				<td colspan="2" class="borleft borright">
+					<span class="label-intr">给卖家留言：</span>
+					<input type="text" class="input-400" name="user_remark[{$C.shop_id}]" placeholder="选填：对本次交易的说明" />
+
+				</td>
+
+				<td colspan="7" class="borright" style="text-align: left;">
+					<span class="label" >物流资费</span>
+					<!-- <span>普通配送 快递 免邮</span> -->
+					<strong class="fr color--e4393c fs14">{$C['total_cost']}{:web_currency()}</strong>
+				</td>
+			</tr>
+			<!-- <tr class="other-shop-intr">
+				<td colspan="2" class="borleft borright">
+					<span class="label-intr">给卖家留言：</span>
+					<input type="text" class="input-400" name="user_remark[{$C.shop_id}]" placeholder="选填：对本次交易的说明" />
+				</td>
+			</tr> -->
+			<tr class="block-tr">
+				
+				<td colspan="7" class="" style="text-align: right;">
+					<span>店铺合计（含运费）</span>
+					<strong class="color--999999 fs16"></strong>
+					<strong class="color--e4393c fs18">{:web_currency()}{$shopOrder[$C['shop_id']]['payable_price']}</strong>
+				</td>
+			</tr>
+			<!-- <tr>
+				<td colspan="5" class="" style="text-align: right;">
+					<span><input type="checkbox" />使用积分兑换结算时扣除</span>
+				</td>
+			</tr> -->
+		</tbody>
+		{/volist}
+	</table>
+</div>
+
+<div id="one_level_coupon">
+</div>
+
+<div class="order-summary mt30">
+		<!-- 非登录用户需要设置订单密码 -->
+	{empty name="user_id"}
+		<span class="label-intr">订单密码：</span>
+		<input type="password" name="ord_pwd" value="{$clearance_sn|default=''}" />
+		<span class="label-intr">确认密码：</span>
+		<input type="password" name="ord_repwd" value="{$clearance_sn|default=''}" />
+	{/empty}
+
+		<span class="mr50 ml100" style="color: #333;">订单总额</span>
+		<span class="fs18">
+			<strong class="color--999999"></strong>
+			<span class="color--e4393c">{:web_currency()}{$total_price}</span>
+		</span>
+	</p>
+	
+</div>
+<div class="btn-box right mt30">
+	<a class="cmall-su-btn" href="javascript:;" onclick="submit_order();"><strong>提交订单</strong></a>
+</div>

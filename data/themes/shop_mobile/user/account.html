@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no,maximum-scale=1.0" />
+	<meta charset="UTF-8">
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<meta content="black" name="apple-mobile-web-app-status-bar-style" />
+	<meta content="telephone=no,email=no,adress=no" name="format-detection" />
+	<title>我的钱包</title>
+
+	{include file="public/static" /}
+	<link rel="stylesheet" href="{:tb_config('resource_path',1)}mshop/css/user.css" />
+</head>
+<body>
+
+	<header class="header">
+		<div class="box clearfix">
+			<div class="header-left">
+				<a href="{:U('user/index')}" class="top-back">
+					<img src="{:tb_config('resource_path',1)}mshop/images/back.png" alt="" />
+				</a>
+			</div>
+			<div class="header-middle">
+				<h5 class="header-title">我的钱包</h5>
+			</div>
+			<!-- <div class="header-right">
+				<div class="filter-top">
+					<img src="{:tb_config('resource_path',1)}mshop/images/filter.png" width="24" alt="">
+				</div>
+			</div> -->
+		</div>
+	</header>
+	<!-- body -->
+	<main class="cmall-body pb30">
+		<div class="wallet-tooltop">
+			<p>可用余额：</p>
+			<p><span class="money">{$user.user_money}<small>元</small></span></p>
+			<div class="btn-box mt20">
+				<a href="recharge.html" class="user-btn recharge">充值</a>
+				<a href="recharge.html" class="user-btn withdrawals">提现</a>
+			</div>
+		</div>
+		<a href="{:U('user/points')}" class="user-block bdrt hasarrow mt10">
+			<div class="bl">我的积分</div>
+			<div class="br">{$user.pay_points}</div>
+		</a>
+		<a href="{:U('user/coupon')}" class="user-block hasarrow">
+			<div class="bl">我的优惠券</div>
+			<div class="br">{$useable_coupon}</div>
+		</a>
+		<div class="user-table scroll tan-table mt20 pb20">
+			<div class="user-block">
+				<div class="bl">收支明细</div>
+				<!-- <div class="bf"><a href="javascript:;" class="more">更多记录</a></div> -->
+			</div>
+			<div class="content">
+				<table>
+					<thead>
+						<tr>
+							<th width="30%">时间</th>
+							<th width="10%">金额</th>
+							<th width="20%">冻结</th>
+							<th width="30%">备注</th>
+						</tr>
+					</thead>
+					<tbody id="account_log">
+						
+					</tbody>
+				</table>
+				<div class="itembox pb20" style="text-align: center;">
+					<button type="button" id="more_goods_btn" style="border: 0px;" onclick="ajaxDftAccountLog();">查看更多></button>
+				</div>
+			</div>
+		</div>
+	</main>
+
+</body>
+	<script type="text/javascript">
+		var goods_page = 1;
+		$(function () {
+			ajaxDftAccountLog(goods_page);
+		})
+		function ajaxDftAccountLog(page) {
+			$('#more_goods_btn').attr('disable',true);
+			if (goods_page>0) {
+    			var index = layer.load(0, {shade: false}); //0代表加载的风格，支持0-2			
+    		}
+			$.ajax({
+				url:"{:U('User/ajaxAccountLog')}",
+				data:{page:goods_page},
+				success: function(data){
+
+					$('#account_log').append(data);
+					layer.close(index);
+					$('#more_goods_btn').attr('disable',false);
+					if (data!='') {
+    					goods_page ++;
+    				}
+				}
+			});	
+		}
+	</script>
+</html>
